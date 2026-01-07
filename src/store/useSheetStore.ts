@@ -42,7 +42,6 @@ interface FilesStore {
   setMergedPdfPreview: (preview: string | null) => void;
   setMergedPdfbytes: (bytes: Uint8Array | null) => void;
 
-  
   previewFile: string | null;
   setPreviewFile: (file: string | null) => void;
 }

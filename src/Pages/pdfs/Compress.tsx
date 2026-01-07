@@ -46,20 +46,20 @@ const CompressPdf = () => {
             />
           </div>
 
-          <PreviewFile />
+          <PreviewFile type="compress"/>
         </div>
       </div>
 
       <aside
         className={`
-          fixed top-[75%] translate-y-[-75%] right-0 h-full w-full md:w-[320px] z-50
+          fixed top-[11%] right-0 h-full w-full md:w-[320px] z-50
           bg-white  shadow-lg border-l border-gray-200
           transform transition-transform duration-300
           ${fileSelected ? "translate-x-0" : "translate-x-full"}
         `}
       >
         <div className="p-6">
-          <button className="absolute top-0 right-0">
+          <button className="absolute top-5 right-5">
             <IoMdClose onClick={() => setFileSelected(false)} />
           </button>
           <h2 className="text-lg font-semibold mb-4">Compression Level</h2>

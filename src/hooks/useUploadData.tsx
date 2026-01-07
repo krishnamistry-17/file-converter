@@ -4,6 +4,18 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { PDFDocument } from "pdf-lib";
 
+// type SplitRange = {
+//   from: number;
+//   to: number;
+// };
+
+export type SplitResult = {
+  name: string;
+  blob: Blob;
+  url: string;
+  pages: string;
+};
+
 const useUploadData = () => {
   const files = useFilesStore((state) => state.files);
   const selectedFile = useFilesStore((state) => state.selectedFile);
@@ -338,8 +350,125 @@ const useUploadData = () => {
     }
   };
 
-  const SplitPdf = () => {
-    if (!selectedFile) return alert("Please select a PDF file first!");
+  const splitPdfByRange = async (
+    file: File,
+    ranges: { from: number; to: number }[]
+  ) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+
+    const results = [];
+
+    for (const range of ranges) {
+      if (range.from < 1 || range.to > totalPages || range.from > range.to) {
+        continue;
+      }
+
+      const newPdf = await PDFDocument.create();
+
+      const pageIndexes = Array.from(
+        { length: range.to - range.from + 1 },
+        (_, i) => range.from - 1 + i
+      );
+
+      const pages = await newPdf.copyPages(pdf, pageIndexes);
+      pages.forEach((p) => newPdf.addPage(p));
+
+      const bytes = await newPdf.save();
+      const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+
+      results.push({
+        name: `pages-${range.from}-${range.to}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${range.from}-${range.to}`,
+      });
+    }
+
+    return results;
+  };
+
+  const downloadPdf = (bytes: Uint8Array, name: string) => {
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const splitEveryPage = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+
+    for (let i = 0; i < totalPages; i++) {
+      const newPdf = await PDFDocument.create();
+      const [page] = await newPdf.copyPages(pdf, [i]);
+      newPdf.addPage(page);
+
+      const bytes = await newPdf.save();
+      downloadPdf(bytes, `page-${i + 1}.pdf`);
+    }
+  };
+
+  const splitPdfByFixedRange = async (
+    file: File,
+    rangeSize: number
+  ): Promise<SplitResult[]> => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+
+    const results: SplitResult[] = [];
+
+    for (let start = 0; start < totalPages; start += rangeSize) {
+      const newPdf = await PDFDocument.create();
+
+      const pageIndexes = Array.from(
+        { length: Math.min(rangeSize, totalPages - start) },
+        (_, i) => start + i
+      );
+
+      const pages = await newPdf.copyPages(pdf, pageIndexes);
+      pages.forEach((p) => newPdf.addPage(p));
+
+      const bytes = await newPdf.save();
+      const blob = new Blob([new Uint8Array(bytes)], {
+        type: "application/pdf",
+      });
+
+      results.push({
+        name: `pages-${start + 1}-${start + pageIndexes.length}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${start + 1}-${start + pageIndexes.length}`,
+      });
+    }
+
+    return results;
+  };
+
+  const downloadSplitPdf = (bytes: Uint8Array, name: string) => {
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+  };
+
+  const getTotalPages = async (file: File) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const originalPdf = await PDFDocument.load(arrayBuffer);
+
+    const totalPages = originalPdf.getPageCount();
+    console.log(totalPages, "totalPages");
+    return totalPages;
   };
 
   return {
@@ -355,7 +484,12 @@ const useUploadData = () => {
     ConvertedPdfToPpt,
     compressPdf,
     MergePdfs,
-    SplitPdf,
+    splitPdfByRange,
+    splitEveryPage,
+    getTotalPages,
+    splitPdfByFixedRange,
+    downloadPdf,
+    downloadSplitPdf,
   };
 };
 

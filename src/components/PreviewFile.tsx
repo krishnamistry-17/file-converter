@@ -1,9 +1,12 @@
 import getFileType from "../constance/FileType";
 import useFilesStore from "../store/useSheetStore";
 import { FaFileExcel, FaFilePowerpoint, FaFileWord } from "react-icons/fa";
-const PreviewFile = () => {
+
+
+const PreviewFile = ({ type }: { type: "split" | "merge" | "compress" }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
+
   return (
     <div>
       <div className="w-full flex flex-col gap-3 items-center justify-center">

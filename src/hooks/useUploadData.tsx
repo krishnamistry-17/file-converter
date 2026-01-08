@@ -4,11 +4,6 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { PDFDocument } from "pdf-lib";
 
-// type SplitRange = {
-//   from: number;
-//   to: number;
-// };
-
 export type SplitResult = {
   name: string;
   blob: Blob;
@@ -376,7 +371,9 @@ const useUploadData = () => {
       pages.forEach((p) => newPdf.addPage(p));
 
       const bytes = await newPdf.save();
-      const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+      const blob = new Blob([new Uint8Array(bytes)], {
+        type: "application/pdf",
+      });
 
       results.push({
         name: `pages-${range.from}-${range.to}.pdf`,
@@ -471,6 +468,104 @@ const useUploadData = () => {
     return totalPages;
   };
 
+  const extractAllPages = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+    const results: SplitResult[] = [];
+    for (let i = 0; i < totalPages; i++) {
+      const newPdf = await PDFDocument.create();
+      const [page] = await newPdf.copyPages(pdf, [i]);
+      newPdf.addPage(page);
+      const bytes = await newPdf.save();
+      const blob = new Blob([new Uint8Array(bytes)], {
+        type: "application/pdf",
+      });
+      results.push({
+        name: `page-${i + 1}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${i + 1}`,
+      });
+    }
+    return results;
+  };
+
+  const extractSelectedPage = async (file: File, pages: number[]) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(arrayBuffer);
+    const totalPages = pdf.getPageCount();
+    const results: SplitResult[] = [];
+
+    for (const page of pages) {
+      if (page < 1 || page > totalPages) {
+        continue;
+      }
+      const newPdf = await PDFDocument.create();
+      const [pageData] = await newPdf.copyPages(pdf, [page - 1]);
+      newPdf.addPage(pageData);
+      const bytes = await newPdf.save();
+      const blob = new Blob([new Uint8Array(bytes)], {
+        type: "application/pdf",
+      });
+      results.push({
+        name: `page-${page}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${page}`,
+      });
+    }
+    return results;
+  };
+
+  const extractSelectedRange = async (
+    file: File,
+    range: { from: number; to: number }
+  ) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(arrayBuffer);
+    const totalPages = pdf.getPageCount();
+
+    // ensure numbers
+    const from = Number(range.from);
+    const to = Number(range.to);
+
+    if (
+      Number.isNaN(from) ||
+      Number.isNaN(to) ||
+      from < 1 ||
+      to > totalPages ||
+      from > to
+    ) {
+      return [];
+    }
+
+    const newPdf = await PDFDocument.create();
+
+    // IMPORTANT: pdf-lib uses ZERO-based indexes
+    const pageIndexes: number[] = [];
+    for (let i = from; i <= to; i++) {
+      pageIndexes.push(i - 1);
+    }
+
+    const copiedPages = await newPdf.copyPages(pdf, pageIndexes);
+    copiedPages.forEach((p) => newPdf.addPage(p));
+
+    const bytes = await newPdf.save();
+    const blob = new Blob([new Uint8Array(bytes)], {
+      type: "application/pdf",
+    });
+
+    return [
+      {
+        name: `range-${from}-${to}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${from}-${to}`,
+      },
+    ];
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -490,6 +585,9 @@ const useUploadData = () => {
     splitPdfByFixedRange,
     downloadPdf,
     downloadSplitPdf,
+    extractAllPages,
+    extractSelectedPage,
+    extractSelectedRange,
   };
 };
 

@@ -7,6 +7,9 @@ import Range from "../../components/split/Range";
 import useSplitStore from "../../store/useSplitStore";
 import PreviewFile from "../../components/PreviewFile";
 import SplitPreviewGrid from "../../components/split/SplitPreviewGrid";
+import Pages from "../../components/split/Pages";
+import Size from "../../components/split/Size";
+import { PDFDocument } from "pdf-lib";
 
 const SplitPdf = () => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
@@ -15,16 +18,21 @@ const SplitPdf = () => {
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const results = useSplitStore((state) => state.results);
   const [fileSelected, setFileSelected] = useState(false);
-  const [splitRangeType, setSplitRangeType] = useState<
-    "Range" | "Pages" | "Size"
-  >("Range");
+  const splitRangeType = useSplitStore((state) => state.splitRangeType);
+  const setTotalPages = useSplitStore((s) => s.setTotalPages);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setSplitRangeType = useSplitStore((state) => state.setSplitRangeType);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    e.target.value = "";
-    setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File));
+
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+
+    setSelectedFile(file);
+    setPreviewFile(URL.createObjectURL(file));
+    setTotalPages(pdf.getPageCount());
     setFileSelected(true);
   };
 
@@ -86,9 +94,10 @@ const SplitPdf = () => {
                 {["Range", "Pages", "Size"].map((tab) => (
                   <button
                     key={tab}
-                    onClick={() =>
-                      setSplitRangeType(tab as "Range" | "Pages" | "Size")
-                    }
+                    onClick={() => {
+                      setSplitRangeType(tab as "Range" | "Pages" | "Size");
+                      clearResults();
+                    }}
                     className={`
                       ${
                         splitRangeType === tab
@@ -105,6 +114,8 @@ const SplitPdf = () => {
             </div>
 
             {splitRangeType === "Range" && <Range />}
+            {splitRangeType === "Pages" && <Pages />}
+            {splitRangeType === "Size" && <Size />}
           </div>
         </div>
       </aside>

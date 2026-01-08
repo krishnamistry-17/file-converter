@@ -22,7 +22,7 @@ const FileConverter = () => {
                 h-full rounded-xl bg-white
                 shadow-md hover:shadow-xl
                 transition-all duration-300
-                p-6 flex flex-col items-center text-center
+                p-8 flex flex-col items-center text-center
               "
             >
               <div

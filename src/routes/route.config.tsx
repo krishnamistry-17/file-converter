@@ -3,7 +3,7 @@ import Layout from "../components/layout/Layout";
 import Home from "../Pages/Home/Home";
 import MergePdfComponent from "../Pages/pdfs/MergePdfs";
 import JsonToPdf from "../Pages/pdfs/JsonToPdf";
-import PdftoExcel from "../Pages/pdfs/PdftoExcel";
+import PdfToExcel from "../Pages/pdfs/PdfToExcel";
 import PdfToWord from "../Pages/pdfs/PdfToWord";
 import PdfToCsv from "../Pages/pdfs/PdfToCsv";
 import JpgToPdf from "../Pages/pdfs/JpgToPdf";
@@ -26,7 +26,7 @@ const routes = createBrowserRouter([
       },
       {
         path: "/pdf-to-excel",
-        element: <PdftoExcel />,
+        element: <PdfToExcel />,
       },
       {
         path: "/pdf-to-word",

@@ -31,7 +31,7 @@ const TableView = () => {
   }, [fetchFiles]);
 
   return (
-    <div className="p-6 bg-gray-50">
+    <div className="p-6 w-full">
       <div className="flex flex-col md:flex-row justify-center items-center md:justify-between md:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Product Table</h1>
         <div className="flex flex-col md:flex-row gap-2 items-center">

@@ -3,6 +3,7 @@ import useFilesStore from "../store/useSheetStore";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { PDFDocument } from "pdf-lib";
+import useSplitStore from "../store/useSplitStore";
 
 export type SplitResult = {
   name: string;
@@ -566,6 +567,45 @@ const useUploadData = () => {
     ];
   };
 
+  const pdfSize = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const sizeUnit = useSplitStore((state) => state.sizeUnit);
+    const bytes = await pdf.save();
+    const size = bytes.length;
+    if (sizeUnit === "MB") {
+      return Math.round(size / 1024 / 1024);
+    } else {
+      return Math.round(size / 1024);
+    }
+  };
+
+  const compressPdfBySize = async (file: File) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer, {
+      ignoreEncryption: true,
+    });
+
+    // Re-save PDF without changing pages to reduce size
+    const compressedBytes = await pdfDoc.save({
+      useObjectStreams: true,
+      addDefaultPage: false,
+    });
+    const results: SplitResult[] = [];
+    const blob = new Blob([new Uint8Array(compressedBytes)], {
+      type: "application/pdf",
+    });
+    //download the compressed pdf
+    downloadPdf(compressedBytes, `compressed-${file.name}`);
+    results.push({
+      name: `compressed-${file.name}`,
+      blob,
+      url: URL.createObjectURL(blob),
+      pages: pdfDoc.getPageCount().toString(),
+    });
+    return results;
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -588,6 +628,8 @@ const useUploadData = () => {
     extractAllPages,
     extractSelectedPage,
     extractSelectedRange,
+    pdfSize,
+    compressPdfBySize,
   };
 };
 

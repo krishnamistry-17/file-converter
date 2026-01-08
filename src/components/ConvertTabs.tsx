@@ -39,7 +39,7 @@ const ConvertTabs = () => {
         </div>
 
         {/* Content */}
-        <div className="mt-8">
+        <div>
           <TabPanel>
             <FileConverter />
           </TabPanel>

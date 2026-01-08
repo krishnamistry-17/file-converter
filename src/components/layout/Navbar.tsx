@@ -3,6 +3,7 @@ import { FaBars, FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "../Dropdown";
 import { IoMdClose } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,9 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-md sticky top-0 left-0 right-0 z-50 ">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center relative ">
-        <h1 className="text-xl font-bold">My App</h1>
+        <Link to="/" className="text-xl font-bold cursor-pointer">
+          My App
+        </Link>
 
         <div className="md:flex hidden items-center gap-6">
           <button onClick={() => navigate("/merge-pdfs")}>Merge PDF</button>
@@ -66,7 +69,10 @@ const Navbar = () => {
             <div className="absolute top-0 right-0">
               <IoMdClose onClick={() => setMobileMenu(false)} />
             </div>
-            <div className="flex flex-col gap-2">
+            <div
+              className="flex flex-col gap-2"
+              onClick={() => setMobileMenu(false)}
+            >
               <button onClick={() => navigate("/merge-pdfs")}>Merge PDF</button>
               <button onClick={() => navigate("/split-pdfs")}>Split PDF</button>
               <button onClick={() => navigate("/compress-pdfs")}>

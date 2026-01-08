@@ -12,7 +12,8 @@ interface PageRange {
 }
 
 interface SplitStore {
-  results: SplitResults[];
+  results: SplitResults[];  
+  
   setResults: (results: SplitResults[]) => void;
   clearResults: () => void;
 
@@ -35,6 +36,10 @@ interface SplitStore {
 
   totalPages: number;
   setTotalPages: (pages: number) => void;
+
+  sizeUnit: "MB" | "KB";
+  setSizeUnit: (unit: "MB" | "KB") => void;
+  clearSizeUnit: () => void;
 }
 
 const useSplitStore = create<SplitStore>((set) => ({
@@ -69,6 +74,10 @@ const useSplitStore = create<SplitStore>((set) => ({
   pageExtractMode: "extractAll",
   setPageExtractMode: (mode) => set({ pageExtractMode: mode }),
   clearPageExtractMode: () => set({ pageExtractMode: "extractAll" }),
+
+  sizeUnit: "MB",
+  setSizeUnit: (unit) => set({ sizeUnit: unit }),
+  clearSizeUnit: () => set({ sizeUnit: "MB" }),
 }));
 
 export default useSplitStore;

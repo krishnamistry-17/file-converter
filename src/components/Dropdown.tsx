@@ -5,7 +5,10 @@ const Dropdown = ({ close }: { close: () => void }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="absolute top-11 left-0 mt-2 p-4 w-[335px] bg-white shadow-lg rounded-md text-sm">
+    <div
+      className="absolute top-11 left-0 mt-2 p-4 w-[335px] transition-all duration-300
+     bg-white shadow-lg rounded-md text-sm z-50"
+    >
       <div className="flex gap-8">
         {convertOptions.map((section: any, idx: number) => (
           <div key={idx}>
@@ -20,8 +23,8 @@ const Dropdown = ({ close }: { close: () => void }) => {
                     }}
                     className="block w-full text-left px-2 py-1 rounded hover:bg-gray-100"
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <item.icon className=" text-blue-500" />
+                    <div className="flex items-center gap-2 justify-start">
+                      <item.icon className=" text-blue-500 text-lg" />
                       <span className="text-sm">{item.label}</span>
                     </div>
                   </button>

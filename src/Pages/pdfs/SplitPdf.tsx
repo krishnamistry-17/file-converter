@@ -21,6 +21,8 @@ const SplitPdf = () => {
   const splitRangeType = useSplitStore((state) => state.splitRangeType);
   const setTotalPages = useSplitStore((s) => s.setTotalPages);
 
+  const [isTabChanged, setIsTabChanged] = useState(false);
+
   const setSplitRangeType = useSplitStore((state) => state.setSplitRangeType);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +42,9 @@ const SplitPdf = () => {
     if (!selectedFile) {
       clearResults();
       setFileSelected(false);
+    } else if (isTabChanged) {
+      clearResults();
+      setIsTabChanged(false);
     }
   }, [selectedFile, clearResults]);
 
@@ -96,6 +101,7 @@ const SplitPdf = () => {
                     key={tab}
                     onClick={() => {
                       setSplitRangeType(tab as "Range" | "Pages" | "Size");
+                      setIsTabChanged(true);
                       clearResults();
                     }}
                     className={`

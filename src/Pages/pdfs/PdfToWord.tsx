@@ -13,7 +13,7 @@ const PdfToWord = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file, "file");
+   
     if (!file) {
       alert("Please select a file");
       return;
@@ -37,7 +37,7 @@ const PdfToWord = () => {
           label="Select a file"
         />
       </div>
-      <PreviewFile />
+      <PreviewFile type=".doc" />
 
       {fileSelected && (
         <div className="my-4">

@@ -4,6 +4,17 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { PDFDocument } from "pdf-lib";
 import useSplitStore from "../store/useSplitStore";
+import * as pdfjsLib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+
+type TextItem = {
+  str: string;
+  transform: number[];
+};
 
 export type SplitResult = {
   name: string;
@@ -11,6 +22,43 @@ export type SplitResult = {
   url: string;
   pages: string;
 };
+
+// export const normalizeText = (text: string) => {
+//   //number
+//   if (!isNaN(Number(text))) {
+//     return text;
+//   }
+
+//   //date
+//   if (!isNaN(new Date(text).getTime())) {
+//     return new Date(text).toLocaleDateString();
+//   }
+
+//   //boolean
+//   if (text.toLowerCase() === "true" || text.toLowerCase() === "false") {
+//     return text.toLowerCase() === "true";
+//   }
+
+//   //null
+//   if (text.toLowerCase() === "null") {
+//     return null;
+//   }
+
+//   //undefined
+//   if (text.toLowerCase() === "undefined") {
+//     return undefined;
+//   }
+
+//   //empty string
+//   if (text.toLowerCase() === "") {
+//     return "";
+//   }
+
+//   return text;
+// };
+
+const normalizeText = (value: any) =>
+  value === null || value === undefined ? "" : String(value);
 
 const useUploadData = () => {
   const files = useFilesStore((state) => state.files);
@@ -31,6 +79,7 @@ const useUploadData = () => {
       return;
     }
   };
+
   //download data in excel format
   const ExportToExcel = () => {
     //create a worksheet
@@ -79,17 +128,41 @@ const useUploadData = () => {
     a.click();
   };
 
+  const mapTableDataToRows = (data: any[]): string[][] => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+
+    // If rows are objects (table data)
+    if (!Array.isArray(data[0])) {
+      const headers = Object.keys(data[0]);
+
+      const body = data.map((row) =>
+        headers.map((key) => normalizeText(row[key]) as string)
+      );
+
+      return [headers, ...body] as string[][];
+    }
+
+    // If already string[][]
+    return data.map((row) => row.map(normalizeText)) as string[][];
+  };
+
   //download data in pdf format
   const ExportToPDF = () => {
     const pdf = new jsPDF();
-    pdf.text(JSON.stringify(files, null, 4), 10, 10);
-    pdf.save("data.pdf");
-    // autoTable(pdf, {
-    //   head: Object.keys(files[0]).map((key) => ({
-    //     content: key.toString().toUpperCase(),
-    //   })),
-    //   body: files.map((item) => Object.values(item)),
-    // });
+    const rows = mapTableDataToRows(files as any[]);
+
+    let y = 10;
+
+    rows.forEach((row: string[]) => {
+      if (y > 270) {
+        pdf.addPage();
+        y = 10;
+      }
+
+      pdf.text(row.join("    "), 10, y);
+      y += 8;
+    });
+
     pdf.save("data.pdf");
   };
 
@@ -138,6 +211,47 @@ const useUploadData = () => {
     };
 
     reader.readAsText(selectedFile as any);
+  };
+
+  // Pdf -> Json
+  const convertPdfToJson = async (file: File) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    const pages: {
+      pageNumber: number;
+      text: string;
+      items: any[];
+    }[] = [];
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+
+      const pageText = textContent.items.map((item: any) => item.str).join(" ");
+
+      pages.push({
+        pageNumber: i,
+        text: pageText,
+        items: textContent.items, // raw text positions (optional)
+      });
+    }
+
+    //add download the json file
+    const json = JSON.stringify(pages, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${file.name}.json`;
+    a.click();
+    setSelectedFile(null);
+
+    return {
+      fileName: file.name,
+      totalPages: pdf.numPages,
+      pages,
+    };
   };
 
   // Pdf -> Excel
@@ -195,28 +309,60 @@ const useUploadData = () => {
   };
 
   // Pdf -> csv
-  const ConvertPdfToCsv = async () => {
-    showError();
-    try {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        const csv = Papa.unparse(
-          text.split("\n").map((line) => ({ Data: line }))
-        );
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "converted.csv";
-        a.click();
-        setSelectedFile(null);
-      };
-      reader.readAsText(selectedFile as any);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to convert PDF to CSV");
+
+  const convertPdfToCsv = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    const rows: string[][] = [];
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+
+      const items = textContent.items as TextItem[];
+
+      // Group text by Y position (rows)
+      const rowMap: Record<number, TextItem[]> = {};
+
+      items.forEach((item) => {
+        const y = Math.round(item.transform[5]); // vertical position
+        if (!rowMap[y]) rowMap[y] = [];
+        rowMap[y].push(item);
+      });
+
+      // Sort rows top → bottom
+      const sortedRows = Object.keys(rowMap)
+        .map(Number)
+        .sort((a, b) => b - a);
+
+      sortedRows.forEach((y) => {
+        const row = rowMap[y]
+          .sort((a, b) => a.transform[4] - b.transform[4]) // left → right
+          .map((item) => item.str.trim())
+          .filter(Boolean);
+
+        if (row.length) rows.push(row);
+      });
     }
+
+    const csv = rowsToCsv(rows);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${file.name}.csv`;
+    a.click();
+    setSelectedFile(null);
+    return csv;
+  };
+
+  const rowsToCsv = (rows: string[][]): string => {
+    return rows
+      .map((row) =>
+        row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
   };
 
   // Jpg,png,jpeg -> Pdf
@@ -605,6 +751,23 @@ const useUploadData = () => {
     });
     return results;
   };
+  const convertCsvToPdf = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const csv = Papa.parse(new TextDecoder().decode(buffer), { header: true });
+    const pdf = new jsPDF();
+    pdf.text(
+      csv.data.map((row: any) => Object.values(row).join(",")).join("\n"),
+      10,
+      10
+    );
+    const blob = new Blob([pdf.output("blob")], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "converted.pdf";
+    a.click();
+    setSelectedFile(null);
+  };
 
   return {
     ExportToExcel,
@@ -614,7 +777,7 @@ const useUploadData = () => {
     ConvertJsonToPdf,
     ConvertPdfToExcel,
     ConvertPdfToWord,
-    ConvertPdfToCsv,
+    convertPdfToCsv,
     ConvertJpgToPdf,
     ConvertedPdfToPpt,
     compressPdf,
@@ -630,6 +793,8 @@ const useUploadData = () => {
     extractSelectedRange,
     pdfSize,
     compressPdfBySize,
+    convertPdfToJson,
+    convertCsvToPdf,
   };
 };
 

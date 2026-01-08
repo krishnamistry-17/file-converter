@@ -10,7 +10,7 @@ const ConvertTabs = () => {
   const tabs = ["Convert PDF", "Export PDF", "Import PDF"];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-2">
       <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
         <div className="flex justify-center">
           <TabList

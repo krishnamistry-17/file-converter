@@ -5,15 +5,16 @@ import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
 import { useState } from "react";
 
-const JpgToPdf = () => {
+const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
-  const { ConvertJpgToPdf } = useUploadData();
+  const selectedFile = useFilesStore((state) => state.selectedFile);
+  const { convertPdfToJson } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
- 
+  
     if (!file) {
       alert("Please select a file");
       return;
@@ -24,28 +25,40 @@ const JpgToPdf = () => {
     setFileSelected(true);
   };
 
+  const handleConvert = async () => {
+    const json = await convertPdfToJson(selectedFile as File);
+
+
+    const blob = new Blob([JSON.stringify(json, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+
+    window.open(url);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <SelectFile
-        heading="Convert Jpg to Pdf"
-        description="Convert a Jpg file to a Pdf file. This tool will convert a Jpg file to a Pdf file."
+        heading="Convert PDF to JSON"
+        description="Convert a PDF file to a JSON file. This tool will convert a PDF file to a JSON file."
       />
       <div className="w-full flex items-center justify-center">
         <InputField
           handleFileUpload={handleFileUpload}
-          accept=".jpg,.jpeg,.png"
+          accept=".pdf"
           label="Select a file"
         />
       </div>
-      <PreviewFile type="pdf" />
+      <PreviewFile type=".json" />
 
       {fileSelected && (
         <div className="my-4">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={ConvertJpgToPdf}
+            onClick={handleConvert}
           >
-            Download Pdf
+            Download JSON
           </button>
         </div>
       )}
@@ -53,4 +66,4 @@ const JpgToPdf = () => {
   );
 };
 
-export default JpgToPdf;
+export default PdfToJson;

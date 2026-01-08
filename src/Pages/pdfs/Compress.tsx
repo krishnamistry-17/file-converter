@@ -26,7 +26,7 @@ const CompressPdf = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen ">
+    <div className="relative flex  ">
       <div
         className={`flex-1 transition-all duration-300 ${
           fileSelected ? "md:mr-[320px]" : ""

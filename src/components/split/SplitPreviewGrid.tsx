@@ -6,9 +6,6 @@ const SplitPreviewGrid = () => {
   const selectedPages = useSplitStore((s) => s.selectedPages);
   const selectedRange = useSplitStore((s) => s.selectedRange);
 
-  const totalPages = useSplitStore((s) => s.totalPages);
-  console.log(totalPages, "totalPages>>>>>>>>form grid");
-
   const clearResults = useSplitStore((state) => state.clearResults);
 
   const checkedPages = new Set<number>();

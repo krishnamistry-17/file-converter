@@ -3,7 +3,7 @@ import ConvertTabs from "../../components/ConvertTabs";
 
 const Home = () => {
   return (
-    <div className="flex flex-col w-full  ">
+    <div className="flex flex-col w-full h-full ">
       <div className=" bg-gray-100 ">
         <div>
           <Herosection />

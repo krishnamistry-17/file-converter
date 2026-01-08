@@ -3,7 +3,7 @@ import useFilesStore from "../store/useSheetStore";
 import { FaFileExcel, FaFilePowerpoint, FaFileWord } from "react-icons/fa";
 
 
-const PreviewFile = ({ type }: { type: "split" | "merge" | "compress" }) => {
+const PreviewFile = ({ type }: { type: "split" | "merge" | "compress" | ".json" | "pdf" | ".csv" | ".xlsx" | ".pptx" | ".doc" }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
 

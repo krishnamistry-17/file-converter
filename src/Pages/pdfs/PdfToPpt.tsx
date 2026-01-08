@@ -13,7 +13,7 @@ const PdfToPpt = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file, "file");
+
     if (!file) {
       alert("Please select a file");
       return;
@@ -37,7 +37,7 @@ const PdfToPpt = () => {
           label="Select a file"
         />
       </div>
-      <PreviewFile />
+      <PreviewFile type=".pptx" />
 
       {fileSelected && (
         <div className="my-4">

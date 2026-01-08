@@ -13,7 +13,7 @@ const JsonToPdf = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file, "file");
+ 
     if (!file) {
       alert("Please select a file");
       return;
@@ -37,7 +37,7 @@ const JsonToPdf = () => {
           label="Select a file"
         />
       </div>
-      <PreviewFile />
+      <PreviewFile type="pdf" />
 
       {fileSelected && (
         <div className="my-4">

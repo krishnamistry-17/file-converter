@@ -10,6 +10,8 @@ import JpgToPdf from "../Pages/pdfs/JpgToPdf";
 import PdfToPpt from "../Pages/pdfs/PdfToPpt";
 import CompressPdf from "../Pages/pdfs/Compress";
 import SplitPdf from "../Pages/pdfs/SplitPdf";
+import PdfToJson from "../Pages/pdfs/PdfToJson";
+import CsvToPdf from "../Pages/pdfs/CsvToPdf";
 
 const routes = createBrowserRouter([
   {
@@ -23,6 +25,10 @@ const routes = createBrowserRouter([
       {
         path: "/json-to-pdf",
         element: <JsonToPdf />,
+      },
+      {
+        path: "/pdf-to-json",
+        element: <PdfToJson />,
       },
       {
         path: "/pdf-to-excel",
@@ -55,6 +61,10 @@ const routes = createBrowserRouter([
       {
         path: "/split-pdfs",
         element: <SplitPdf />,
+      },
+      {
+        path: "/csv-to-pdf",
+        element: <CsvToPdf />,
       },
     ],
   },

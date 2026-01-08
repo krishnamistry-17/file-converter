@@ -1,8 +1,9 @@
 import InputField from "../../components/InputField";
 import PreviewFile from "../../components/PreviewFile";
 import SelectFile from "../../components/SelectFile";
-import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
+import useFilesStore from "../../store/useSheetStore";
+
 import { useState } from "react";
 
 const PdftoExcel = () => {
@@ -13,7 +14,7 @@ const PdftoExcel = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file, "file");
+   
     if (!file) {
       alert("Please select a file");
       return;
@@ -37,13 +38,13 @@ const PdftoExcel = () => {
           label="Select a file"
         />
       </div>
-      <PreviewFile />
+      <PreviewFile type=".xlsx" />
 
       {fileSelected && (
         <div className="my-4">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={ConvertPdfToExcel}
+            onClick={() => ConvertPdfToExcel()}
           >
             Download Excel
           </button>

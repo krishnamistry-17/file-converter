@@ -2,8 +2,22 @@ import getFileType from "../constance/FileType";
 import useFilesStore from "../store/useSheetStore";
 import { FaFileExcel, FaFilePowerpoint, FaFileWord } from "react-icons/fa";
 
-
-const PreviewFile = ({ type }: { type: "split" | "merge" | "compress" | ".json" | "pdf" | ".csv" | ".xlsx" | ".pptx" | ".doc" }) => {
+const PreviewFile = ({
+  type,
+}: {
+  type:
+    | "split"
+    | "merge"
+    | "compress"
+    | ".json"
+    | "pdf"
+    | ".csv"
+    | ".xlsx"
+    | ".pptx"
+    | ".doc"
+    | ".docx"
+    | ".html";
+}) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
 
@@ -54,6 +68,17 @@ const PreviewFile = ({ type }: { type: "split" | "merge" | "compress" | ".json" 
                     </p>
                     <p className="text-xs">Preview not available</p>
                   </div>
+                );
+              }
+
+              // Html
+              if (type === ".html") {
+                return (
+                  <iframe
+                    src={previewFile}
+                    title="Html Preview"
+                    className="w-full h-80 rounded border"
+                  />
                 );
               }
 

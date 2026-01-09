@@ -15,6 +15,7 @@
     "compress-pdf": "^0.5.6",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
+    "mammoth": "^1.11.0",
     "papaparse": "^5.5.3",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.530",

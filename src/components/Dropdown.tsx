@@ -6,7 +6,7 @@ const Dropdown = ({ close }: { close: () => void }) => {
 
   return (
     <div
-      className="absolute top-11 left-0 mt-2 p-4 w-[335px] transition-all duration-300
+      className="absolute top-12 lg:left-0 left-1/2 -translate-x-1/2 mt-2 p-5 w-[500px] transition-all duration-300
      bg-white shadow-lg rounded-md text-sm z-50"
     >
       <div className="flex gap-8">

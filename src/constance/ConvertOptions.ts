@@ -39,6 +39,13 @@ export const convertOptions = [
       { icon: FaFilePowerpoint, label: "PDF to PPT", path: "/pdf-to-ppt" },
     ],
   },
+  {
+    title: "Convert from Excel",
+    options: [
+      { icon: FaFileExcel, label: "Excel to Json", path: "/excel-to-json" },
+      { icon: FaFileCsv, label: "Excel to Csv", path: "/excel-to-csv" },
+    ],
+  },
 ];
 
 export const fileOperations = [
@@ -48,6 +55,19 @@ export const fileOperations = [
     icon: FaFilePdf,
     description: "Convert a JSON file to a PDF file.",
   },
+  {
+    label: "Convert Excel to Json",
+    path: "/excel-to-json",
+    icon: FaFileExcel,
+    description: "Convert a Excel file to a Json file.",
+  },
+  {
+    label: "Convert Excel to Csv",
+    path: "/excel-to-csv",
+    icon: FaFileCsv,
+    description: "Convert a Excel file to a Csv file.",
+  },
+
   {
     label: "Convert PDF to Excel",
     path: "/pdf-to-excel",

@@ -6,6 +6,7 @@ import { PDFDocument } from "pdf-lib";
 import useSplitStore from "../store/useSplitStore";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+import mammoth from "mammoth";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -104,6 +105,69 @@ const useUploadData = () => {
     a.href = excelUrl;
     a.download = "data.xlsx";
     a.click();
+  };
+
+  const ConvertExcelToCsv = () => {
+    if (!selectedFile) {
+      alert("Please select a file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = new Uint8Array(event.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.SheetNames[0];
+      const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheet]);
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${selectedFile.name}.csv`;
+      a.click();
+    };
+    reader.readAsArrayBuffer(selectedFile as any);
+  };
+
+  const ConvertDocsToHtml = async () => {
+    if (!selectedFile) {
+      alert("Please select a file");
+      return;
+    }
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const doc = await mammoth.extractRawText(
+      new Uint8Array(arrayBuffer) as any
+    );
+    console.log(doc);
+    const blob = new Blob([doc.value], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${selectedFile?.name}.html`;
+    a.click();
+    setSelectedFile(null);
+  };
+
+  const ConvertExcelToJson = () => {
+    if (!selectedFile) {
+      alert("Please select a file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = new Uint8Array(event.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.SheetNames[0];
+      const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
+      const blob = new Blob([JSON.stringify(json, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${selectedFile.name}.json`;
+      a.click();
+    };
+    reader.readAsArrayBuffer(selectedFile as any);
   };
 
   //download data in csv format
@@ -774,6 +838,9 @@ const useUploadData = () => {
     ExportToCSV,
     ExportToPDF,
     ExportToJSON,
+    ConvertExcelToJson,
+    ConvertExcelToCsv,
+    ConvertDocsToHtml,
     ConvertJsonToPdf,
     ConvertPdfToExcel,
     ConvertPdfToWord,

@@ -12,6 +12,9 @@ import CompressPdf from "../Pages/pdfs/Compress";
 import SplitPdf from "../Pages/pdfs/SplitPdf";
 import PdfToJson from "../Pages/pdfs/PdfToJson";
 import CsvToPdf from "../Pages/pdfs/CsvToPdf";
+import ExcelToJson from "../Pages/excels/ExcelToJson";
+import ExcelToCsv from "../Pages/excels/ExcelToCsv";
+import DocsToHtml from "../Pages/docs/DocsToHtml";
 
 const routes = createBrowserRouter([
   {
@@ -57,7 +60,7 @@ const routes = createBrowserRouter([
       {
         path: "/compress-pdfs",
         element: <CompressPdf />,
-      },  
+      },
       {
         path: "/split-pdfs",
         element: <SplitPdf />,
@@ -65,6 +68,18 @@ const routes = createBrowserRouter([
       {
         path: "/csv-to-pdf",
         element: <CsvToPdf />,
+      },
+      {
+        path: "/excel-to-json",
+        element: <ExcelToJson />,
+      },
+      {
+        path: "/excel-to-csv",
+        element: <ExcelToCsv />,
+      },
+      {
+        path: "/docs-to-html",
+        element: <DocsToHtml />,
       },
     ],
   },

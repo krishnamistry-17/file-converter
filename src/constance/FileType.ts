@@ -17,5 +17,11 @@ const getFileType = (file: File) => {
   if (file.type === "image/png") return ".png";
   if (file.type === "image/jpg") return ".jpg";
   if (file.type === "application/msword") return ".doc";
+  if (file.type === "text/html") return ".html";
+  if (
+    file.type ===
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  )
+    return ".docx";
 };
 export default getFileType;

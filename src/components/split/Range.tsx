@@ -77,7 +77,7 @@ const Range = () => {
                     ? " border border-black bg-gray-200"
                     : "bg-gray-200 text-gray-800"
                 }
-                px-6 py-2 rounded-md
+                sm:px-6 sm:py-2 px-2 py-2 rounded-md
             `}
         >
           Custome Range
@@ -90,7 +90,7 @@ const Range = () => {
                     ? " border border-black bg-gray-200"
                     : "bg-gray-200 text-gray-800"
                 }
-                px-6 py-2 rounded-md
+                sm:px-6 sm:py-2 px-2 py-2 rounded-md
             `}
         >
           Fixed Range
@@ -138,7 +138,7 @@ const Range = () => {
         )}
         {activeMode === "fixed" && (
           <>
-            <div className="flex items-center justify-between gap-2 my-2">
+            <div className="sm:flex items-center justify-between gap-2 my-2">
               <p className=" text-sm font-medium">Split into page ranges of:</p>
               <input
                 type="number"
@@ -146,14 +146,10 @@ const Range = () => {
                 onChange={(e) =>
                   setPageRange(parseInt(e.target.value) as number)
                 }
-                className=" focus:outline-none focus:ring-0 border border-gray-300 rounded-md p-2"
+                className=" focus:outline-none focus:ring-0 
+                border border-gray-300 rounded-md p-2 sm:mt-0 mt-2"
               />
             </div>
-            {/* <div>
-              <p>{`This pdf has ${totalPages()} pages and it will be split into ${Math.ceil(
-                totalPages() / pageRange
-              )} ranges`}</p>
-            </div> */}
           </>
         )}
       </div>

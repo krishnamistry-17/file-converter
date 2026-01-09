@@ -15,6 +15,7 @@ import CsvToPdf from "../Pages/pdfs/CsvToPdf";
 import ExcelToJson from "../Pages/excels/ExcelToJson";
 import ExcelToCsv from "../Pages/excels/ExcelToCsv";
 import DocsToHtml from "../Pages/docs/DocsToHtml";
+import ConvertPdf from "../Pages/convertpdf";
 
 const routes = createBrowserRouter([
   {
@@ -80,6 +81,10 @@ const routes = createBrowserRouter([
       {
         path: "/docs-to-html",
         element: <DocsToHtml />,
+      },
+      {
+        path: "/convert-pdfs",
+        element: <ConvertPdf />,
       },
     ],
   },

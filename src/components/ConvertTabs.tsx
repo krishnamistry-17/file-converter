@@ -14,7 +14,8 @@ const ConvertTabs = () => {
       <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
         <div className="flex justify-center">
           <TabList
-            className="flex overflow-x-auto no-scrollbar bg-gray-100 rounded-full p-1 gap-1"
+            className="md:flex flex-col md:flex-row justify-center items-center 
+             bg-gray-100 rounded-full p-1 gap-2 lg:gap-0"
             style={{ scrollbarWidth: "none" }}
           >
             {tabs.map((label, index) => (
@@ -22,8 +23,8 @@ const ConvertTabs = () => {
                 key={index}
                 className={`
                   cursor-pointer select-none
-                  px-6 py-2 text-sm font-semibold rounded-full
-                  transition-all duration-300
+                  px-6 py-2 mt-2 lg:mt-0 text-sm font-semibold rounded-full
+                  transition-all duration-300 
                   focus:outline-none
                   ${
                     activeTab === index

@@ -26,7 +26,7 @@ const FileConverter = () => {
               focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500
             "
           >
-            <div className="flex flex-col items-center text-center h-full hover:scale-100">
+            <div className="flex flex-col items-center text-center h-full hover:scale-110">
               <div
                 className="
                   text-red-500 text-5xl mb-4

@@ -1,17 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { convertOptions } from "../constance/ConvertOptions";
 
-const Dropdown = ({ close }: { close: () => void }) => {
+const ConvertPdf = () => {
   const navigate = useNavigate();
-
   return (
-    <div
-      className="absolute top-12 lg:left-0 left-1/2 -translate-x-1/2 mt-2 p-5 w-[500px] transition-all duration-300
-     bg-white shadow-lg rounded-md text-sm z-50"
-    >
-      <div className="flex gap-8">
+    <div>
+      <div className="flex flex-col">
         {convertOptions.map((section: any, idx: number) => (
-          <div key={idx}>
+          <div key={idx} className=" p-4">
             <h3 className="font-semibold mb-2">{section.title}</h3>
             <ul className="space-y-1 items-center justify-center">
               {section.options.map((item: any, i: number) => (
@@ -38,4 +34,4 @@ const Dropdown = ({ close }: { close: () => void }) => {
   );
 };
 
-export default Dropdown;
+export default ConvertPdf;

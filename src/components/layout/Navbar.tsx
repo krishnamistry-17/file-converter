@@ -38,7 +38,8 @@ const Navbar = () => {
               onClick={toggleDropdown}
               onMouseEnter={() => setOpen(true)}
             >
-              Convert PDF <FaChevronDown />
+              Convert PDF{" "}
+              <FaChevronDown className={`${open ? "rotate-180" : ""}`} />
             </button>
 
             {open && (
@@ -66,8 +67,11 @@ const Navbar = () => {
             onMouseLeave={() => setMobileMenu(false)}
             className="absolute top-18 right-0 mt-2 p-4 w-[250px] bg-white shadow-lg rounded-md text-sm"
           >
-            <div className="absolute top-0 right-0">
-              <IoMdClose onClick={() => setMobileMenu(false)} />
+            <div className="absolute top-3 right-3 cursor-pointer">
+              <IoMdClose
+                onClick={() => setMobileMenu(false)}
+                className=" w-5 h-5"
+              />
             </div>
             <div
               className="flex flex-col gap-2"
@@ -77,6 +81,9 @@ const Navbar = () => {
               <button onClick={() => navigate("/split-pdfs")}>Split PDF</button>
               <button onClick={() => navigate("/compress-pdfs")}>
                 Compress PDF
+              </button>
+              <button onClick={() => navigate("/convert-pdfs")}>
+                Convert PDF
               </button>
             </div>
           </div>

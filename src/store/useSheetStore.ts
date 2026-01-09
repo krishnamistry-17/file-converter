@@ -31,19 +31,16 @@ interface FilesStore {
   setSelectedFile: (file: any) => void;
   fileExtension: FileExtensions;
 
+  previewFile: string | null;
+  setPreviewFile: (file: string | null) => void;
+
   mergeFile1: File | null;
   mergeFile2: File | null;
   setMergeFile1: (file: File | null) => void;
   setMergeFile2: (file: File | null) => void;
 
   mergedPdfPreview: string | null;
-  mergedPdfbytes: Uint8Array | null;
-
   setMergedPdfPreview: (preview: string | null) => void;
-  setMergedPdfbytes: (bytes: Uint8Array | null) => void;
-
-  previewFile: string | null;
-  setPreviewFile: (file: string | null) => void;
 }
 
 const useFilesStore = create<FilesStore>()(
@@ -78,6 +75,9 @@ const useFilesStore = create<FilesStore>()(
           pdf: ".pdf",
         },
 
+        previewFile: null,
+        setPreviewFile: (file: string | null) => set({ previewFile: file }),
+
         mergeFile1: null,
         mergeFile2: null,
         setMergeFile1: (file: File | null) => set({ mergeFile1: file }),
@@ -86,12 +86,6 @@ const useFilesStore = create<FilesStore>()(
         mergedPdfPreview: null,
         setMergedPdfPreview: (preview: string | null) =>
           set({ mergedPdfPreview: preview }),
-        mergedPdfbytes: null,
-        setMergedPdfbytes: (bytes: Uint8Array | null) =>
-          set({ mergedPdfbytes: bytes }),
-
-        previewFile: null,
-        setPreviewFile: (file: string | null) => set({ previewFile: file }),
       };
     },
     {

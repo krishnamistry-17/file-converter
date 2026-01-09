@@ -62,17 +62,12 @@ const normalizeText = (value: any) =>
   value === null || value === undefined ? "" : String(value);
 
 const useUploadData = () => {
+  const mergeFile1 = useFilesStore((state) => state.mergeFile1);
+  const mergeFile2 = useFilesStore((state) => state.mergeFile2);
+
   const files = useFilesStore((state) => state.files);
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-
-  const mergeFile1 = useFilesStore((state) => state.mergeFile1);
-
-  const mergeFile2 = useFilesStore((state) => state.mergeFile2);
-  const setMergedPdfPreview = useFilesStore(
-    (state) => state.setMergedPdfPreview
-  );
-  const setMergedPdfbytes = useFilesStore((state) => state.setMergedPdfbytes);
 
   const showError = () => {
     if (!selectedFile) {
@@ -506,53 +501,40 @@ const useUploadData = () => {
   };
 
   // Merge PDFs
+
   const MergePdfs = async () => {
     if (!mergeFile1 || !mergeFile2) {
-      alert("Please select two PDF files first!");
+      alert("Please select both PDF files to merge!");
       return;
     }
 
     try {
-      // Read files
-      const arrayBuffer1 = await mergeFile1.arrayBuffer();
-      const arrayBuffer2 = await mergeFile2.arrayBuffer();
+      // Read the files as array buffers
+      const file1Buffer = await mergeFile1.arrayBuffer();
+      const file2Buffer = await mergeFile2.arrayBuffer();
 
       // Load PDFs
-      const pdfDoc1 = await PDFDocument.load(arrayBuffer1);
-      const pdfDoc2 = await PDFDocument.load(arrayBuffer2);
+      const pdf1 = await PDFDocument.load(file1Buffer);
+      const pdf2 = await PDFDocument.load(file2Buffer);
 
-      // Create a new PDF
+      // Create a new PDF to merge into
       const mergedPdf = await PDFDocument.create();
 
       // Copy pages from first PDF
-      const pages1 = await mergedPdf.copyPages(
-        pdfDoc1,
-        pdfDoc1.getPageIndices()
-      );
+      const pages1 = await mergedPdf.copyPages(pdf1, pdf1.getPageIndices());
       pages1.forEach((page) => mergedPdf.addPage(page));
 
       // Copy pages from second PDF
-      const pages2 = await mergedPdf.copyPages(
-        pdfDoc2,
-        pdfDoc2.getPageIndices()
-      );
+      const pages2 = await mergedPdf.copyPages(pdf2, pdf2.getPageIndices());
       pages2.forEach((page) => mergedPdf.addPage(page));
 
       // Save merged PDF
       const mergedPdfBytes = await mergedPdf.save();
-      setMergedPdfbytes(mergedPdfBytes);
 
-      //display merged pdf in preview
-      setMergedPdfPreview(
-        URL.createObjectURL(
-          new Blob([new Uint8Array(mergedPdfBytes)], {
-            type: "application/pdf",
-          })
-        )
-      );
+      // Create blob and preview URL
+      downloadPdf(mergedPdfBytes, "merged.pdf");
     } catch (error) {
-      console.error(error);
-      alert("Failed to merge PDFs");
+      console.error("Error merging PDFs:", error);
     }
   };
 

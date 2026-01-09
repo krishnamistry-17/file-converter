@@ -1,24 +1,16 @@
 import { useState } from "react";
-import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
-import Loader from "../../components/Loader";
+import useUploadData from "../../hooks/useUploadData";
 
 const MergePdfComponent = () => {
-  const mergeFile1 = useFilesStore((state) => state.mergeFile1);
-  const mergeFile2 = useFilesStore((state) => state.mergeFile2);
-
-  const setMergeFile1 = useFilesStore((state) => state.setMergeFile1);
-  const setMergeFile2 = useFilesStore((state) => state.setMergeFile2);
-
-  const mergedPdfPreview = useFilesStore((state) => state.mergedPdfPreview);
-  const mergedPdfbytes = useFilesStore((state) => state.mergedPdfbytes);
-
   const [pdfPreview1, setPdfPreview1] = useState<string | null>(null);
   const [pdfPreview2, setPdfPreview2] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
+  const mergeFile1 = useFilesStore((state) => state.mergeFile1);
+  const mergeFile2 = useFilesStore((state) => state.mergeFile2);
+  const setMergeFile1 = useFilesStore((state) => state.setMergeFile1);
+  const setMergeFile2 = useFilesStore((state) => state.setMergeFile2);
   const { MergePdfs } = useUploadData();
-
   const handleFileUpload1 = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setMergeFile1(file);
@@ -32,29 +24,7 @@ const MergePdfComponent = () => {
   };
 
   const handleMerge = async () => {
-    setLoading(true);
-    try {
-      await MergePdfs();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to merge PDFs");
-    } finally {
-      setLoading(false);
-    }
-    setLoading(false);
-  };
-
-  const handleDownload = () => {
-    if (!mergedPdfbytes) return;
-    const blob = new Blob([new Uint8Array(mergedPdfbytes)], {
-      type: "application/pdf",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "merged.pdf";
-    a.click();
-    URL.revokeObjectURL(url);
+    await MergePdfs();
   };
 
   return (
@@ -129,15 +99,15 @@ const MergePdfComponent = () => {
         </div>
       </div>
 
-      <button
-        onClick={handleMerge}
+      {/* <button
         className="bg-blue-600 text-white my-3
          px-6 py-2 rounded-md hover:bg-blue-700 transition"
+         onClick={handleMerge}
       >
         Merge PDFs
-      </button>
+      </button> */}
 
-      {mergedPdfPreview && !loading && (
+      {/* {mergedPdfPreview && !loading && (
         <div>
           <p className="text-lg font-bold py-2 text-center">
             Merged Pdf Preview
@@ -151,10 +121,10 @@ const MergePdfComponent = () => {
             <embed src={mergedPdfPreview} type="application/pdf" />
           </object>
         </div>
-      )}
+      )} */}
 
       <button
-        onClick={handleDownload}
+        onClick={handleMerge}
         className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
       >
         Download Merged PDF

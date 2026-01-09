@@ -55,7 +55,7 @@ const SplitPdf = () => {
         ${fileSelected ? "md:mr-[320px]" : ""}
         `}
       >
-        <div className="flex flex-col items-center justify-center w-full">
+        <div className="flex flex-col items-center justify-center w-full sm:px-0 px-4">
           <SelectFile
             heading="Split PDF"
             description="Split a PDF file into multiple pages."
@@ -72,7 +72,7 @@ const SplitPdf = () => {
             <p className="text-gray-500 mt-8">Upload a PDF to start</p>
           )}
 
-          {selectedFile && results.length === 0 && <PreviewFile type="split" />}
+          {selectedFile && results.length === 0 && <PreviewFile type="pdf" />}
 
           {selectedFile && results.length > 0 && <SplitPreviewGrid />}
         </div>

@@ -1,9 +1,7 @@
-import InputField from "../../components/InputField";
-import PreviewFile from "../../components/PreviewFile";
-import SelectFile from "../../components/SelectFile";
 import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
 import { useState } from "react";
+import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -14,7 +12,7 @@ const PdfToJson = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-  
+
     if (!file) {
       alert("Please select a file");
       return;
@@ -28,7 +26,6 @@ const PdfToJson = () => {
   const handleConvert = async () => {
     const json = await convertPdfToJson(selectedFile as File);
 
-
     const blob = new Blob([JSON.stringify(json, null, 2)], {
       type: "application/json",
     });
@@ -38,31 +35,19 @@ const PdfToJson = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <SelectFile
+    <>
+      <PdfFile
         heading="Convert PDF to JSON"
-        description="Convert a PDF file to a JSON file. This tool will convert a PDF file to a JSON file."
+        para="Convert a PDF file to a JSON file. This tool will convert a PDF file to a JSON file."
+        onFileUpload={handleFileUpload}
+        fileSelected={fileSelected}
+        handleConvert={handleConvert}
+        PreviewFileType="json"
+        accept=".pdf"
+        label="Select a file"
+        btnText="Download JSON"
       />
-      <div className="w-full flex items-center justify-center">
-        <InputField
-          handleFileUpload={handleFileUpload}
-          accept=".pdf"
-          label="Select a file"
-        />
-      </div>
-      <PreviewFile type=".json" />
-
-      {fileSelected && (
-        <div className="my-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={handleConvert}
-          >
-            Download JSON
-          </button>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

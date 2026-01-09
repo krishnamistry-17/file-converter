@@ -1,6 +1,4 @@
-import InputField from "../../components/InputField";
-import PreviewFile from "../../components/PreviewFile";
-import SelectFile from "../../components/SelectFile";
+import PdfFile from "../../components/layout/PdfFile";
 import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
 
@@ -25,32 +23,24 @@ const DocsToHtml = () => {
     setFileSelected(true);
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <SelectFile
-        heading="Convert Docs to Html"
-        description="Convert a Docs file to a Html file. This tool will convert a Docs file to a Html file."
-      />
-      <div className="w-full flex items-center justify-center">
-        <InputField
-          handleFileUpload={handleFileUpload}
-          accept=".docx"
-          label="Select a file"
-        />
-      </div>
-      <PreviewFile type=".html" />
+  const handleConvert = async () => {
+    await ConvertDocsToHtml();
+  };
 
-      {fileSelected && (
-        <div className="my-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={() => ConvertDocsToHtml()}
-          >
-            Download Html
-          </button>
-        </div>
-      )}
-    </div>
+  return (
+    <>
+      <PdfFile
+        heading="Convert Docs to Html"
+        para="Convert a Docs file to a Html file. This tool will convert a Docs file to a Html file."
+        onFileUpload={handleFileUpload}
+        fileSelected={fileSelected}
+        handleConvert={handleConvert}
+        PreviewFileType="html"
+        accept=".docx"
+        label="Select a file"
+        btnText="Download Html"
+      />
+    </>
   );
 };
 

@@ -1,9 +1,7 @@
-import InputField from "../../components/InputField";
-import PreviewFile from "../../components/PreviewFile";
-import SelectFile from "../../components/SelectFile";
 import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
 import { useState } from "react";
+import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToCsv = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -25,32 +23,24 @@ const PdfToCsv = () => {
     setFileSelected(true);
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <SelectFile
-        heading="Convert PDF to Csv"
-        description="Convert a PDF file to a Csv file. This tool will convert a PDF file to a Csv file."
-      />
-      <div className="w-full flex items-center justify-center">
-        <InputField
-          handleFileUpload={handleFileUpload}
-          accept=".pdf"
-          label="Select a file"
-        />
-      </div>
-      <PreviewFile type=".csv" />
+  const handleConvert = async () => {
+    await convertPdfToCsv(selectedFile as File);
+  };
 
-      {fileSelected && (
-        <div className="my-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={() => convertPdfToCsv(selectedFile as File)}
-          >
-            Download Csv
-          </button>
-        </div>
-      )}
-    </div>
+  return (
+    <>
+      <PdfFile
+        heading="Convert PDF to Csv"
+        para="Convert a PDF file to a Csv file. This tool will convert a PDF file to a Csv file."
+        onFileUpload={handleFileUpload}
+        fileSelected={fileSelected}
+        handleConvert={handleConvert}
+        PreviewFileType="csv"
+        accept=".pdf"
+        label="Select a file"
+        btnText="Download Csv"
+      />
+    </>
   );
 };
 

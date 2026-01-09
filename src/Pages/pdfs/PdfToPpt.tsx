@@ -1,11 +1,9 @@
-import InputField from "../../components/InputField";
-import PreviewFile from "../../components/PreviewFile";
-import SelectFile from "../../components/SelectFile";
 import useFilesStore from "../../store/useSheetStore";
 import { useState } from "react";
 import api from "../../utils/axios";
 import { saveAs } from "file-saver";
 import axios from "axios";
+import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToPpt = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -72,32 +70,24 @@ const PdfToPpt = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center w-full">
-      <SelectFile
-        heading="Convert PDF to Ppt"
-        description="Convert a PDF file to a Ppt file. This tool will convert a PDF file to a Ppt file."
-      />
-      <div className="w-full flex items-center justify-center">
-        <InputField
-          handleFileUpload={handleFileUpload}
-          accept=".pdf"
-          label="Select a file"
-        />
-      </div>
-      <PreviewFile type=".pptx" />
+  const handleConvert = async () => {
+    await handleUpload();
+  };
 
-      {fileSelected && (
-        <div className="my-4">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={handleUpload}
-          >
-            Download Ppt
-          </button>
-        </div>
-      )}
-    </div>
+  return (
+    <>
+      <PdfFile
+        heading="Convert PDF to Ppt"
+        para="Convert a PDF file to a Ppt file. This tool will convert a PDF file to a Ppt file."
+        onFileUpload={handleFileUpload}
+        fileSelected={fileSelected}
+        handleConvert={handleConvert}
+        PreviewFileType="pptx"
+        accept=".pdf"
+        label="Select a file"
+        btnText="Download Ppt"
+      />
+    </>
   );
 };
 

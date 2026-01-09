@@ -32,7 +32,7 @@ const CompressPdf = () => {
           fileSelected ? "md:mr-[320px]" : ""
         }`}
       >
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full sm:px-0 px-4">
           <SelectFile
             heading="Compress PDF"
             description="Compress a PDF file to reduce its size."
@@ -46,13 +46,13 @@ const CompressPdf = () => {
             />
           </div>
 
-          <PreviewFile type="compress"/>
+          <PreviewFile type="pdf" />
         </div>
       </div>
 
       <aside
         className={`
-          fixed top-[11%] right-0 h-full w-full md:w-[320px] z-50
+          fixed lg:top-[11%] top-[12%] right-0 h-full w-full md:w-[320px] z-50
           bg-white  shadow-lg border-l border-gray-200
           transform transition-transform duration-300
           ${fileSelected ? "translate-x-0" : "translate-x-full"}

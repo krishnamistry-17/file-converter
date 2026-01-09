@@ -5,18 +5,7 @@ import { FaFileExcel, FaFilePowerpoint, FaFileWord } from "react-icons/fa";
 const PreviewFile = ({
   type,
 }: {
-  type:
-    | "split"
-    | "merge"
-    | "compress"
-    | ".json"
-    | "pdf"
-    | ".csv"
-    | ".xlsx"
-    | ".pptx"
-    | ".doc"
-    | ".docx"
-    | ".html";
+  type: "pdf" | "json" | "csv" | "xlsx" | "pptx" | "doc" | "docx" | "html";
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);

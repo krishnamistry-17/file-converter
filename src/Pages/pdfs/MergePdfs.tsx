@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
+import SelectFile from "../../components/SelectFile";
 
 const MergePdfComponent = () => {
   const [pdfPreview1, setPdfPreview1] = useState<string | null>(null);
@@ -29,7 +30,13 @@ const MergePdfComponent = () => {
 
   return (
     <div className="max-w-[1000px] mx-auto my-6 p-4 flex flex-col items-center gap-6">
-      <div className="flex gap-6 mb-2">
+      <div>
+        <SelectFile
+          heading="Merge PDFs"
+          description="Merge two PDF files into one."
+        />
+      </div>
+      <div className="md:flex flex-col md:flex-row gap-6 mb-2">
         <div className=" relative">
           <label
             htmlFor="pdf1"
@@ -64,7 +71,7 @@ const MergePdfComponent = () => {
           )}
         </div>
 
-        <div className=" relative">
+        <div className=" md:mt-0 mt-6 relative">
           <label
             htmlFor="pdf2"
             className="cursor-pointer bg-white border-2 border-dashed border-gray-500 

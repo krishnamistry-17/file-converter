@@ -67,6 +67,7 @@ const useUploadData = () => {
 
   const files = useFilesStore((state) => state.files);
   const selectedFile = useFilesStore((state) => state.selectedFile);
+
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
 
   const showError = () => {
@@ -163,6 +164,23 @@ const useUploadData = () => {
       a.click();
     };
     reader.readAsArrayBuffer(selectedFile as any);
+  };
+
+  const ConvertWordToPdf = async () => {
+    if (!selectedFile) {
+      alert("Please select a file");
+      return;
+    }
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const result = await mammoth.extractRawText(
+      new Uint8Array(arrayBuffer) as any
+    );
+    console.log(result);
+    const text = result.value;
+
+    const pdf = new jsPDF();
+    pdf.text(text, 10, 10);
+    pdf.save("converted.pdf");
   };
 
   //download data in csv format
@@ -828,6 +846,7 @@ const useUploadData = () => {
     ConvertJsonToPdf,
     ConvertPdfToExcel,
     ConvertPdfToWord,
+    ConvertWordToPdf,
     convertPdfToCsv,
     ConvertJpgToPdf,
     ConvertedPdfToPpt,

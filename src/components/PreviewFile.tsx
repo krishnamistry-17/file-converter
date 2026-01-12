@@ -46,12 +46,18 @@ const PreviewFile = ({
               }
 
               // Word / Excel / PPT
-              if (type === "doc" || type === "xlsx" || type === "ppt") {
+              if (
+                type === "doc" ||
+                type === "xlsx" ||
+                type === "ppt" ||
+                type === "docx"
+              ) {
                 return (
                   <div className="flex flex-col items-center text-gray-600 py-6">
                     {type === "doc" && <FaFileWord size={48} />}
                     {type === "xlsx" && <FaFileExcel size={48} />}
                     {type === "ppt" && <FaFilePowerpoint size={48} />}
+                    {type === "docx" && <FaFileWord size={48} />}
                     <p className="mt-2 text-sm">
                       {selectedFile.name.split(".")[0]}
                     </p>
@@ -90,9 +96,8 @@ const PreviewFile = ({
 
 export default PreviewFile;
 
+{
 
-
-{/*
 
 
 
@@ -138,7 +143,8 @@ export default PreviewFile;
 //           Convert a PDF file to a Word file. Drag & drop or select a file below.
 //         </p>
 
-//         {/* Upload Button */}
+//         {/* Upload Button */
+}
 //         <button
 //           onClick={() => setModalOpen(true)}
 //           className="bg-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-300 transition"
@@ -236,7 +242,6 @@ export default PreviewFile;
 
 // export default PreviewFile;
 
-
 // import { useState } from "react";
 // import UploadModal from "./UploadModal";
 // import { IoMdClose } from "react-icons/io";
@@ -294,4 +299,3 @@ export default PreviewFile;
 // };
 
 // export default InputField;
- 

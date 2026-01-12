@@ -6,7 +6,7 @@ interface InputFieldProps {
 
 const InputField = ({
   handleFileUpload,
-  accept = ".csv,.xlsx,.xls,.json,.pdf,.jpg,.jpeg,.png,.ppt,application/pdf,.doc",
+  accept = ".csv,.xlsx,.xls,.json,.pdf,.jpg,.jpeg,.png,.ppt,application/pdf,.doc,.docx",
   label,
 }: InputFieldProps) => {
   return (

@@ -352,11 +352,13 @@ const useUploadData = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const text = event.target?.result as string;
-        const blob = new Blob([text], { type: "application/msword" });
+        const blob = new Blob([text], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "converted.doc";
+        a.download = "converted.docx";
         a.click();
         setSelectedFile(null);
       };

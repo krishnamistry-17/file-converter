@@ -6,6 +6,7 @@ import PdfFile from "../../components/layout/PdfFile";
 const JsonToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertJsonToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,6 +25,7 @@ const JsonToPdf = () => {
 
   const handleConvert = async () => {
     await ConvertJsonToPdf();
+    clearSelectedFile();
   };
 
   return (

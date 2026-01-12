@@ -53,7 +53,7 @@ const UploadData = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 max-w-sm mx-auto my-4">
+      <div className="flex flex-col gap-2 max-w-sm mx-auto my-4 h-screen">
         <div className=" flex justify-center w-full">
           <label className="w-full max-w-sm cursor-pointer bg-gray-50 border border-gray-300 rounded-lg p-3 text-center hover:bg-gray-100 transition">
             <span className="text-gray-600">Select a file</span>

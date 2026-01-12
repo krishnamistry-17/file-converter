@@ -10,7 +10,9 @@ type SplitRange = {
 
 const Range = () => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
+  const clearSelectedRange = useSplitStore((state) => state.clearSelectedRange);
   const { splitPdfByRange, splitPdfByFixedRange } = useUploadData();
+
   const [activeRange, setActiveRange] = useState<SplitRange[]>([
     { from: 1, to: 10 },
   ]);
@@ -35,6 +37,7 @@ const Range = () => {
       const results = await splitPdfByRange(selectedFile as File, activeRange);
 
       setResults(results as any);
+      clearSelectedRange();
     }
 
     // FIXED RANGE (every N pages)
@@ -50,6 +53,7 @@ const Range = () => {
       );
 
       setResults(results as any);
+      clearSelectedRange();
     }
   };
 

@@ -6,8 +6,15 @@ const Dropdown = ({ close }: { close: () => void }) => {
 
   return (
     <div
-      className="absolute top-12 lg:left-0 left-1/2 -translate-x-1/2 mt-2 p-5 w-[500px] transition-all duration-300
-     bg-white shadow-lg rounded-md text-sm z-50"
+      className="
+    absolute
+    top-12
+    xl:right-0 md:right-[15px]
+    mt-2 p-5
+    w-[90vw] max-w-[500px]
+    bg-white shadow-lg rounded-md text-sm z-50
+    transition-all duration-300
+     "
     >
       <div className="flex gap-8">
         {convertOptions.map((section: any, idx: number) => (

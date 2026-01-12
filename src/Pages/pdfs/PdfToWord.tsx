@@ -4,9 +4,10 @@ import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToWord = () => {
+  const { ConvertPdfToWord } = useUploadData();
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
-  const { ConvertPdfToWord } = useUploadData();
+  
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

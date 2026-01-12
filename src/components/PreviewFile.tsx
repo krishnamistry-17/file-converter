@@ -19,7 +19,7 @@ const PreviewFile = ({
               const type = getFileType(selectedFile as File);
 
               // PDF
-              if (type === ".pdf") {
+              if (type === "pdf") {
                 return (
                   <iframe
                     src={previewFile}
@@ -30,7 +30,7 @@ const PreviewFile = ({
               }
 
               // Image
-              if (type === ".jpg" || type === ".png" || type === ".jpeg") {
+              if (type === "jpg" || type === "png" || type === "jpeg") {
                 return (
                   <img
                     src={previewFile}
@@ -41,17 +41,17 @@ const PreviewFile = ({
               }
 
               // Text (CSV / JSON)
-              if (type === ".csv" || type === ".json") {
+              if (type === "csv" || type === "json") {
                 return <p className="text-gray-500">Preview not available</p>;
               }
 
               // Word / Excel / PPT
-              if (type === ".doc" || type === ".xlsx" || type === ".ppt") {
+              if (type === "doc" || type === "xlsx" || type === "ppt") {
                 return (
                   <div className="flex flex-col items-center text-gray-600 py-6">
-                    {type === ".doc" && <FaFileWord size={48} />}
-                    {type === ".xlsx" && <FaFileExcel size={48} />}
-                    {type === ".ppt" && <FaFilePowerpoint size={48} />}
+                    {type === "doc" && <FaFileWord size={48} />}
+                    {type === "xlsx" && <FaFileExcel size={48} />}
+                    {type === "ppt" && <FaFilePowerpoint size={48} />}
                     <p className="mt-2 text-sm">
                       {selectedFile.name.split(".")[0]}
                     </p>
@@ -61,7 +61,7 @@ const PreviewFile = ({
               }
 
               // Html
-              if (type === ".html") {
+              if (type === "html") {
                 return (
                   <iframe
                     src={previewFile}

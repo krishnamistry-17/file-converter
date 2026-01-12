@@ -6,6 +6,7 @@ import PdfFile from "../../components/layout/PdfFile";
 const JpgToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertJpgToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,6 +25,7 @@ const JpgToPdf = () => {
 
   const handleConvert = async () => {
     await ConvertJpgToPdf();
+    clearSelectedFile();
   };
 
   return (

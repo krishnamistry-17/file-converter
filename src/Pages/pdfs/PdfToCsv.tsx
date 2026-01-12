@@ -6,6 +6,7 @@ import PdfFile from "../../components/layout/PdfFile";
 const PdfToCsv = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { convertPdfToCsv } = useUploadData();
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const [fileSelected, setFileSelected] = useState(false);
@@ -25,6 +26,7 @@ const PdfToCsv = () => {
 
   const handleConvert = async () => {
     await convertPdfToCsv(selectedFile as File);
+    clearSelectedFile();
   };
 
   return (

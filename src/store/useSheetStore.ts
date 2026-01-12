@@ -29,6 +29,7 @@ interface FilesStore {
   fetchFiles: () => Promise<void>;
   selectedFile: File | null;
   setSelectedFile: (file: any) => void;
+  clearSelectedFile: () => void;
   fileExtension: FileExtensions;
 
   previewFile: string | null;
@@ -38,9 +39,15 @@ interface FilesStore {
   mergeFile2: File | null;
   setMergeFile1: (file: File | null) => void;
   setMergeFile2: (file: File | null) => void;
+  clearMergeFile1: () => void;
+  clearMergeFile2: () => void;
 
   mergedPdfPreview: string | null;
   setMergedPdfPreview: (preview: string | null) => void;
+
+  uploadModalOpen: boolean;
+  setUploadModalOpen: (open: boolean) => void;
+  clearUploadModalOpen: () => void;
 }
 
 const useFilesStore = create<FilesStore>()(
@@ -67,6 +74,7 @@ const useFilesStore = create<FilesStore>()(
 
         selectedFile: null,
         setSelectedFile: (file: any) => set({ selectedFile: file }),
+        clearSelectedFile: () => set({ selectedFile: null }),
         fileExtension: {
           csv: ".csv",
           xlsx: ".xlsx",
@@ -82,10 +90,15 @@ const useFilesStore = create<FilesStore>()(
         mergeFile2: null,
         setMergeFile1: (file: File | null) => set({ mergeFile1: file }),
         setMergeFile2: (file: File | null) => set({ mergeFile2: file }),
-
+        clearMergeFile1: () => set({ mergeFile1: null }),
+        clearMergeFile2: () => set({ mergeFile2: null }),
         mergedPdfPreview: null,
         setMergedPdfPreview: (preview: string | null) =>
           set({ mergedPdfPreview: preview }),
+
+        uploadModalOpen: false,
+        setUploadModalOpen: (open: boolean) => set({ uploadModalOpen: open }),
+        clearUploadModalOpen: () => set({ uploadModalOpen: false }),
       };
     },
     {

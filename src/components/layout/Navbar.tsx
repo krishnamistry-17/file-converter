@@ -22,7 +22,7 @@ const Navbar = () => {
     <header className="bg-white shadow-md sticky top-0 left-0 right-0 z-50 ">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center relative ">
         <Link to="/" className="text-xl font-bold cursor-pointer">
-          My App
+          PDF Converter
         </Link>
 
         <div className="md:flex hidden items-center gap-6">
@@ -48,13 +48,6 @@ const Navbar = () => {
               </div>
             )}
           </div>
-        </div>
-
-        <div>
-          <button className="bg-gray-200 px-4 py-2 rounded-md mr-2">
-            Login
-          </button>
-          <button className="bg-gray-200 px-4 py-2 rounded-md">Register</button>
         </div>
 
         <div className="md:hidden">

@@ -14,7 +14,7 @@ const ConvertTabs = () => {
       <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
         <div className="flex justify-center">
           <TabList
-            className="md:flex flex-col md:flex-row justify-center items-center 
+            className="md:flex flex-col md:flex-row justify-center items-center  
              bg-gray-100 rounded-full p-1 gap-2 lg:gap-0"
             style={{ scrollbarWidth: "none" }}
           >

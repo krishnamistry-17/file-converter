@@ -7,6 +7,7 @@ const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const selectedFile = useFilesStore((state) => state.selectedFile);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { convertPdfToJson } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -32,6 +33,7 @@ const PdfToJson = () => {
     const url = URL.createObjectURL(blob);
 
     window.open(url);
+    clearSelectedFile();
   };
 
   return (

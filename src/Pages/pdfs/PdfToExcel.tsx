@@ -7,6 +7,7 @@ import { useState } from "react";
 const PdftoExcel = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertPdfToExcel } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -25,6 +26,7 @@ const PdftoExcel = () => {
 
   const handleConvert = async () => {
     await ConvertPdfToExcel();
+    clearSelectedFile();
   };
 
   return (

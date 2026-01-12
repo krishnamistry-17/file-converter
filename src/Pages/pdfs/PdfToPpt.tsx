@@ -7,7 +7,7 @@ import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToPpt = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
 
   const [file, setFile] = useState<File | null>(null);
@@ -72,6 +72,7 @@ const PdfToPpt = () => {
 
   const handleConvert = async () => {
     await handleUpload();
+    clearSelectedFile();
   };
 
   return (

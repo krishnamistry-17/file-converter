@@ -6,6 +6,8 @@ import SelectFile from "../../components/SelectFile";
 const MergePdfComponent = () => {
   const [pdfPreview1, setPdfPreview1] = useState<string | null>(null);
   const [pdfPreview2, setPdfPreview2] = useState<string | null>(null);
+  const clearMergeFile1 = useFilesStore((state) => state.clearMergeFile1);
+  const clearMergeFile2 = useFilesStore((state) => state.clearMergeFile2);
 
   const mergeFile1 = useFilesStore((state) => state.mergeFile1);
   const mergeFile2 = useFilesStore((state) => state.mergeFile2);
@@ -26,6 +28,8 @@ const MergePdfComponent = () => {
 
   const handleMerge = async () => {
     await MergePdfs();
+    clearMergeFile1();
+    clearMergeFile2();
   };
 
   return (

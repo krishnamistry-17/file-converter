@@ -1,9 +1,8 @@
 import useFilesStore from "../../store/useSheetStore";
 import { useState } from "react";
 import api from "../../utils/axios";
-import { saveAs } from "file-saver";
-import axios from "axios";
 import PdfFile from "../../components/layout/PdfFile";
+import { API_ROUTES } from "../../constance/apiConstance";
 
 const PdfToPpt = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -35,38 +34,19 @@ const PdfToPpt = () => {
     formData.append("pdf", file);
 
     try {
-      const response = await api.post("/api/ai/pdf-to-ppt", formData, {
+      const response = await api.post(API_ROUTES.PDFS.PDF_TO_PPT, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
       const pptUrl = response.data.url;
-      console.log(pptUrl, "pptUrl-------");
+      window.open(pptUrl, "_blank");
 
-      if (!pptUrl) {
-        alert("Conversion failed: no URL returned");
-        return;
-      }
-
-      // window.open(pptUrl, "_blank");
-
-      const fileResponse = await axios.get(pptUrl, {
-        responseType: "blob",
-      });
-      console.log(fileResponse.data, "fileResponse.data-------");
-
-      const blob = new Blob([fileResponse.data], {
-        type: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      });
-
-      saveAs(blob, "converted.pptx");
       alert("Conversion successful!");
-    } catch (err: any) {
-      console.error(err.response || err.message);
-      alert(
-        "Conversion failed: " + (err.response?.data?.message || err.message)
-      );
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
     }
   };
 

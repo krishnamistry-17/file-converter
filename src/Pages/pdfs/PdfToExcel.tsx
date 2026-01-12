@@ -1,14 +1,16 @@
 import PdfFile from "../../components/layout/PdfFile";
-import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
 
 import { useState } from "react";
+import api from "../../utils/axios";
+import { API_ROUTES } from "../../constance/apiConstance";
 
 const PdftoExcel = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-  const { ConvertPdfToExcel } = useUploadData();
+
+  const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,13 +21,38 @@ const PdftoExcel = () => {
       return;
     }
     setSelectedFile(file as any);
+    setFile(file as any);
     setPreviewFile(URL.createObjectURL(file as File) as string);
     e.target.value = "";
     setFileSelected(true);
   };
 
+  const handleUpload = async () => {
+    if (!file) return alert("Select a PDF file first");
+
+    const formData = new FormData();
+    formData.append("pdf", file);
+
+    try {
+      const response = await api.post(API_ROUTES.PDFS.PDF_TO_EXCEL, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const excelUrl = response.data.url;
+
+      window.open(excelUrl, "_blank");
+
+      alert(" Conversion successful!");
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    }
+  };
+
   const handleConvert = async () => {
-    await ConvertPdfToExcel();
+    await handleUpload();
     clearSelectedFile();
   };
 

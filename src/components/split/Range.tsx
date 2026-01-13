@@ -4,69 +4,92 @@ import useFilesStore from "../../store/useSheetStore";
 import useSplitStore from "../../store/useSplitStore";
 
 type SplitRange = {
-  from: number;
-  to: number;
+  from: string;
+  to: string;
 };
 
 const Range = () => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const clearSelectedRange = useSplitStore((state) => state.clearSelectedRange);
   const { splitPdfByRange, splitPdfByFixedRange } = useUploadData();
-
-  const [activeRange, setActiveRange] = useState<SplitRange[]>([
-    { from: 1, to: 10 },
-  ]);
-  const [activeMode, setActiveMode] = useState<"custome" | "fixed">("custome");
-  const [pageRange, setPageRange] = useState<number>();
-
   const setResults = useSplitStore((state) => state.setResults);
+
+  const [activeMode, setActiveMode] = useState<"custome" | "fixed">("custome");
+  const [activeRange, setActiveRange] = useState<SplitRange[]>([
+    { from: "1", to: "10" },
+  ]);
+  const [pageRange, setPageRange] = useState<string>("");
+
   const handleRangeChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
-    type: "from" | "to"
+    field: "from" | "to"
   ) => {
-    const newRange = [...activeRange] as SplitRange[];
-    newRange[index][type] = parseInt(e.target.value);
-    setActiveRange(newRange);
+    const value = e.target.value;
+
+    setActiveRange((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   };
+
+  const handleAddRange = () => {
+    const last = activeRange[activeRange.length - 1];
+    const lastTo = Number(last.to);
+
+    const base = Number.isFinite(lastTo) && lastTo > 0 ? lastTo : 1;
+
+    setActiveRange((prev) => [
+      ...prev,
+      { from: String(base + 1), to: String(base + 5) },
+    ]);
+  };
+
+  const validateCustomRanges = () => {
+    return activeRange.every(({ from, to }) => {
+      const f = Number(from);
+      const t = Number(to);
+      return Number.isFinite(f) && Number.isFinite(t) && f > 0 && t >= f;
+    });
+  };
+
   const handleSplit = async () => {
     if (!selectedFile) return;
 
-    // CUSTOM RANGE (from-to)
     if (activeMode === "custome") {
-      const results = await splitPdfByRange(selectedFile as File, activeRange);
-
-      setResults(results as any);
-      clearSelectedRange();
-    }
-
-    // FIXED RANGE (every N pages)
-    if (activeMode === "fixed") {
-      if (!pageRange || pageRange < 1) {
-        alert("Please enter a valid page range");
+      if (!validateCustomRanges()) {
+        alert("Please enter valid page ranges.");
         return;
       }
 
-      const results = await splitPdfByFixedRange(
+      const numericRanges = activeRange.map(({ from, to }) => ({
+        from: Number(from),
+        to: Number(to),
+      }));
+
+      const results = await splitPdfByRange(
         selectedFile as File,
-        pageRange
+        numericRanges
       );
 
       setResults(results as any);
       clearSelectedRange();
     }
-  };
 
-  const handleAddRange = () => {
-    const last = activeRange[activeRange.length - 1];
+    if (activeMode === "fixed") {
+      const count = Number(pageRange);
 
-    setActiveRange([
-      ...activeRange,
-      {
-        from: last.to + 1,
-        to: last.to + 5, // default step (or ask user)
-      },
-    ]);
+      if (!Number.isFinite(count) || count < 1) {
+        alert("Please enter a valid page range.");
+        return;
+      }
+
+      const results = await splitPdfByFixedRange(selectedFile as File, count);
+
+      setResults(results as any);
+      clearSelectedRange();
+    }
   };
 
   return (
@@ -104,7 +127,6 @@ const Range = () => {
         <p>Range:</p>
         {activeMode === "custome" && (
           <div>
-            {/* <p>Total Range: {activeRange.length}</p> */}
             {activeRange.map((range, index) => (
               <div key={index} className="flex items-center gap-2 mt-2">
                 <div className="flex items-center gap-2 w-full border border-gray-300 rounded-md p-2 ">
@@ -147,9 +169,7 @@ const Range = () => {
               <input
                 type="number"
                 value={pageRange}
-                onChange={(e) =>
-                  setPageRange(parseInt(e.target.value) as number)
-                }
+                onChange={(e) => setPageRange(e.target.value)}
                 className=" focus:outline-none focus:ring-0 
                 border border-gray-300 rounded-md p-2 sm:mt-0 mt-2"
               />

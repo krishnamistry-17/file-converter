@@ -3,15 +3,14 @@ import ConvertTabs from "../../components/ConvertTabs";
 
 const Home = () => {
   return (
-    <div className="flex flex-col w-full  ">
-      <div className=" bg-gray-100 ">
-        <div>
-          <Herosection />
-        </div>
-        <div>
-          <ConvertTabs />
-        </div>
-      </div>
+    <div className="w-full bg-linear-to-b from-gray-50 to-white">
+      <section>
+        <Herosection />
+      </section>
+
+      <section className=" pt-4 pb-24">
+        <ConvertTabs />
+      </section>
     </div>
   );
 };

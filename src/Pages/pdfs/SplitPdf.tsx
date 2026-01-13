@@ -17,8 +17,10 @@ const SplitPdf = () => {
   const clearResults = useSplitStore((state) => state.clearResults);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const results = useSplitStore((state) => state.results);
+  console.log(results, "results");
   const [fileSelected, setFileSelected] = useState(false);
   const splitRangeType = useSplitStore((state) => state.splitRangeType);
+  console.log(splitRangeType, "splitRangeType");
   const setTotalPages = useSplitStore((s) => s.setTotalPages);
 
   const [isTabChanged, setIsTabChanged] = useState(false);
@@ -130,3 +132,4 @@ const SplitPdf = () => {
 };
 
 export default SplitPdf;
+//react-dom-client.development.js:1561 The specified value "NaN" cannot be parsed, or is out of range.

@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import PreviewFile from "../PreviewFile";
 import useFilesStore from "../../store/useSheetStore";
 import UploadModal from "../UploadModal";
 import { IoMdClose } from "react-icons/io";
-
 interface PdfFileProps {
   heading: string;
   para: string;
@@ -38,67 +37,95 @@ const PdfFile = ({
   const [modalOpen, setModalOpen] = useState(false);
 
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
+
+  useEffect(() => {
+    if (modalOpen) {
+      const stopScrollOutSide = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      document.addEventListener("wheel", stopScrollOutSide, { passive: false });
+      return () => {
+        document.removeEventListener("wheel", stopScrollOutSide);
+      };
+    }
+  }, [modalOpen]);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-      <div className="max-w-3xl w-full bg-white shadow-md rounded-xl p-8 flex flex-col gap-6">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{heading}</h1>
-          <p className="text-gray-600">{para}</p>
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+            {heading}
+          </h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">{para}</p>
         </div>
 
-        {/* File Upload */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            setModalOpen(true);
-            setSelectedFile(null);
-          }}
-          className=" cursor-pointer w-full max-w-sm mx-auto
-         bg-gray-50 border border-gray-300 rounded-lg p-3 text-center hover:bg-gray-100 transition"
-        >
-          {label}
-        </button>
-
-        {/* Modal */}
-        {modalOpen && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 ">
-            <div className="bg-white p-8 rounded-lg w-full max-w-xl relative">
-              <button
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                onClick={() => setModalOpen(false)}
-              >
-                <IoMdClose size={24} />
-              </button>
-              <UploadModal
-                handleFileUpload={(e) => {
-                  onFileUpload(e);
-                  setModalOpen(false);
-                }}
-                accept={accept}
-                label={label}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* File Preview */}
-        <div className="flex justify-center">
-          <PreviewFile type={PreviewFileType} />
-        </div>
-
-        {/* Download Button */}
-        {fileSelected && (
-          <div className="flex justify-center">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-10">
+          <div className="flex flex-col items-center gap-4">
             <button
-              className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition shadow-md"
-              onClick={handleConvert}
+              onClick={() => {
+                setModalOpen(true);
+                setSelectedFile(null);
+              }}
+              className="
+               w-full sm:w-auto
+              px-8 py-4
+              border-2 border-dashed border-gray-300
+              rounded-xl text-gray-600 font-medium
+              hover:border-blue-500 hover:text-blue-600
+              transition
+            "
             >
-              {btnText}
+              {label}
             </button>
+
+            <p className="text-xs text-gray-400">Supported format: {accept}</p>
           </div>
-        )}
+
+          <div className="mt-10">
+            <PreviewFile type={PreviewFileType} />
+          </div>
+
+          {fileSelected && (
+            <div className="mt-10 flex justify-center">
+              <button
+                onClick={handleConvert}
+                className="
+                bg-blue-600 text-white font-semibold
+                px-10 py-4 rounded-xl
+                hover:bg-blue-700 transition
+                shadow-md
+              "
+              >
+                {btnText}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg relative">
+            <button
+              className="absolute sm:top-4 sm:right-4 top-1 right-2 text-gray-500"
+              onClick={() => setModalOpen(false)}
+            >
+              <IoMdClose size={24} />
+            </button>
+
+            <UploadModal
+              handleFileUpload={(e) => {
+                onFileUpload(e);
+                setModalOpen(false);
+              }}
+              accept={accept}
+              label={label}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

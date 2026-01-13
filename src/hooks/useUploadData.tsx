@@ -566,18 +566,32 @@ const useUploadData = () => {
     const pdf = await PDFDocument.load(buffer);
     const totalPages = pdf.getPageCount();
 
-    const results = [];
+    const results: any[] = [];
 
-    for (const range of ranges) {
-      if (range.from < 1 || range.to > totalPages || range.from > range.to) {
+    for (const raw of ranges) {
+      const from = Number(raw.from);
+      const to = Number(raw.to);
+      console.log(from, to, "from, to");
+
+      if (
+        !Number.isFinite(from) ||
+        !Number.isFinite(to) ||
+        from < 1 ||
+        to < 1 ||
+        from > to ||
+        from > totalPages
+      ) {
+        console.warn("Invalid range skipped:", raw);
         continue;
       }
+
+      const safeTo = Math.min(to, totalPages);
 
       const newPdf = await PDFDocument.create();
 
       const pageIndexes = Array.from(
-        { length: range.to - range.from + 1 },
-        (_, i) => range.from - 1 + i
+        { length: safeTo - from + 1 },
+        (_, i) => from - 1 + i
       );
 
       const pages = await newPdf.copyPages(pdf, pageIndexes);
@@ -589,13 +603,14 @@ const useUploadData = () => {
       });
 
       results.push({
-        name: `pages-${range.from}-${range.to}.pdf`,
+        name: `pages-${from}-${safeTo}.pdf`,
         blob,
         url: URL.createObjectURL(blob),
-        pages: `${range.from}-${range.to}`,
+        pages: `${from}-${safeTo}`,
       });
     }
 
+    console.log("Final split results:", results);
     return results;
   };
 
@@ -685,6 +700,7 @@ const useUploadData = () => {
     const buffer = await file.arrayBuffer();
     const pdf = await PDFDocument.load(buffer);
     const totalPages = pdf.getPageCount();
+    console.log(totalPages, "totalPages");
     const results: SplitResult[] = [];
     for (let i = 0; i < totalPages; i++) {
       const newPdf = await PDFDocument.create();

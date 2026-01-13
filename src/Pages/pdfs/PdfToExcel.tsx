@@ -39,9 +39,10 @@ const PdftoExcel = () => {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log(response.data);
 
       const excelUrl = response.data.url;
-
+      console.log(excelUrl);
       window.open(excelUrl, "_blank");
 
       alert(" Conversion successful!");

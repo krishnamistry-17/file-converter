@@ -7,6 +7,7 @@ import useSplitStore from "../store/useSplitStore";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
+import autoTable from "jspdf-autotable";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -164,23 +165,6 @@ const useUploadData = () => {
       a.click();
     };
     reader.readAsArrayBuffer(selectedFile as any);
-  };
-
-  const ConvertWordToPdf = async () => {
-    if (!selectedFile) {
-      alert("Please select a file");
-      return;
-    }
-    const arrayBuffer = await selectedFile.arrayBuffer();
-    const result = await mammoth.extractRawText(
-      new Uint8Array(arrayBuffer) as any
-    );
-    console.log(result);
-    const text = result.value;
-
-    const pdf = new jsPDF();
-    pdf.text(text, 10, 10);
-    pdf.save("converted.pdf");
   };
 
   //download data in csv format
@@ -833,22 +817,43 @@ const useUploadData = () => {
     });
     return results;
   };
+
+  // const convertCsvToPdf = async (file: File) => {
+  //   const buffer = await file.arrayBuffer();
+  //   const csv = Papa.parse(new TextDecoder().decode(buffer), { header: true });
+  //   const pdf = new jsPDF();
+  //   pdf.text(
+  //     csv.data.map((row: any) => Object.values(row).join(",")).join("\n"),
+  //     10,
+  //     10
+  //   );
+  //   const blob = new Blob([pdf.output("blob")], { type: "application/pdf" });
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = "converted.pdf";
+  //   a.click();
+  //   setSelectedFile(null);
+  // };
+
   const convertCsvToPdf = async (file: File) => {
     const buffer = await file.arrayBuffer();
-    const csv = Papa.parse(new TextDecoder().decode(buffer), { header: true });
+    const text = new TextDecoder().decode(buffer);
+
+    const { data, meta } = Papa.parse(text, {
+      header: true,
+      skipEmptyLines: true,
+    });
+
     const pdf = new jsPDF();
-    pdf.text(
-      csv.data.map((row: any) => Object.values(row).join(",")).join("\n"),
-      10,
-      10
-    );
-    const blob = new Blob([pdf.output("blob")], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "converted.pdf";
-    a.click();
-    setSelectedFile(null);
+
+    autoTable(pdf, {
+      head: [meta.fields!],
+      body: data.map((row: any) => meta.fields!.map((f) => row[f])),
+      styles: { fontSize: 8 },
+    });
+
+    pdf.save("converted.pdf");
   };
 
   return {
@@ -862,7 +867,6 @@ const useUploadData = () => {
     ConvertJsonToPdf,
     ConvertPdfToExcel,
     ConvertPdfToWord,
-    ConvertWordToPdf,
     convertPdfToCsv,
     ConvertJpgToPdf,
     ConvertedPdfToPpt,

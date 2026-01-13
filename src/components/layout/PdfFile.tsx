@@ -70,7 +70,7 @@ const PdfFile = ({
               }}
               className="
                w-full sm:w-auto
-              px-8 py-4
+              px-10 py-4
               border-2 border-dashed border-gray-300
               rounded-xl text-gray-600 font-medium
               hover:border-blue-500 hover:text-blue-600

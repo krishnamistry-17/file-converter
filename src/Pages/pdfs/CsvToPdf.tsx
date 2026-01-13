@@ -7,6 +7,7 @@ const CsvToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
+  const setDownloadFileUrl = useFilesStore((state) => state.setDownloadFileUrl);
   const { convertCsvToPdf } = useUploadData();
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const [fileSelected, setFileSelected] = useState(false);
@@ -26,6 +27,7 @@ const CsvToPdf = () => {
 
   const handleConvert = async () => {
     await convertCsvToPdf(selectedFile as File);
+    setDownloadFileUrl(URL.createObjectURL(selectedFile as File) as string);
     clearSelectedFile();
   };
 

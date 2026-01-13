@@ -23,7 +23,6 @@ export const convertOptions = [
     title: "Convert to PDF",
     options: [
       { icon: FaFileAlt, label: "JSON to PDF", path: "/json-to-pdf" },
-      { icon: FaFileExcel, label: "Excel to PDF", path: "/excel-to-pdf" },
       { icon: FaFileWord, label: "Word to PDF", path: "/word-to-pdf" },
       { icon: FaFileCsv, label: "CSV to PDF", path: "/csv-to-pdf" },
       { icon: FaFilePowerpoint, label: "PPT to PDF", path: "/ppt-to-pdf" },
@@ -44,6 +43,7 @@ export const convertOptions = [
     options: [
       { icon: FaFileExcel, label: "Excel to Json", path: "/excel-to-json" },
       { icon: FaFileCsv, label: "Excel to Csv", path: "/excel-to-csv" },
+      { icon: FaFileExcel, label: "Excel to PDF", path: "/excel-to-pdf" },
     ],
   },
 ];

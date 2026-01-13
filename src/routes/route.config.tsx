@@ -17,6 +17,8 @@ import ExcelToCsv from "../Pages/excels/ExcelToCsv";
 import DocsToHtml from "../Pages/docs/DocsToHtml";
 import ConvertPdf from "../Pages/Convertpdf";
 import WordToPdf from "../Pages/words/WordToPdf";
+import ExcelToPdf from "../Pages/excels/ExcelToPdf";
+import PptToPdf from "../Pages/ppt/PptToPdf";
 
 const routes = createBrowserRouter([
   {
@@ -90,6 +92,14 @@ const routes = createBrowserRouter([
       {
         path: "/word-to-pdf",
         element: <WordToPdf />,
+      },
+      {
+        path: "/excel-to-pdf",
+        element: <ExcelToPdf />,
+      },
+      {
+        path: "/ppt-to-pdf",
+        element: <PptToPdf />,
       },
     ],
   },

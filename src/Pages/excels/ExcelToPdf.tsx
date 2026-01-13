@@ -1,12 +1,12 @@
 import useFilesStore from "../../store/useSheetStore";
+
 import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 import api from "../../utils/axios";
 import { API_ROUTES } from "../../constance/apiConstance";
 
-const WordToPdf = () => {
+const ExcelToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setDownloadFileUrl = useFilesStore((state) => state.setDownloadFileUrl);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [file, setFile] = useState<File | null>(null);
@@ -27,22 +27,26 @@ const WordToPdf = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert("Select a Word file first");
+    if (!file) return alert("Select a Excel file first");
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await api.post(API_ROUTES.WORD.WORD_TO_PDF, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await api.post(API_ROUTES.EXCEL.EXCEL_TO_PDF, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      const data = await response.data;
-      if (!data.url) {
-        alert("Conversion failed!");
-        return;
-      }
-      setDownloadFileUrl(data.url);
-      window.open(data.url, "_blank");
+      const pdfUrl = response.data.url;
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = "converted.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log("Download triggered successfully!");
     } catch (error) {
       console.error(error);
       alert("Conversion failed!");
@@ -57,13 +61,13 @@ const WordToPdf = () => {
   return (
     <>
       <PdfFile
-        heading="Convert Word to Pdf"
-        para="Convert a Word file to a Pdf file. This tool will convert a Word file to a Pdf file."
+        heading="Convert Excel to Pdf"
+        para="Convert a Excel file to a Pdf file. This tool will convert a Excel file to a Pdf file."
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
         PreviewFileType="pdf"
-        accept=".docx"
+        accept=".xlsx"
         label="Select a file"
         btnText="Download Pdf"
       />
@@ -71,4 +75,4 @@ const WordToPdf = () => {
   );
 };
 
-export default WordToPdf;
+export default ExcelToPdf;

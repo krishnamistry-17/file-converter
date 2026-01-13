@@ -1,301 +1,235 @@
 import getFileType from "../constance/FileType";
 import useFilesStore from "../store/useSheetStore";
-import { FaFileExcel, FaFilePowerpoint, FaFileWord } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import useClearOnTabChange from "../hooks/useClearOnTabChnage";
+import * as XLSX from "xlsx";
+import { useLocation } from "react-router-dom";
+
+export const CsvPreview = ({ file }: { file: File }) => {
+  const [content, setContent] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    file.text().then((text) => {
+      if (!cancelled) {
+        setContent(text.split("\n").slice(0, 5).join("\n"));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [file]);
+
+  return (
+    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+      {content}
+    </pre>
+  );
+};
+
+export const JsonPreview = ({ file }: { file: File }) => {
+  const [content, setContent] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    file.text().then((text) => {
+      if (!cancelled) {
+        try {
+          const json = JSON.parse(text);
+          setContent(JSON.stringify(json, null, 2));
+        } catch {
+          setContent("Invalid JSON file");
+        }
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [file]);
+
+  return (
+    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+      {content}
+    </pre>
+  );
+};
+
+export const ExcelPreview = ({ file }: { file: File }) => {
+  const [data, setData] = useState<any[][]>([]);
+
+  useEffect(() => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const buffer = e.target?.result;
+      if (buffer) {
+        const workbook = XLSX.read(buffer, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        setData(jsonData.slice(0, 10) as any[][]);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }, [file]);
+
+  return (
+    <div className="overflow-auto max-h-80 w-full">
+      <table className="border-collapse border border-gray-300 w-full text-xs">
+        <tbody>
+          {data.map((row, i) => (
+            <tr key={i}>
+              {row.map((cell: any, j: number) => (
+                <td key={j} className="border border-gray-300 px-1 py-0.5">
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export const WordPreview = () => {
+  return (
+    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+      No preview available for Word file
+    </pre>
+  );
+};
 
 const PreviewFile = ({
   type,
 }: {
-  type: "pdf" | "json" | "csv" | "xlsx" | "pptx" | "doc" | "docx" | "html";
+  type:
+    | "pdf"
+    | "json"
+    | "csv"
+    | "xlsx"
+    | "pptx"
+    | "doc"
+    | "docx"
+    | "html"
+    | "xls";
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
+  const downloadFileUrl = useFilesStore((state) => state.downloadFileUrl);
+
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
+
+  useClearOnTabChange(clearSelectedFile);
+
+  const location = useLocation();
+
+  const showPptPreview = () => {
+    if (location.pathname.includes("ppt-to-pdf")) {
+      return (
+        <>
+          <p>Converted Pdf</p>
+          <iframe
+            src={downloadFileUrl || ""}
+            title="Ppt Preview"
+            className="w-full h-80 rounded border"
+          />
+        </>
+      );
+    }
+  };
+
+  useEffect(() => {
+    clearSelectedFile();
+  }, [location.pathname]);
 
   return (
     <div>
       <div className="w-full flex flex-col gap-3 items-center justify-center">
-        {previewFile && selectedFile && (
-          <div className="max-w-md my-4 flex flex-col items-center gap-2">
-            {(() => {
-              const type = getFileType(selectedFile as File);
+        <div>
+          {previewFile && selectedFile && (
+            <div className="max-w-md my-4 flex flex-col items-center gap-2">
+              {(() => {
+                const type = getFileType(selectedFile as File);
 
-              // PDF
-              if (type === "pdf") {
+                // PDF
+                if (type === "pdf") {
+                  return (
+                    <iframe
+                      src={previewFile}
+                      title="PDF Preview"
+                      className="w-full h-80 rounded border"
+                    />
+                  );
+                }
+
+                // Image
+                if (type === "jpg" || type === "png" || type === "jpeg") {
+                  return (
+                    <img
+                      src={previewFile}
+                      alt="Image Preview"
+                      className="max-h-80 object-contain rounded border"
+                    />
+                  );
+                }
+
+                // json preview
+                if (type === "json") {
+                  return <JsonPreview file={selectedFile as File} />;
+                }
+
+                //csv preview
+                if (type === "csv") {
+                  return <CsvPreview file={selectedFile as File} />;
+                }
+
+                //excel preview
+                if (type === "xlsx") {
+                  return <ExcelPreview file={selectedFile as File} />;
+                }
+
+                // word preview
+                if (type === "doc" || type === "docx") {
+                  return <WordPreview />;
+                }
+
+                if (location.pathname.includes("ppt-to-pdf")) {
+                  return showPptPreview();
+                }
+
+                // Html
+                if (type === "html") {
+                  return (
+                    <>
+                      <iframe
+                        src={previewFile}
+                        title="Html Preview"
+                        className="w-full h-80 rounded border"
+                      />
+                    </>
+                  );
+                }
+
                 return (
-                  <iframe
-                    src={previewFile}
-                    title="PDF Preview"
-                    className="w-full h-80 rounded border"
-                  />
+                  <p className="text-gray-500">
+                    {selectedFile
+                      ? "Please select a file to preview"
+                      : "No preview available"}
+                  </p>
                 );
-              }
+              })()}
 
-              // Image
-              if (type === "jpg" || type === "png" || type === "jpeg") {
-                return (
-                  <img
-                    src={previewFile}
-                    alt="Image Preview"
-                    className="max-h-80 object-contain rounded border"
-                  />
-                );
-              }
-
-              // Text (CSV / JSON)
-              if (type === "csv" || type === "json") {
-                return <p className="text-gray-500">Preview not available</p>;
-              }
-
-              // Word / Excel / PPT
-              if (
-                type === "doc" ||
-                type === "xlsx" ||
-                type === "ppt" ||
-                type === "docx"
-              ) {
-                return (
-                  <div className="flex flex-col items-center text-gray-600 py-6">
-                    {type === "doc" && <FaFileWord size={48} />}
-                    {type === "xlsx" && <FaFileExcel size={48} />}
-                    {type === "ppt" && <FaFilePowerpoint size={48} />}
-                    {type === "docx" && <FaFileWord size={48} />}
-                    <p className="mt-2 text-sm">
-                      {selectedFile.name.split(".")[0]}
-                    </p>
-                    <p className="text-xs">Preview not available</p>
-                  </div>
-                );
-              }
-
-              // Html
-              if (type === "html") {
-                return (
-                  <iframe
-                    src={previewFile}
-                    title="Html Preview"
-                    className="w-full h-80 rounded border"
-                  />
-                );
-              }
-
-              return (
-                <p className="text-gray-500">
-                  {selectedFile
-                    ? "Please select a file to preview"
-                    : "No preview available"}
-                </p>
-              );
-            })()}
-
-            <p className="text-sm text-gray-500">{selectedFile.name}</p>
-          </div>
-        )}
+              <p className="text-sm text-gray-500">{selectedFile.name}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default PreviewFile;
-
-{
-
-
-
-
-// import InputField from "../InputField";
-// import PreviewFile from "../PreviewFile";
-// import useFilesStore from "../../store/useSheetStore";
-// import UploadModal from "../UploadModal";
-// import { useState } from "react";
-
-// interface PdfFileProps {
-//   heading: string;
-//   para: string;
-//   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
-//   handleConvert: () => void;
-//   PreviewFileType:
-//     | "pdf"
-//     | "json"
-//     | "csv"
-//     | "xlsx"
-//     | "pptx"
-//     | "doc"
-//     | "docx"
-//     | "html";
-//   accept: string;
-//   label: string;
-//   btnText: string;
-// }
-// const PdfFile = ({
-//   onFileUpload,
-//   handleConvert,
-// }: PdfFileProps) => {
-//   const [modalOpen, setModalOpen] = useState(false);
-//   const selectedFile = useFilesStore((state) => state.selectedFile);
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-//       <div className="max-w-3xl w-full bg-white shadow-md rounded-xl p-8 flex flex-col gap-6">
-//         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-//           Convert PDF to Word
-//         </h1>
-//         <p className="text-gray-600">
-//           Convert a PDF file to a Word file. Drag & drop or select a file below.
-//         </p>
-
-//         {/* Upload Button */
-}
-//         <button
-//           onClick={() => setModalOpen(true)}
-//           className="bg-gray-200 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-300 transition"
-//         >
-//           {selectedFile ? selectedFile.name : "Select a PDF"}
-//         </button>
-
-//         {/* Modal */}
-//         {modalOpen && (
-//           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-//             <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
-//               <button
-//                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-//                 onClick={() => setModalOpen(false)}
-//               >
-//                 ✕
-//               </button>
-//               <UploadModal
-//                 handleFileUpload={onFileUpload}
-//                 accept=".pdf"
-//                 label="Drag & drop or click to select PDF"
-//               />
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Preview */}
-//         <div className="flex justify-center">
-//           <PreviewFile type="pdf" />
-//         </div>
-
-//         {/* Convert Button */}
-//         {selectedFile && (
-//           <div className="flex justify-center">
-//             <button
-//               onClick={handleConvert}
-//               className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-//             >
-//               Download Word
-//             </button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PdfFile;
-
-// import { FaFileWord, FaFileExcel, FaFilePowerpoint } from "react-icons/fa";
-// import useFilesStore from "../store/useSheetStore";
-
-// interface PreviewFileProps {
-//   type: "pdf" | "docx" | "doc" | "xlsx" | "ppt" | "jpg" | "png";
-// }
-
-// const PreviewFile = ({ type }: PreviewFileProps) => {
-//   const selectedFile = useFilesStore((state) => state.selectedFile);
-//   const previewFile = useFilesStore((state) => state.previewFile);
-
-//   if (!selectedFile || !previewFile)
-//     return <p className="text-gray-500">No file selected</p>;
-
-//   // PDF preview
-//   if (type === "pdf")
-//     return (
-//       <iframe
-//         src={previewFile}
-//         title="PDF Preview"
-//         className="w-full max-w-md h-80 rounded border"
-//       />
-//     );
-
-//   // Images
-//   if (["jpg", "png"].includes(type))
-//     return (
-//       <img
-//         src={previewFile}
-//         alt="Preview"
-//         className="max-h-80 object-contain rounded border"
-//       />
-//     );
-
-//   // Office files
-//   return (
-//     <div className="flex flex-col items-center text-gray-600 py-6">
-//       {type === "doc" || type === "docx" ? <FaFileWord size={48} /> : null}
-//       {type === "xlsx" ? <FaFileExcel size={48} /> : null}
-//       {type === "ppt" ? <FaFilePowerpoint size={48} /> : null}
-//       <p className="mt-2 text-sm">{selectedFile.name}</p>
-//       <p className="text-xs text-gray-500">Preview not available</p>
-//     </div>
-//   );
-// };
-
-// export default PreviewFile;
-
-// import { useState } from "react";
-// import UploadModal from "./UploadModal";
-// import { IoMdClose } from "react-icons/io";
-
-// interface InputFieldProps {
-//   handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-//   accept: string;
-//   label: string;
-// }
-
-// const InputField = ({
-//   handleFileUpload,
-//   accept = ".csv,.xlsx,.xls,.json,.pdf,.jpg,.jpeg,.png,.ppt,.doc",
-//   label = "Select a file",
-// }: InputFieldProps) => {
-//   const [modalOpen, setModalOpen] = useState(false);
-
-//   const toggleModal = () => {
-//     setModalOpen(!modalOpen);
-//   };
-
-//   return (
-//     <>
-//       <div
-//         onClick={toggleModal}
-//         className="cursor-pointer w-full max-w-sm mx-auto
-//          bg-gray-50 border border-gray-300 rounded-lg p-3 text-center hover:bg-gray-100 transition"
-//       >
-//         <p className="text-gray-600">{label}</p>
-//       </div>
-
-//       {modalOpen && (
-//         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-//           <div className="bg-white p-6 rounded-lg relative w-full max-w-md">
-//             <button
-//               onClick={toggleModal}
-//               className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-//             >
-//               <IoMdClose className="w-5 h-5" />
-//             </button>
-
-//             <UploadModal
-//               handleFileUpload={(e) => {
-//                 handleFileUpload(e);
-//                 toggleModal();
-//               }}
-//               accept={accept}
-//               label={label}
-//             />
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default InputField;

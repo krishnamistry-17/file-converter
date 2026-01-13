@@ -23,7 +23,7 @@ const ConvertTabs = () => {
                 <Tab
                   key={index}
                   className={`
-              cursor-pointer px-6 py-2 text-sm font-semibold rounded-full text-center
+              cursor-pointer px-6 sm:py-3 py-2 text-sm font-semibold rounded-full text-center
               transition-all duration-300 outline-none
               ${
                 activeTab === index

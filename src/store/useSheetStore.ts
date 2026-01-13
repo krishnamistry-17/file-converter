@@ -18,6 +18,10 @@ interface FileExtensions {
   xls: string;
   json: string;
   pdf: string;
+  docx: string;
+  doc: string;
+  pptx: string;
+  ppt: string;
 }
 
 interface FilesStore {
@@ -34,6 +38,14 @@ interface FilesStore {
 
   previewFile: string | null;
   setPreviewFile: (file: string | null) => void;
+
+  downloadFileUrl: string | null;
+  setDownloadFileUrl: (file: string | null) => void;
+  clearDownloadFileUrl: () => void;
+
+  downloadFilePreview: string | null;
+  setDownloadFilePreview: (file: string | null) => void;
+  clearDownloadFilePreview: () => void;
 
   mergeFile1: File | null;
   mergeFile2: File | null;
@@ -81,10 +93,23 @@ const useFilesStore = create<FilesStore>()(
           xls: ".xls",
           json: ".json",
           pdf: ".pdf",
+          docx: ".docx",
+          doc: ".doc",
+          pptx: ".pptx",
+          ppt: ".ppt",
         },
 
         previewFile: null,
         setPreviewFile: (file: string | null) => set({ previewFile: file }),
+
+        downloadFilePreview: null,
+        setDownloadFilePreview: (file: string | null) =>
+          set({ downloadFilePreview: file }),
+        clearDownloadFilePreview: () => set({ downloadFilePreview: null }),
+
+        downloadFileUrl: null,
+        setDownloadFileUrl: (file: string | null) => set({ downloadFileUrl: file }),
+        clearDownloadFileUrl: () => set({ downloadFileUrl: null }),
 
         mergeFile1: null,
         mergeFile2: null,

@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://84e5b751e42d.ngrok-free.app",
+        target: "https://5cfbda106b2e.ngrok-free.app",
         changeOrigin: true,
         secure: false,
       },

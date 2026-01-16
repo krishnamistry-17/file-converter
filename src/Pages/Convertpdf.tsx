@@ -1,13 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { convertOptions } from "../constance/ConvertOptions";
+import { MdArrowBack } from "react-icons/md";
 
 const ConvertPdf = () => {
   const navigate = useNavigate();
   return (
     <div>
+      <MdArrowBack
+        onClick={() => navigate("/")}
+        className=" text-xl cursor-pointer ml-2 mt-2"
+      />
       <div className="flex flex-col">
         {convertOptions.map((section: any, idx: number) => (
-          <div key={idx} className=" p-4">
+          <div key={idx} className=" p-4 hover:bg-gray-100">
             <h3 className="font-semibold mb-2">{section.title}</h3>
             <ul className="space-y-1 items-center justify-center">
               {section.options.map((item: any, i: number) => (

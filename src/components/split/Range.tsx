@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useUploadData from "../../hooks/useUploadData";
-import useFilesStore from "../../store/useSheetStore";
+import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useSplitStore from "../../store/useSplitStore";
 
 type SplitRange = {
@@ -9,11 +9,10 @@ type SplitRange = {
 };
 
 const Range = () => {
-  const selectedFile = useFilesStore((state) => state.selectedFile);
+  const { selectedFile } = useFileSessionStore();
   const clearSelectedRange = useSplitStore((state) => state.clearSelectedRange);
   const { splitPdfByRange, splitPdfByFixedRange } = useUploadData();
   const setResults = useSplitStore((state) => state.setResults);
-
   const [activeMode, setActiveMode] = useState<"custome" | "fixed">("custome");
   const [activeRange, setActiveRange] = useState<SplitRange[]>([
     { from: "1", to: "10" },
@@ -55,7 +54,10 @@ const Range = () => {
   };
 
   const handleSplit = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      alert("Please select a file first");
+      return;
+    }
 
     if (activeMode === "custome") {
       if (!validateCustomRanges()) {

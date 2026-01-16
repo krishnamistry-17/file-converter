@@ -1,6 +1,5 @@
 import SelectFile from "../../components/SelectFile";
 import InputField from "../../components/InputField";
-import useFilesStore from "../../store/useSheetStore";
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import Range from "../../components/split/Range";
@@ -10,17 +9,22 @@ import SplitPreviewGrid from "../../components/split/SplitPreviewGrid";
 import Pages from "../../components/split/Pages";
 import Size from "../../components/split/Size";
 import { PDFDocument } from "pdf-lib";
+import { useFileSessionStore } from "../../store/useFileSessionStore";
+import useFilesStore from "../../store/useSheetStore";
 
 const SplitPdf = () => {
-  const selectedFile = useFilesStore((state) => state.selectedFile);
-  const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
+  const { selectedFile, setSelectedFile, clearSelectedFile } =
+    useFileSessionStore();
+  console.log(selectedFile, "selectedFile--------");
+  const fileSelected = !!selectedFile;
+  console.log(fileSelected, "fileSelected--------");
+
   const clearResults = useSplitStore((state) => state.clearResults);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+
   const results = useSplitStore((state) => state.results);
-  console.log(results, "results");
-  const [fileSelected, setFileSelected] = useState(false);
+
   const splitRangeType = useSplitStore((state) => state.splitRangeType);
-  console.log(splitRangeType, "splitRangeType");
   const setTotalPages = useSplitStore((s) => s.setTotalPages);
 
   const [isTabChanged, setIsTabChanged] = useState(false);
@@ -29,21 +33,20 @@ const SplitPdf = () => {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log(file, "file");
     if (!file) return;
+    setSelectedFile(file);
 
     const buffer = await file.arrayBuffer();
     const pdf = await PDFDocument.load(buffer);
 
-    setSelectedFile(file);
     setPreviewFile(URL.createObjectURL(file));
     setTotalPages(pdf.getPageCount());
-    setFileSelected(true);
   };
 
   useEffect(() => {
     if (!selectedFile) {
       clearResults();
-      setFileSelected(false);
     } else if (isTabChanged) {
       clearResults();
       setIsTabChanged(false);
@@ -70,13 +73,13 @@ const SplitPdf = () => {
             />
           </div>
 
-          {!selectedFile && (
+          {!fileSelected && (
             <p className="text-gray-500 mt-8">Upload a PDF to start</p>
           )}
 
-          {selectedFile && results.length === 0 && <PreviewFile type="pdf" />}
+          {fileSelected && results.length === 0 && <PreviewFile type="pdf" />}
 
-          {selectedFile && results.length > 0 && <SplitPreviewGrid />}
+          {fileSelected && results.length > 0 && <SplitPreviewGrid />}
         </div>
       </div>
 
@@ -90,9 +93,17 @@ const SplitPdf = () => {
         <div className="p-6">
           <button
             className="absolute top-5 right-5"
-            onClick={() => setFileSelected(false)}
+            onClick={() => {
+              clearSelectedFile();
+              clearResults();
+            }}
           >
-            <IoMdClose onClick={() => setFileSelected(false)} />
+            <IoMdClose
+              onClick={() => {
+                clearSelectedFile();
+                clearResults();
+              }}
+            />
           </button>
           <h2 className="text-lg font-semibold mb-4">Split PDF</h2>
           <div className=" space-y-2">
@@ -132,4 +143,3 @@ const SplitPdf = () => {
 };
 
 export default SplitPdf;
-//react-dom-client.development.js:1561 The specified value "NaN" cannot be parsed, or is out of range.

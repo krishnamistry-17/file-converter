@@ -15,9 +15,7 @@ import useFilesStore from "../../store/useSheetStore";
 const SplitPdf = () => {
   const { selectedFile, setSelectedFile, clearSelectedFile } =
     useFileSessionStore();
-  console.log(selectedFile, "selectedFile--------");
   const fileSelected = !!selectedFile;
-  console.log(fileSelected, "fileSelected--------");
 
   const clearResults = useSplitStore((state) => state.clearResults);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
@@ -79,7 +77,7 @@ const SplitPdf = () => {
 
           {fileSelected && results.length === 0 && <PreviewFile type="pdf" />}
 
-          {fileSelected && results.length > 0 && <SplitPreviewGrid />}
+          {selectedFile && results.length > 0 && <SplitPreviewGrid />}
         </div>
       </div>
 

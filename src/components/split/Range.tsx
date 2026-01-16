@@ -10,6 +10,7 @@ type SplitRange = {
 
 const Range = () => {
   const { selectedFile } = useFileSessionStore();
+
   const clearSelectedRange = useSplitStore((state) => state.clearSelectedRange);
   const { splitPdfByRange, splitPdfByFixedRange } = useUploadData();
   const setResults = useSplitStore((state) => state.setResults);
@@ -54,6 +55,7 @@ const Range = () => {
   };
 
   const handleSplit = async () => {
+    console.log(selectedFile, "selectedFile--------");
     if (!selectedFile) {
       alert("Please select a file first");
       return;

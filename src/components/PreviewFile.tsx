@@ -119,9 +119,7 @@ const PreviewFile = ({
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
-  console.log(previewFile, "previewFile--------");
   const downloadFileUrl = useFilesStore((state) => state.downloadFileUrl);
-  console.log(downloadFileUrl, "downloadFileUrl--------");
 
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
 

@@ -119,8 +119,9 @@ const PreviewFile = ({
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
-  const downloadFileUrl = useFilesStore((state) => state.downloadFileUrl);
 
+  const results = useFilesStore((state) => state.results);
+  console.log(results, "results");
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
 
   useClearOnTabChange(clearSelectedFile);
@@ -133,7 +134,7 @@ const PreviewFile = ({
         <>
           <p>Converted Pdf</p>
           <iframe
-            src={downloadFileUrl || ""}
+            src={results[0]?.url || ""}
             title="Ppt Preview"
             className="w-full h-80 rounded border"
           />
@@ -159,7 +160,7 @@ const PreviewFile = ({
                 if (type === "pdf") {
                   return (
                     <iframe
-                      src={previewFile}
+                      src={results[0]?.url || ""}
                       title="PDF Preview"
                       className="w-full h-80 rounded border"
                     />
@@ -223,7 +224,12 @@ const PreviewFile = ({
                 );
               })()}
 
-              <p className="text-sm text-gray-500">{selectedFile.name}</p>
+              <p className="text-sm text-gray-500 flex flex-col items-center justify-center">
+                File Name: {selectedFile.name}
+                <span className="text-xs text-gray-500 pl-3">
+                  selected file type is {type}
+                </span>
+              </p>
             </div>
           )}
         </div>

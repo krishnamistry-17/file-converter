@@ -1,12 +1,12 @@
 import { useState } from "react";
-import useFilesStore from "../../store/useSheetStore";
 import useSplitStore from "../../store/useSplitStore";
 import SwitchButton from "../SwitchButton";
 import useUploadData from "../../hooks/useUploadData";
+import { useFileSessionStore } from "../../store/useFileSessionStore";
 
 const Size = () => {
   const totalPages = useSplitStore((state) => state.totalPages);
-  const selectedFile = useFilesStore((state) => state.selectedFile);
+  const { selectedFile } = useFileSessionStore();
   const setResults = useSplitStore((state) => state.setResults);
   const clearResults = useSplitStore((state) => state.clearResults);
 

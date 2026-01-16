@@ -1,16 +1,5 @@
-import axios from "axios";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
-interface Files {
-  id: string;
-  title: string;
-  brand: string;
-  category: string;
-  price: number;
-  rating: number;
-  images: string[];
-}
 
 interface FileExtensions {
   csv: string;
@@ -25,16 +14,18 @@ interface FileExtensions {
 }
 
 interface FilesStore {
-  files: Files[];
   loading: boolean;
   error: string | null;
   setError: (error: string | null) => void;
-  setFiles: (files: Files[]) => void;
-  fetchFiles: () => Promise<void>;
+
   selectedFile: File | null;
   setSelectedFile: (file: any) => void;
   clearSelectedFile: () => void;
   fileExtension: FileExtensions;
+
+  results: any[];
+  setResults: (results: any[]) => void;
+  clearResults: () => void;
 
   previewFile: string | null;
   setPreviewFile: (file: string | null) => void;
@@ -66,27 +57,17 @@ const useFilesStore = create<FilesStore>()(
   persist(
     (set) => {
       return {
-        files: [],
+        results: [],
+        setResults: (results: any[]) => set({ results }),
+        clearResults: () => set({ results: [] }),
         loading: false,
         error: null,
         setError: (error) => set({ error }),
-        setFiles: (files) => set({ files }),
-        fetchFiles: async () => {
-          try {
-            set({ loading: true, error: null });
-            const res = await axios.get("https://dummyjson.com/products");
-            const data = res.data.products.sort(
-              (a: any, b: any) => a.id - b.id
-            );
-            set({ files: data, loading: false });
-          } catch (err) {
-            set({ error: "Failed to fetch data", loading: false });
-          }
-        },
 
         selectedFile: null,
         setSelectedFile: (file: any) => set({ selectedFile: file }),
         clearSelectedFile: () => set({ selectedFile: null }),
+
         fileExtension: {
           csv: ".csv",
           xlsx: ".xlsx",
@@ -108,7 +89,8 @@ const useFilesStore = create<FilesStore>()(
         clearDownloadFilePreview: () => set({ downloadFilePreview: null }),
 
         downloadFileUrl: null,
-        setDownloadFileUrl: (file: string | null) => set({ downloadFileUrl: file }),
+        setDownloadFileUrl: (file: string | null) =>
+          set({ downloadFileUrl: file }),
         clearDownloadFileUrl: () => set({ downloadFileUrl: null }),
 
         mergeFile1: null,

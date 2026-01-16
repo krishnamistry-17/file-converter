@@ -33,113 +33,95 @@ const MergePdfComponent = () => {
   };
 
   return (
-    <div className="max-w-[1000px] mx-auto my-6 p-4 flex flex-col items-center gap-6">
-      <div>
-        <SelectFile
-          heading="Merge PDFs"
-          description="Merge two PDF files into one."
-        />
-      </div>
-      <div className="md:flex flex-col md:flex-row gap-6 mb-2">
-        <div className=" relative">
-          <label
-            htmlFor="pdf1"
-            className="cursor-pointer bg-white border-2 border-dashed border-gray-500 
-          rounded-md w-64 h-40 flex flex-col items-center justify-center 
-          hover:bg-gray-50 transition"
-          >
-            <span className="text-gray-700 font-medium">Select PDF 1</span>
-            <input
-              id="pdf1"
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={handleFileUpload1}
-            />
-          </label>
-          {pdfPreview1 && (
-            <div className="absolute top-0 left-0 w-full h-full">
-              <object
-                data={pdfPreview1}
-                title="PDF Preview1"
-                className="w-64 h-40 object-cover"
-              >
-                <embed src={pdfPreview1} type="application/pdf" />
-              </object>
-              {mergeFile1 && (
-                <div>
-                  <p>{mergeFile1.name}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className=" md:mt-0 mt-6 relative">
-          <label
-            htmlFor="pdf2"
-            className="cursor-pointer bg-white border-2 border-dashed border-gray-500 
-          rounded-md w-64 h-40 flex flex-col items-center justify-center 
-          hover:bg-gray-50 transition"
-          >
-            <span className="text-gray-700 font-medium">Select PDF 2</span>
-            <input
-              id="pdf2"
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={handleFileUpload2}
-            />
-          </label>
-          {pdfPreview2 && (
-            <div className="absolute top-0 left-0 w-full h-full">
-              <object
-                data={pdfPreview2}
-                title="PDF Preview2"
-                className="w-64 h-40 object-cover"
-              >
-                <embed src={pdfPreview2} type="application/pdf" />
-              </object>
-              {mergeFile2 && (
-                <div>
-                  <p>{mergeFile2.name}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* <button
-        className="bg-blue-600 text-white my-3
-         px-6 py-2 rounded-md hover:bg-blue-700 transition"
-         onClick={handleMerge}
+    <div className=" min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
+      <div
+        className="max-w-7xl mx-auto my-6 p-4 flex flex-col items-center gap-6
+      bg-white rounded-2xl shadow-lg border border-gray-100  sm:p-10
+      "
       >
-        Merge PDFs
-      </button> */}
-
-      {/* {mergedPdfPreview && !loading && (
         <div>
-          <p className="text-lg font-bold py-2 text-center">
-            Merged Pdf Preview
-          </p>
-          {loading && <Loader />}
-          <object
-            data={mergedPdfPreview}
-            title="PDF Preview1"
-            className=" w-full  h-full object-cover"
-          >
-            <embed src={mergedPdfPreview} type="application/pdf" />
-          </object>
+          <SelectFile
+            heading="Merge PDFs"
+            description="Merge two PDF files into one."
+          />
         </div>
-      )} */}
+        <div className="md:flex flex-col md:flex-row gap-6 mb-2">
+          <div className=" relative">
+            <label
+              htmlFor="pdf1"
+              className="cursor-pointer bg-white border-2 border-dashed border-gray-500 
+          rounded-md w-64 h-40 flex flex-col items-center justify-center 
+          hover:bg-gray-50 transition"
+            >
+              <span className="text-gray-700 font-medium">Select PDF 1</span>
+              <input
+                id="pdf1"
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={handleFileUpload1}
+              />
+            </label>
+            {pdfPreview1 && (
+              <div className="absolute top-0 left-0 w-full h-full">
+                <object
+                  data={pdfPreview1}
+                  title="PDF Preview1"
+                  className="w-64 h-40 object-cover"
+                >
+                  <embed src={pdfPreview1} type="application/pdf" />
+                </object>
+                {mergeFile1 && (
+                  <div>
+                    <p>{mergeFile1.name}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
-      <button
-        onClick={handleMerge}
-        className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-      >
-        Download Merged PDF
-      </button>
+          <div className=" md:mt-0 mt-6 relative">
+            <label
+              htmlFor="pdf2"
+              className="cursor-pointer bg-white border-2 border-dashed border-gray-500 
+          rounded-md w-64 h-40 flex flex-col items-center justify-center 
+          hover:bg-gray-50 transition"
+            >
+              <span className="text-gray-700 font-medium">Select PDF 2</span>
+              <input
+                id="pdf2"
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={handleFileUpload2}
+              />
+            </label>
+            {pdfPreview2 && (
+              <div className="absolute top-0 left-0 w-full h-full">
+                <object
+                  data={pdfPreview2}
+                  title="PDF Preview2"
+                  className="w-64 h-40 object-cover"
+                >
+                  <embed src={pdfPreview2} type="application/pdf" />
+                </object>
+                {mergeFile2 && (
+                  <div>
+                    <p>{mergeFile2.name}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button
+          onClick={handleMerge}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+        >
+          Download Merged PDF
+        </button>
+      </div>
     </div>
   );
 };

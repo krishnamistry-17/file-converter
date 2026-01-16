@@ -5,6 +5,10 @@ interface FileSessionStore {
   previewUrl: string | null;
   setSelectedFile: (file: File) => void;
   clearSelectedFile: () => void;
+
+  results: any[];
+  setResults: (results: any[]) => void;
+  clearResults: () => void;
 }
 
 export const useFileSessionStore = create<FileSessionStore>((set) => ({
@@ -18,6 +22,10 @@ export const useFileSessionStore = create<FileSessionStore>((set) => ({
       previewUrl: URL.createObjectURL(file),
     });
   },
+
+  results: [],
+  setResults: (results: any[]) => set({ results }),
+  clearResults: () => set({ results: [] }),
 
   clearSelectedFile: () =>
     set({

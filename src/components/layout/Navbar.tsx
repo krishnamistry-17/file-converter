@@ -26,15 +26,22 @@ const Navbar = () => {
         </Link>
 
         <div className="md:flex hidden items-center gap-6">
-          <button onClick={() => navigate("/merge-pdfs")}>Merge PDF</button>
-          <button onClick={() => navigate("/split-pdfs")}>Split PDF</button>
-          <button onClick={() => navigate("/compress-pdfs")}>
+          <button className="text-left" onClick={() => navigate("/merge-pdfs")}>
+            Merge PDF
+          </button>
+          <button className="text-left" onClick={() => navigate("/split-pdfs")}>
+            Split PDF
+          </button>
+          <button
+            className="text-left"
+            onClick={() => navigate("/compress-pdfs")}
+          >
             Compress PDF
           </button>
 
           <div className="relative">
             <button
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-left"
               onClick={toggleDropdown}
               onMouseEnter={() => setOpen(true)}
             >
@@ -58,7 +65,7 @@ const Navbar = () => {
         {mobileMenu && (
           <div
             onMouseLeave={() => setMobileMenu(false)}
-            className="absolute top-18 right-0 mt-2 p-4 w-[250px] bg-white shadow-lg rounded-md text-sm"
+            className="absolute top-18 z-50 right-0 mt-2 p-4 w-[250px] bg-white shadow-lg rounded-md text-sm"
           >
             <div className="absolute top-3 right-3 cursor-pointer">
               <IoMdClose
@@ -67,15 +74,31 @@ const Navbar = () => {
               />
             </div>
             <div
-              className="flex flex-col gap-2"
+              className="flex flex-col text-left  gap-4"
               onClick={() => setMobileMenu(false)}
             >
-              <button onClick={() => navigate("/merge-pdfs")}>Merge PDF</button>
-              <button onClick={() => navigate("/split-pdfs")}>Split PDF</button>
-              <button onClick={() => navigate("/compress-pdfs")}>
+              <button
+                className="text-left"
+                onClick={() => navigate("/merge-pdfs")}
+              >
+                Merge PDF
+              </button>
+              <button
+                className="text-left"
+                onClick={() => navigate("/split-pdfs")}
+              >
+                Split PDF
+              </button>
+              <button
+                className="text-left"
+                onClick={() => navigate("/compress-pdfs")}
+              >
                 Compress PDF
               </button>
-              <button onClick={() => navigate("/convert-pdfs")}>
+              <button
+                className="text-left"
+                onClick={() => navigate("/convert-pdfs")}
+              >
                 Convert PDF
               </button>
             </div>

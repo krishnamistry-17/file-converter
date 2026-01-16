@@ -26,11 +26,11 @@ const CompressPdf = () => {
   };
 
   return (
-    <div className="relative flex  ">
+    <div className="relative flex min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
       <div
-        className={`flex-1 transition-all duration-300 ${
-          fileSelected ? "md:mr-[320px]" : ""
-        }`}
+        className={`flex-1 transition-all duration-300 
+          bg-white rounded-2xl shadow-lg border border-gray-100 sm:p-10
+          ${fileSelected ? "md:mr-[320px]" : ""}`}
       >
         <div className="flex flex-col items-center w-full sm:px-0 px-4">
           <SelectFile

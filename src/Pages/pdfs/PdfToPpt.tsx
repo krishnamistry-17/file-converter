@@ -8,7 +8,7 @@ const PdfToPpt = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
-
+  const setResults = useFilesStore((state) => state.setResults);
   const [file, setFile] = useState<File | null>(null);
 
   const [fileSelected, setFileSelected] = useState(false);
@@ -23,6 +23,7 @@ const PdfToPpt = () => {
     setSelectedFile(file as any);
     setFile(file as any);
     setPreviewFile(URL.createObjectURL(file as File) as string);
+    setResults([{ url: URL.createObjectURL(file as File) as string }]);
     e.target.value = "";
     setFileSelected(true);
   };

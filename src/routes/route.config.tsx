@@ -19,6 +19,9 @@ import ConvertPdf from "../Pages/Convertpdf";
 import WordToPdf from "../Pages/words/WordToPdf";
 import ExcelToPdf from "../Pages/excels/ExcelToPdf";
 import PptToPdf from "../Pages/ppt/PptToPdf";
+import ConvertFromPdf from "../components/tabs/ConvertFromPdf/ConvertFromPdf";
+import ConvertToPdf from "../components/tabs/ConvertToPdf/ConvertToPdf";
+import OtherConversion from "../components/tabs/OtherConversion/OtherConversion";
 
 const routes = createBrowserRouter([
   {
@@ -100,6 +103,18 @@ const routes = createBrowserRouter([
       {
         path: "/ppt-to-pdf",
         element: <PptToPdf />,
+      },
+      {
+        path: "/convert-to-pdf",
+        element: <ConvertToPdf />,
+      },
+      {
+        path: "/convert-from-pdf",
+        element: <ConvertFromPdf />,
+      },
+      {
+        path: "/other-conversion",
+        element: <OtherConversion />,
       },
     ],
   },

@@ -1,20 +1,34 @@
 import { Tabs, TabList, TabPanel, Tab } from "react-tabs";
-import TableView from "./TableView";
-import UploadData from "./UploadData";
-import FileConverter from "./FileConverter";
 import { useState } from "react";
+import ConvertToPdf from "./tabs/ConvertToPdf/ConvertToPdf";
+import ConvertFromPdf from "./tabs/ConvertFromPdf/ConvertFromPdf";
+import OtherConversion from "./tabs/OtherConversion/OtherConversion";
+import MergePdf from "./tabs/MergePdf/MergePdf";
+import SplitPdf from "./tabs/SplitPdf/SplitPdf";
+import AllTab from "./tabs/AllTab";
+import { FaChevronDown } from "react-icons/fa";
 
 const ConvertTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
-
-  const tabs = ["Convert PDF", "Export PDF", "Import PDF"];
+  const [menuOpen, setMenuOpen] = useState(false);
+  const handleMenuOpen = () => {
+    setMenuOpen(!menuOpen);
+  };
+  const tabs = [
+    "All",
+    "Convert to PDF",
+    "Convert from PDF",
+    "Merge PDF",
+    "Split PDF",
+    "Other Options",
+  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 ">
       <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
-        <div className="flex justify-center mb-10">
+        <div className="lg:flex hidden justify-center mb-10 ">
           <TabList
-            className="sm:flex sm:flex-row flex-col bg-white sm:w-auto w-full  
+            className="sm:flex sm:flex-row flex-col sm:bg-white bg-transparent sm:w-auto w-full  
             sm:rounded-full shadow-md sm:p-2 p-4 gap-2"
             style={{ scrollbarWidth: "none" }}
           >
@@ -23,11 +37,11 @@ const ConvertTabs = () => {
                 <Tab
                   key={index}
                   className={`
-              cursor-pointer px-6 sm:py-3 py-2 text-sm font-semibold rounded-full text-center
+              cursor-pointer px-6 sm:py-3 py-2 text-lg font-semibold rounded-full text-center 
               transition-all duration-300 outline-none
               ${
                 activeTab === index
-                  ? "bg-linear-to-r from-red-500 to-red-400 text-white shadow"
+                  ? "bg-linear-to-r bg-clip-text text-transparent from-pink-800 via-purple-600 to-red-500 font-semibold "
                   : "text-gray-500 hover:text-gray-900"
               }
             `}
@@ -38,18 +52,71 @@ const ConvertTabs = () => {
             })}
           </TabList>
         </div>
+        <div className="lg:hidden lg:mb-0 mb-4 relative z-40">
+          <div
+            onClick={() => {
+              setActiveTab(activeTab);
+              handleMenuOpen();
+            }}
+            className=" bg-white rounded-3xl shadow-sm border border-gray-100 cursor-pointer
+          py-4 px-6 flex items-center justify-between w-full"
+          >
+            <label
+              className={`text-md text-center cursor-pointer
+                ${
+                  activeTab === activeTab
+                    ? "  bg-linear-to-r bg-clip-text text-transparent from-pink-800 via-purple-500 to-red-500 font-semibold"
+                    : "text-gray-500 hover:text-gray-900"
+                }
+                `}
+            >
+              {tabs[activeTab]}
+            </label>
+            <div>
+              <FaChevronDown className={`${menuOpen ? "rotate-180" : ""}`} />
+            </div>
+          </div>
+          {menuOpen && (
+            <div
+              className="flex flex-col gap-4 w-full mt-4 bg-white rounded-3xl 
+            shadow-sm border border-gray-100 p-4 sm:p-10 transition-all duration-150"
+            >
+              {tabs.map((tab: any, index: number) => {
+                return (
+                  <button
+                    key={index}
+                    className="text-sm font-medium text-gray-500 cursor-pointer"
+                    onClick={() => {
+                      setActiveTab(index);
+                      handleMenuOpen();
+                    }}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-10">
           <TabPanel>
-            <FileConverter />
+            <AllTab />
           </TabPanel>
-
           <TabPanel>
-            <TableView />
+            <ConvertToPdf />
           </TabPanel>
-
           <TabPanel>
-            <UploadData />
+            <ConvertFromPdf />
+          </TabPanel>
+          <TabPanel>
+            <MergePdf />
+          </TabPanel>
+          <TabPanel>
+            <SplitPdf />
+          </TabPanel>
+          <TabPanel>
+            <OtherConversion />
           </TabPanel>
         </div>
       </Tabs>

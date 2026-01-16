@@ -1,83 +1,55 @@
 import { create } from "zustand";
-interface SplitResults {
-  name: string;
-  url: string;
-  blob: Blob;
-  pages: string;
-}
 
-interface PageRange {
-  from: number;
-  to: number;
-}
+type SplitRange = { from: string; to: string };
 
 interface SplitStore {
-  results: SplitResults[];  
-  
-  setResults: (results: SplitResults[]) => void;
-  clearResults: () => void;
-
-  selectedPages: number[];
-  setSelectedPages: (pages: number[]) => void;
-  clearSelectedPages: () => void;
-
-  selectedRange: PageRange[];
-  setSelectedRange: (ranges: PageRange[]) => void;
-  addSelectedRange: (range: PageRange) => void;
-  clearSelectedRange: () => void;
-
   splitRangeType: "Range" | "Pages" | "Size";
+  results: any[];
+  activeMode: "custome" | "fixed";
+  activeRange: SplitRange[];
+  pageRange: string;
+  setActiveMode: (mode: "custome" | "fixed") => void;
+  setActiveRange: (ranges: SplitRange[]) => void;
+  setPageRange: (value: string) => void;
+  setResults: (results: any[]) => void;
+  clearResults: () => void;
+  sizeUnit: "KB" | "MB";
+  setSizeUnit: (unit: "KB" | "MB") => void;
+  clearSizeUnit: () => void;
+  totalPages: number;
+  setTotalPages: (pages: number) => void;
+  clearTotalPages: () => void;
+  clearSelectedRange: () => void;
   setSplitRangeType: (type: "Range" | "Pages" | "Size") => void;
-  clearSplitRangeType: () => void;
-
   pageExtractMode: "extractAll" | "selectPages";
   setPageExtractMode: (mode: "extractAll" | "selectPages") => void;
   clearPageExtractMode: () => void;
-
-  totalPages: number;
-  setTotalPages: (pages: number) => void;
-
-  sizeUnit: "MB" | "KB";
-  setSizeUnit: (unit: "MB" | "KB") => void;
-  clearSizeUnit: () => void;
 }
 
 const useSplitStore = create<SplitStore>((set) => ({
-  // results
+  splitRangeType: "Range",
   results: [],
+  activeMode: "custome",
+  activeRange: [{ from: "1", to: "10" }],
+  pageRange: "",
+  setActiveMode: (mode) => set({ activeMode: mode }),
+  setActiveRange: (ranges) => set({ activeRange: ranges }),
+  setPageRange: (value) => set({ pageRange: value }),
   setResults: (results) => set({ results }),
   clearResults: () => set({ results: [] }),
-
-  // pages
-  selectedPages: [],
-  setSelectedPages: (pages) => set({ selectedPages: pages }),
-  clearSelectedPages: () => set({ selectedPages: [] }),
-
-  // ranges
-  selectedRange: [],
-  setSelectedRange: (ranges) => set({ selectedRange: ranges }),
-  addSelectedRange: (range) =>
-    set((state) => ({
-      selectedRange: [...state.selectedRange, range],
-    })),
-  clearSelectedRange: () => set({ selectedRange: [] }),
-
-  // split range type
-  splitRangeType: "Range",
+  clearSelectedRange: () =>
+    set({ activeRange: [{ from: "1", to: "10" }], pageRange: "" }),
+  sizeUnit: "MB",
+  setSizeUnit: (unit) => set({ sizeUnit: unit }),
+  clearSizeUnit: () => set({ sizeUnit: "MB" }),
   setSplitRangeType: (type) => set({ splitRangeType: type }),
-  clearSplitRangeType: () => set({ splitRangeType: "Range" }),
-
-  totalPages: 0,
-  setTotalPages: (pages) => set({ totalPages: pages }),
-  clearTotalPages: () => set({ totalPages: 0 }),
-
   pageExtractMode: "extractAll",
   setPageExtractMode: (mode) => set({ pageExtractMode: mode }),
   clearPageExtractMode: () => set({ pageExtractMode: "extractAll" }),
 
-  sizeUnit: "MB",
-  setSizeUnit: (unit) => set({ sizeUnit: unit }),
-  clearSizeUnit: () => set({ sizeUnit: "MB" }),
+  totalPages: 0,
+  setTotalPages: (pages) => set({ totalPages: pages }),
+  clearTotalPages: () => set({ totalPages: 0 }),
 }));
 
 export default useSplitStore;

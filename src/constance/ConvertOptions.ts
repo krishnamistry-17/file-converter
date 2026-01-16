@@ -48,7 +48,7 @@ export const convertOptions = [
   },
 ];
 
-export const fileOperations = [
+const allOptions = [
   {
     label: "Convert JSON to PDF",
     path: "/json-to-pdf",
@@ -56,18 +56,35 @@ export const fileOperations = [
     description: "Convert a JSON file to a PDF file.",
   },
   {
-    label: "Convert Excel to Json",
-    path: "/excel-to-json",
-    icon: FaFileExcel,
-    description: "Convert a Excel file to a Json file.",
+    label: "Convert JPG to PDF",
+    path: "/jpg-to-pdf",
+    icon: FaFilePdf,
+    description: "Convert a JPG file to a PDF file.",
   },
   {
-    label: "Convert Excel to Csv",
-    path: "/excel-to-csv",
-    icon: FaFileCsv,
-    description: "Convert a Excel file to a Csv file.",
+    label: "Convert Word to PDF",
+    path: "/word-to-pdf",
+    icon: FaFileWord,
+    description: "Convert a Word file to a PDF file.",
   },
-
+  {
+    label: "Convert CSV to PDF",
+    path: "/csv-to-pdf",
+    icon: FaFileCsv,
+    description: "Convert a CSV file to a PDF file.",
+  },
+  {
+    label: "Convert PPT to PDF",
+    path: "/ppt-to-pdf",
+    icon: FaFilePowerpoint,
+    description: "Convert a PPT file to a PDF file.",
+  },
+  {
+    label: "Convert PDF to JSON",
+    path: "/pdf-to-json",
+    icon: FaFilePdf,
+    description: "Convert a PDF file to a JSON file.",
+  },
   {
     label: "Convert PDF to Excel",
     path: "/pdf-to-excel",
@@ -87,16 +104,40 @@ export const fileOperations = [
     description: "Convert a PDF file to a CSV file.",
   },
   {
-    label: "Convert JPG to PDF",
-    path: "/jpg-to-pdf",
-    icon: FaFilePdf,
-    description: "Convert a JPG file to a PDF file.",
-  },
-  {
     label: "Convert PDF to PPT",
     path: "/pdf-to-ppt",
     icon: FaFilePowerpoint,
     description: "Convert a PDF file to a PPT file.",
+  },
+  {
+    label: "Merge PDFs",
+    path: "/merge-pdfs",
+    icon: FaFilePdf,
+    description: "Merge two or more PDF files into a single PDF file.",
+  },
+  {
+    label: "Split PDF",
+    path: "/split-pdfs",
+    icon: FaFilePdf,
+    description: "Split a PDF file into multiple PDF files.",
+  },
+  {
+    label: "Convert Excel to Json",
+    path: "/excel-to-json",
+    icon: FaFileExcel,
+    description: "Convert a Excel file to a Json file.",
+  },
+  {
+    label: "Convert Excel to Csv",
+    path: "/excel-to-csv",
+    icon: FaFileCsv,
+    description: "Convert a Excel file to a Csv file.",
+  },
+  {
+    label: "Convert Excel to PDF",
+    path: "/excel-to-pdf",
+    icon: FaFileExcel,
+    description: "Convert a Excel file to a PDF file.",
   },
   {
     label: "Compress PDF",
@@ -104,12 +145,37 @@ export const fileOperations = [
     icon: FaFilePdf,
     description: "Compress a PDF file to reduce its size.",
   },
+];
+
+export const fileOperations = [
   {
-    label: "Merge PDFs",
-    path: "/merge-pdfs",
-    icon: FaFilePdf,
-    menushow: false,
-    description: "Merge two or more PDF files into a single PDF file.",
+    title: "All",
+    options: allOptions,
+  },
+  {
+    title: "Convert to PDF",
+    options: allOptions.filter((o) => o.label.includes("to PDF")),
+  },
+  {
+    title: "Convert From PDF",
+    options: allOptions.filter((o) => o.label.includes("PDF to")),
+  },
+  {
+    title: "Merge PDF",
+    options: allOptions.filter((o) => o.label.includes("Merge")),
+  },
+  {
+    title: "Split PDF",
+    options: allOptions.filter((o) => o.label.includes("Split")),
+  },
+  {
+    title: "Other Options",
+    options: allOptions.filter(
+      (o) =>
+        !o.label.includes("PDF") &&
+        !o.label.includes("Merge") &&
+        !o.label.includes("Split")
+    ),
   },
 ];
 

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { fileOperations } from "../constance/ConvertOptions";
+import { fileOperations } from "../../../constance/ConvertOptions";
 
 const colors = [
   "from-red-500 to-red-400",
@@ -10,22 +10,28 @@ const colors = [
   "from-pink-500 to-pink-400",
 ];
 
-const FileConverter = () => {
+const OtherConversion = () => {
   const navigate = useNavigate();
 
   return (
     <div className="max-w-7xl mx-auto px-4 ">
       <div className="text-center mb-12">
         <h2 className="md:text-3xl text-2xl font-bold text-gray-900">
-          PDF Conversion Tools
+          Other Conversion
         </h2>
         <p className="md:text-lg text-md text-gray-500 mt-2">
           Fast, secure, and easy file conversions
         </p>
+        <p className="md:text-lg text-md text-gray-500 mt-2">
+          Convert your files to other formats easily and quickly. Choose the
+          format you want to convert and click the convert button.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {fileOperations.map((operation: any, index: number) => (
+        {fileOperations
+          .find((operation: any) => operation.title === "Other Options")
+          ?.options.map((operation: any, index: number) => (
           <button
             key={index}
             className="group bg-white border border-gray-100 rounded-2xl p-6 
@@ -61,4 +67,4 @@ const FileConverter = () => {
   );
 };
 
-export default FileConverter;
+export default OtherConversion;

@@ -12,7 +12,7 @@ import { PDFDocument } from "pdf-lib";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useFilesStore from "../../store/useSheetStore";
 
-const SplitPdf = () => {
+const SplitPdfComponent = () => {
   const { selectedFile, setSelectedFile, clearSelectedFile } =
     useFileSessionStore();
   const fileSelected = !!selectedFile;
@@ -23,12 +23,12 @@ const SplitPdf = () => {
   const results = useSplitStore((state) => state.results);
 
   const splitRangeType = useSplitStore((state) => state.splitRangeType);
-  const setTotalPages = useSplitStore((s) => s.setTotalPages);
 
   const [isTabChanged, setIsTabChanged] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const setSplitRangeType = useSplitStore((state) => state.setSplitRangeType);
-
+  const setTotalPages = useSplitStore((state) => state.setTotalPages);
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     console.log(file, "file");
@@ -37,14 +37,18 @@ const SplitPdf = () => {
 
     const buffer = await file.arrayBuffer();
     const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+    setTotalPages(totalPages);
 
     setPreviewFile(URL.createObjectURL(file));
-    setTotalPages(pdf.getPageCount());
   };
 
   useEffect(() => {
     if (!selectedFile) {
       clearResults();
+      setIsSidebarOpen(false);
+    } else if (fileSelected) {
+      setIsSidebarOpen(true);
     } else if (isTabChanged) {
       clearResults();
       setIsTabChanged(false);
@@ -52,10 +56,11 @@ const SplitPdf = () => {
   }, [selectedFile, clearResults]);
 
   return (
-    <div className=" relative flex">
+    <div className=" relative flex min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
       <div
         className={` flex-1 transition-all duration-300
-        ${fileSelected ? "md:mr-[320px]" : ""}
+           bg-white rounded-2xl shadow-lg border border-gray-100 sm:p-10
+        ${isSidebarOpen ? "md:mr-[320px]" : ""}
         `}
       >
         <div className="flex flex-col items-center justify-center w-full sm:px-0 px-4">
@@ -85,7 +90,7 @@ const SplitPdf = () => {
         className={` fixed top-0 right-0 h-full w-full md:w-[380px] z-50
           bg-white  shadow-lg border-l border-gray-200
           transform transition-transform duration-300
-          ${fileSelected ? "translate-x-0" : "translate-x-full"}
+          ${isSidebarOpen ? "translate-x-0" : "translate-x-full"}
         `}
       >
         <div className="p-6">
@@ -130,8 +135,12 @@ const SplitPdf = () => {
               </>
             </div>
 
-            {splitRangeType === "Range" && <Range />}
-            {splitRangeType === "Pages" && <Pages />}
+            {splitRangeType === "Range" && (
+              <Range setIsSidebarOpen={setIsSidebarOpen} />
+            )}
+            {splitRangeType === "Pages" && (
+              <Pages setIsSidebarOpen={setIsSidebarOpen} />
+            )}
             {splitRangeType === "Size" && <Size />}
           </div>
         </div>
@@ -140,4 +149,4 @@ const SplitPdf = () => {
   );
 };
 
-export default SplitPdf;
+export default SplitPdfComponent;

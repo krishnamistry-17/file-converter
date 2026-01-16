@@ -66,7 +66,7 @@ const useUploadData = () => {
   const mergeFile1 = useFilesStore((state) => state.mergeFile1);
   const mergeFile2 = useFilesStore((state) => state.mergeFile2);
 
-  const files = useFilesStore((state) => state.files);
+  const files = useFilesStore((state) => state.results);
   const selectedFile = useFilesStore((state) => state.selectedFile);
 
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -130,6 +130,7 @@ const useUploadData = () => {
       alert("Please select a file");
       return;
     }
+    console.log(selectedFile);
     const arrayBuffer = await selectedFile.arrayBuffer();
     const doc = await mammoth.extractRawText(
       new Uint8Array(arrayBuffer) as any
@@ -568,6 +569,8 @@ const useUploadData = () => {
         console.warn("Invalid range skipped:", raw);
         continue;
       }
+      if (to > totalPages)
+        console.warn(`Adjusted "to" from ${to} to ${totalPages}`);
 
       const safeTo = Math.min(to, totalPages);
 
@@ -596,33 +599,6 @@ const useUploadData = () => {
 
     console.log("Final split results:", results);
     return results;
-  };
-
-  const downloadPdf = (bytes: Uint8Array, name: string) => {
-    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = name;
-    a.click();
-
-    URL.revokeObjectURL(url);
-  };
-
-  const splitEveryPage = async (file: File) => {
-    const buffer = await file.arrayBuffer();
-    const pdf = await PDFDocument.load(buffer);
-    const totalPages = pdf.getPageCount();
-
-    for (let i = 0; i < totalPages; i++) {
-      const newPdf = await PDFDocument.create();
-      const [page] = await newPdf.copyPages(pdf, [i]);
-      newPdf.addPage(page);
-
-      const bytes = await newPdf.save();
-      downloadPdf(bytes, `page-${i + 1}.pdf`);
-    }
   };
 
   const splitPdfByFixedRange = async (
@@ -660,6 +636,33 @@ const useUploadData = () => {
     }
 
     return results;
+  };
+
+  const downloadPdf = (bytes: Uint8Array, name: string) => {
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const splitEveryPage = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const totalPages = pdf.getPageCount();
+
+    for (let i = 0; i < totalPages; i++) {
+      const newPdf = await PDFDocument.create();
+      const [page] = await newPdf.copyPages(pdf, [i]);
+      newPdf.addPage(page);
+
+      const bytes = await newPdf.save();
+      downloadPdf(bytes, `page-${i + 1}.pdf`);
+    }
   };
 
   const downloadSplitPdf = (bytes: Uint8Array, name: string) => {

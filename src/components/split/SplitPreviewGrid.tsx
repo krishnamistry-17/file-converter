@@ -3,41 +3,49 @@ import { useEffect } from "react";
 
 const SplitPreviewGrid = () => {
   const results = useSplitStore((s) => s.results);
-  const selectedPages = useSplitStore((s) => s.selectedPages);
-  const selectedRange = useSplitStore((s) => s.selectedRange);
-
-  const clearResults = useSplitStore((state) => state.clearResults);
+  const selectedPages = useSplitStore((s) => s.pageRange);
+  const selectedRange = useSplitStore((s) => s.activeRange);
+  console.log(results, "results");
+  console.log(selectedPages, "selectedPages");
+  console.log(selectedRange, "selectedRange");
+  const activeMode = useSplitStore((s) => s.activeMode);
 
   const checkedPages = new Set<number>();
-  selectedPages.forEach((p) => checkedPages.add(p));
-  selectedRange.forEach((r) => {
-    for (let i = r.from; i <= r.to; i++) checkedPages.add(i);
-  });
 
   useEffect(() => {
-    if (!results.length) {
-      clearResults();
+    if (activeMode === "custome") {
+      selectedRange?.forEach((r: { from: string; to: string }) => {
+        for (let i = Number(r.from); i <= Number(r.to); i++)
+          checkedPages.add(i);
+      });
+    } else {
+      for (
+        let i = 1;
+        i <= Number(selectedPages.split(",").map(Number).join(","));
+        i++
+      )
+        checkedPages.add(i);
     }
-  }, [results]);
-
-  if (!results.length) return null;
+  }, [activeMode, selectedRange, selectedPages]);
 
   return (
     <div className="my-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {results.map((file, index) => {
-          const filePages: number[] = file.pages.split(",").flatMap((p) =>
-            p.includes("-")
-              ? Array.from(
-                  {
-                    length:
-                      Number(p.split("-")[1]) - Number(p.split("-")[0]) + 1,
-                  },
-                  (_, i) => Number(p.split("-")[0]) + i
-                )
-              : [Number(p)]
-          );
-
+          const filePages: number[] = file.pages
+            .split(",")
+            .flatMap((p: string) =>
+              p.includes("-")
+                ? Array.from(
+                    {
+                      length:
+                        Number(p.split("-")[1]) - Number(p.split("-")[0]) + 1,
+                    },
+                    (_, i) => Number(p.split("-")[0]) + i
+                  )
+                : [Number(p)]
+            );
+          console.log(filePages, "filePages");
           const isSelected = filePages.some((p) => checkedPages.has(p));
 
           return (

@@ -1,52 +1,57 @@
 import { useState } from "react";
 import useUploadData from "../../hooks/useUploadData";
-import useFilesStore from "../../store/useSheetStore";
 import useSplitStore from "../../store/useSplitStore";
+import { useFileSessionStore } from "../../store/useFileSessionStore";
 
-const Pages = () => {
+const Pages = ({
+  setIsSidebarOpen,
+}: {
+  setIsSidebarOpen: (open: boolean) => void;
+}) => {
   const pageExtractMode = useSplitStore((s) => s.pageExtractMode);
   const setPageExtractMode = useSplitStore((s) => s.setPageExtractMode);
 
   const { extractAllPages, extractSelectedRange, extractSelectedPage } =
     useUploadData();
 
-  const selectedFile = useFilesStore((state) => state.selectedFile);
+  const { selectedFile } = useFileSessionStore();
 
   const clearSelectedRange = useSplitStore((s) => s.clearSelectedRange);
 
   const setResults = useSplitStore((state) => state.setResults);
-  const setSelectedPages = useSplitStore((state) => state.setSelectedPages);
-  const selectedPages = useSplitStore((state) => state.selectedPages);
+  const setPageRange = useSplitStore((state) => state.setPageRange);
+  const pageRange = useSplitStore((state) => state.pageRange);
   const results = useSplitStore((state) => state.results);
-  const selectedRange = useSplitStore((state) => state.selectedRange);
+  const activeRange = useSplitStore((state) => state.activeRange);
 
   const [pageInput, setPageInput] = useState("");
 
   const handleSplit = async () => {
     if (!selectedFile) return;
-
     if (pageExtractMode === "extractAll") {
       const allResults = await extractAllPages(selectedFile as File);
       setResults(allResults as any);
     }
 
     if (pageExtractMode === "selectPages") {
-      const allResults = await extractAllPages(selectedFile as File);
-      const pageResults = await extractSelectedPage(
-        selectedFile as File,
-        selectedPages
-      );
+      // const allResults = await extractAllPages(selectedFile as File);
+      // const pageResults = await extractSelectedPage(
+      //   selectedFile as File,
+      //   pageRange.split(",").map(Number)
+      // );
 
       const rangeResults = await Promise.all(
-        selectedRange.map((r) => extractSelectedRange(selectedFile as File, r))
+        activeRange.map((r: { from: string; to: string }) =>
+          extractSelectedRange(selectedFile as File, {
+            from: Number(r.from),
+            to: Number(r.to),
+          })
+        )
       );
 
-      setResults([
-        ...allResults,
-        ...pageResults,
-        ...rangeResults.flat(),
-      ] as any);
+      setResults([...rangeResults.flat()] as any);
     }
+    setIsSidebarOpen(false);
   };
 
   const parsePagesAndRanges = (input: string) => {
@@ -85,17 +90,26 @@ const Pages = () => {
     clearSelectedRange();
 
     const { pages, ranges } = parsePagesAndRanges(value);
-    setSelectedPages(pages);
-    useSplitStore.getState().setSelectedRange(ranges);
+    setPageRange(pages.join(",") as string);
+    useSplitStore
+      .getState()
+      .setActiveRange(
+        ranges.map((r) => ({ from: r.from.toString(), to: r.to.toString() }))
+      );
   };
   const handleDownloadSelectedPages = async () => {
     if (!selectedFile) return;
     const selectedpageResult = await extractSelectedPage(
       selectedFile as File,
-      selectedPages
+      pageRange.split(",").map(Number)
     );
     const rangeResults = await Promise.all(
-      selectedRange.map((r) => extractSelectedRange(selectedFile as File, r))
+      activeRange.map((r: { from: string; to: string }) =>
+        extractSelectedRange(selectedFile as File, {
+          from: Number(r.from),
+          to: Number(r.to),
+        })
+      )
     );
 
     const blob = new Blob(
@@ -218,7 +232,7 @@ const Pages = () => {
               </button>
               <p className="text-sm text-black">
                 Selected pages will be converted into sepraate pdf files.{" "}
-                <b>{selectedRange.length} pdf</b> will be created.
+                <b>{results.length} pdf</b> will be created.
               </p>
               <button
                 onClick={handleDownloadSelectedPages}

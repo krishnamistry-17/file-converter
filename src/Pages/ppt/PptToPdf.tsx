@@ -5,19 +5,19 @@ import api from "../../utils/axios";
 
 const PptToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-
-  const setDownloadFileUrl = useFilesStore((state) => state.setDownloadFileUrl);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-  const downloadFileUrl = useFilesStore((state) => state.downloadFileUrl);
+
   const [fileSelected, setFileSelected] = useState(false);
+
   const [file, setFile] = useState<File | null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string| null>(null);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = e.target.files?.[0];
+    if (!uploadedFile) return alert("Please select a file");
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return alert("Please select a file");
-
-    setSelectedFile(file);
-    setFile(file);
+    setSelectedFile(uploadedFile);
+    setFile(uploadedFile);
+    setPreviewFileDesign(URL.createObjectURL(uploadedFile as File));
     setFileSelected(true);
     e.target.value = "";
   };
@@ -37,27 +37,21 @@ const PptToPdf = () => {
 
       const data = await response.data;
 
-      if (!data.url) {
+      if (!data.downloadUrl) {
         alert("Conversion failed!");
         return;
       }
-
-      setDownloadFileUrl(data.url);
-      window.open(data.url, "_blank");
+      window.open(data.downloadUrl, "_blank");
+      URL.revokeObjectURL(data.downloadUrl);
+      alert("Conversion successful!");
     } catch (error) {
       console.error(error);
       alert("Download failed!");
     }
   };
 
-  const handleDownload = async () => {
-    if (!downloadFileUrl) return alert("No file to download");
-    window.open(downloadFileUrl, "_blank");
-  };
-
   const handleConvert = async () => {
     await handleUpload();
-    await handleDownload();
     clearSelectedFile();
   };
 
@@ -73,6 +67,7 @@ const PptToPdf = () => {
         label="Select a file"
         btnText="Download Pdf"
         PreviewFileType="pptx"
+        previewFileDesign={previewFileDesign as unknown as string}
       />
     </>
   );

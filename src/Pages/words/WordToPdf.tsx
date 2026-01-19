@@ -6,12 +6,13 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const WordToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setDownloadFileUrl = useFilesStore((state) => state.setDownloadFileUrl);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
-
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -20,7 +21,7 @@ const WordToPdf = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     setFile(file as any);
     e.target.value = "";
     setFileSelected(true);
@@ -36,13 +37,22 @@ const WordToPdf = () => {
       const response = await api.post(API_ROUTES.WORD.WORD_TO_PDF, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       const data = await response.data;
-      if (!data.url) {
+
+      if (!data.downloadUrl) {
         alert("Conversion failed!");
         return;
       }
-      setDownloadFileUrl(data.url);
-      window.open(data.url, "_blank");
+
+      const a = document.createElement("a");
+      a.href = data.downloadUrl;
+      a.download = data.fileName;
+      a.click();
+
+      URL.revokeObjectURL(data.downloadUrl);
+
+      alert("Conversion successful!");
     } catch (error) {
       console.error(error);
       alert("Conversion failed!");
@@ -66,6 +76,7 @@ const WordToPdf = () => {
         accept=".docx"
         label="Select a file"
         btnText="Download Pdf"
+        previewFileDesign={previewFileDesign}
       />
     </>
   );

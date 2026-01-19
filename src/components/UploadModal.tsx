@@ -2,14 +2,14 @@ import { useState, useRef } from "react";
 import { pdfUploadBg } from "../assets/images";
 
 interface UploadModalProps {
-  handleFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;       
+  handleFileUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   accept: string;
   label: string;
 }
 
 const UploadModal = ({
   handleFileUpload,
-  accept = ".csv,.xlsx,.xls,.json,.pdf,.jpg,.jpeg,.png,.ppt,.doc,.docx",
+  accept = ".csv,.xlsx,.xls,.json,.pdf,.jpg,.jpeg,.png,.ppt,.doc,.docx,.pptx",
   label = "Select a file",
 }: UploadModalProps) => {
   const [isDragging, setIsDragging] = useState(false);

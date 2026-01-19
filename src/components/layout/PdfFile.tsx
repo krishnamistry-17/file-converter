@@ -5,6 +5,7 @@ import useFilesStore from "../../store/useSheetStore";
 import UploadModal from "../UploadModal";
 import { IoMdClose } from "react-icons/io";
 interface PdfFileProps {
+  previewFileDesign?: React.ReactNode;
   heading: string;
   para: string;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,6 +25,7 @@ interface PdfFileProps {
   btnText: string;
 }
 const PdfFile = ({
+  previewFileDesign,
   heading,
   para,
   onFileUpload,
@@ -84,7 +86,10 @@ const PdfFile = ({
           </div>
 
           <div className="mt-10">
-            <PreviewFile type={PreviewFileType} />
+            <PreviewFile
+              type={PreviewFileType}
+              previewFileDesign={previewFileDesign as any}
+            />
           </div>
 
           {fileSelected && (

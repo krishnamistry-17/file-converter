@@ -5,11 +5,13 @@ import PdfFile from "../../components/layout/PdfFile";
 
 const JpgToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertJpgToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
-
+  const [file, setFile] = useState<File | null>(null);
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -18,7 +20,8 @@ const JpgToPdf = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
+    setFile(file as File);
     e.target.value = "";
     setFileSelected(true);
   };
@@ -36,6 +39,7 @@ const JpgToPdf = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
+        previewFileDesign={previewFileDesign}
         PreviewFileType="pdf"
         accept=".jpg,.jpeg,.png"
         label="Select a file"

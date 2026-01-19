@@ -130,12 +130,12 @@ const useUploadData = () => {
       alert("Please select a file");
       return;
     }
-    console.log(selectedFile);
+
     const arrayBuffer = await selectedFile.arrayBuffer();
     const doc = await mammoth.extractRawText(
       new Uint8Array(arrayBuffer) as any
     );
-    console.log(doc);
+
     const blob = new Blob([doc.value], { type: "text/html;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

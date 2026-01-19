@@ -6,10 +6,12 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const ExcelToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const setDownloadFilePreview = useFilesStore((state) => state.setDownloadFilePreview);
+
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,7 +21,7 @@ const ExcelToPdf = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     setFile(file as any);
     e.target.value = "";
     setFileSelected(true);
@@ -37,15 +39,20 @@ const ExcelToPdf = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      const pdfUrl = response.data.url;
-      const link = document.createElement("a");
-      link.href = pdfUrl;
-      link.download = "converted.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
 
-      console.log("Download triggered successfully!");
+      const data = await response.data;
+
+      if (!data.downloadUrl) {
+        alert("Conversion failed!");
+        return;
+      }
+      setDownloadFilePreview(data.previewUrl);
+      const a = document.createElement("a");
+      a.href = data.downloadUrl;
+      a.download = data.fileName;
+      a.click();
+      URL.revokeObjectURL(data.downloadUrl);
+      alert("Conversion successful!");
     } catch (error) {
       console.error(error);
       alert("Conversion failed!");
@@ -69,6 +76,7 @@ const ExcelToPdf = () => {
         accept=".xlsx"
         label="Select a file"
         btnText="Download Pdf"
+        previewFileDesign={previewFileDesign}
       />
     </>
   );

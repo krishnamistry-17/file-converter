@@ -6,11 +6,10 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const PdfToWord = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
 
   const [file, setFile] = useState<File | null>(null);
-
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +20,7 @@ const PdfToWord = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     setFile(file as any);
     e.target.value = "";
     setFileSelected(true);
@@ -61,6 +60,7 @@ const PdfToWord = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
+        previewFileDesign={previewFileDesign}
         PreviewFileType="docx"
         accept=".pdf"
         label="Select a file"

@@ -7,10 +7,13 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const PdftoExcel = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
 
   const [file, setFile] = useState<File | null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
+
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,8 +24,8 @@ const PdftoExcel = () => {
       return;
     }
     setSelectedFile(file as any);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     setFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
     e.target.value = "";
     setFileSelected(true);
   };
@@ -39,10 +42,9 @@ const PdftoExcel = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data);
 
       const excelUrl = response.data.url;
-      console.log(excelUrl);
+
       window.open(excelUrl, "_blank");
 
       alert(" Conversion successful!");
@@ -65,7 +67,8 @@ const PdftoExcel = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
-        PreviewFileType="xlsx"
+        previewFileDesign={previewFileDesign}
+        PreviewFileType="pdf"
         accept=".pdf"
         label="Select a file"
         btnText="Download Excel"

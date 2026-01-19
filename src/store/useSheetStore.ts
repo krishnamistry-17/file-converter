@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 interface FileExtensions {
   csv: string;
@@ -53,66 +52,55 @@ interface FilesStore {
   clearUploadModalOpen: () => void;
 }
 
-const useFilesStore = create<FilesStore>()(
-  persist(
-    (set) => {
-      return {
-        results: [],
-        setResults: (results: any[]) => set({ results }),
-        clearResults: () => set({ results: [] }),
-        loading: false,
-        error: null,
-        setError: (error) => set({ error }),
+const useFilesStore = create<FilesStore>((set) => ({
+  results: [],
+  setResults: (results) => set({ results }),
+  clearResults: () => set({ results: [] }),
 
-        selectedFile: null,
-        setSelectedFile: (file: any) => set({ selectedFile: file }),
-        clearSelectedFile: () => set({ selectedFile: null }),
+  loading: false,
+  error: null,
+  setError: (error) => set({ error }),
 
-        fileExtension: {
-          csv: ".csv",
-          xlsx: ".xlsx",
-          xls: ".xls",
-          json: ".json",
-          pdf: ".pdf",
-          docx: ".docx",
-          doc: ".doc",
-          pptx: ".pptx",
-          ppt: ".ppt",
-        },
+  selectedFile: null,
+  setSelectedFile: (file) => set({ selectedFile: file }),
+  clearSelectedFile: () => set({ selectedFile: null }),
 
-        previewFile: null,
-        setPreviewFile: (file: string | null) => set({ previewFile: file }),
+  fileExtension: {
+    csv: ".csv",
+    xlsx: ".xlsx",
+    xls: ".xls",
+    json: ".json",
+    pdf: ".pdf",
+    docx: ".docx",
+    doc: ".doc",
+    pptx: ".pptx",
+    ppt: ".ppt",
+  },
 
-        downloadFilePreview: null,
-        setDownloadFilePreview: (file: string | null) =>
-          set({ downloadFilePreview: file }),
-        clearDownloadFilePreview: () => set({ downloadFilePreview: null }),
+  previewFile: null,
+  setPreviewFile: (file) => set({ previewFile: file }),
 
-        downloadFileUrl: null,
-        setDownloadFileUrl: (file: string | null) =>
-          set({ downloadFileUrl: file }),
-        clearDownloadFileUrl: () => set({ downloadFileUrl: null }),
+  downloadFilePreview: null,
+  setDownloadFilePreview: (file) => set({ downloadFilePreview: file }),
+  clearDownloadFilePreview: () => set({ downloadFilePreview: null }),
 
-        mergeFile1: null,
-        mergeFile2: null,
-        setMergeFile1: (file: File | null) => set({ mergeFile1: file }),
-        setMergeFile2: (file: File | null) => set({ mergeFile2: file }),
-        clearMergeFile1: () => set({ mergeFile1: null }),
-        clearMergeFile2: () => set({ mergeFile2: null }),
-        mergedPdfPreview: null,
-        setMergedPdfPreview: (preview: string | null) =>
-          set({ mergedPdfPreview: preview }),
+  downloadFileUrl: null,
+  setDownloadFileUrl: (file) => set({ downloadFileUrl: file }),
+  clearDownloadFileUrl: () => set({ downloadFileUrl: null }),
 
-        uploadModalOpen: false,
-        setUploadModalOpen: (open: boolean) => set({ uploadModalOpen: open }),
-        clearUploadModalOpen: () => set({ uploadModalOpen: false }),
-      };
-    },
-    {
-      name: "files",
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-);
+  mergeFile1: null,
+  mergeFile2: null,
+  setMergeFile1: (file) => set({ mergeFile1: file }),
+  setMergeFile2: (file) => set({ mergeFile2: file }),
+  clearMergeFile1: () => set({ mergeFile1: null }),
+  clearMergeFile2: () => set({ mergeFile2: null }),
+
+  mergedPdfPreview: null,
+  setMergedPdfPreview: (preview) => set({ mergedPdfPreview: preview }),
+
+  uploadModalOpen: false,
+  setUploadModalOpen: (open) => set({ uploadModalOpen: open }),
+  clearUploadModalOpen: () => set({ uploadModalOpen: false }),
+}));
 
 export default useFilesStore;

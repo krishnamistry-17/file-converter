@@ -31,7 +31,7 @@ const SplitPdfComponent = () => {
   const setTotalPages = useSplitStore((state) => state.setTotalPages);
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file, "file");
+
     if (!file) return;
     setSelectedFile(file);
 
@@ -80,7 +80,9 @@ const SplitPdfComponent = () => {
             <p className="text-gray-500 mt-8">Upload a PDF to start</p>
           )}
 
-          {fileSelected && results.length === 0 && <PreviewFile type="pdf" />}
+          {fileSelected && results.length === 0 && (
+            <PreviewFile type="pdf" previewFileDesign={""} />
+          )}
 
           {selectedFile && results.length > 0 && <SplitPreviewGrid />}
         </div>

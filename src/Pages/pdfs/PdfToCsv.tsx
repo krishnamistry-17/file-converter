@@ -5,11 +5,12 @@ import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToCsv = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-  const { convertPdfToCsv } = useUploadData();
   const selectedFile = useFilesStore((state) => state.selectedFile);
+  const { convertPdfToCsv } = useUploadData();
+
   const [fileSelected, setFileSelected] = useState(false);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,7 +20,7 @@ const PdfToCsv = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     e.target.value = "";
     setFileSelected(true);
   };
@@ -37,6 +38,7 @@ const PdfToCsv = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
+        previewFileDesign={previewFileDesign}
         PreviewFileType="csv"
         accept=".pdf"
         label="Select a file"

@@ -16,7 +16,6 @@ export const useFileSessionStore = create<FileSessionStore>((set) => ({
   previewUrl: null,
 
   setSelectedFile: (file) => {
-    console.log(file, "file--------");
     set({
       selectedFile: file,
       previewUrl: URL.createObjectURL(file),

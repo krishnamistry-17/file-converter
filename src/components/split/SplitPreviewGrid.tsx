@@ -5,9 +5,7 @@ const SplitPreviewGrid = () => {
   const results = useSplitStore((s) => s.results);
   const selectedPages = useSplitStore((s) => s.pageRange);
   const selectedRange = useSplitStore((s) => s.activeRange);
-  console.log(results, "results");
-  console.log(selectedPages, "selectedPages");
-  console.log(selectedRange, "selectedRange");
+
   const activeMode = useSplitStore((s) => s.activeMode);
 
   const checkedPages = new Set<number>();
@@ -45,7 +43,7 @@ const SplitPreviewGrid = () => {
                   )
                 : [Number(p)]
             );
-          console.log(filePages, "filePages");
+         
           const isSelected = filePages.some((p) => checkedPages.has(p));
 
           return (

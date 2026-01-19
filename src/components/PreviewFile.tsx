@@ -105,6 +105,7 @@ export const WordPreview = () => {
 
 const PreviewFile = ({
   type,
+  previewFileDesign,
 }: {
   type:
     | "pdf"
@@ -116,6 +117,7 @@ const PreviewFile = ({
     | "docx"
     | "html"
     | "xls";
+  previewFileDesign: string | null;
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const previewFile = useFilesStore((state) => state.previewFile);
@@ -132,12 +134,9 @@ const PreviewFile = ({
     if (location.pathname.includes("ppt-to-pdf")) {
       return (
         <>
-          <p>Converted Pdf</p>
-          <iframe
-            src={results[0]?.url || ""}
-            title="Ppt Preview"
-            className="w-full h-80 rounded border"
-          />
+          <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+            No preview available for Ppt file
+          </pre>
         </>
       );
     }
@@ -151,7 +150,7 @@ const PreviewFile = ({
     <div>
       <div className="w-full flex flex-col gap-3 items-center justify-center">
         <div>
-          {previewFile && selectedFile && (
+          {selectedFile && previewFileDesign && (
             <div className="max-w-md my-4 flex flex-col items-center gap-2">
               {(() => {
                 const type = getFileType(selectedFile as File);
@@ -160,7 +159,7 @@ const PreviewFile = ({
                 if (type === "pdf") {
                   return (
                     <iframe
-                      src={results[0]?.url || ""}
+                      src={previewFileDesign ?? ""}
                       title="PDF Preview"
                       className="w-full h-80 rounded border"
                     />
@@ -171,7 +170,7 @@ const PreviewFile = ({
                 if (type === "jpg" || type === "png" || type === "jpeg") {
                   return (
                     <img
-                      src={previewFile}
+                      src={previewFileDesign ?? ""}
                       alt="Image Preview"
                       className="max-h-80 object-contain rounded border"
                     />
@@ -207,7 +206,7 @@ const PreviewFile = ({
                   return (
                     <>
                       <iframe
-                        src={previewFile}
+                        src={previewFileDesign ?? ""}
                         title="Html Preview"
                         className="w-full h-80 rounded border"
                       />

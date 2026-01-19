@@ -7,11 +7,10 @@ import { API_ROUTES } from "../../constance/apiConstance";
 const PdfToPpt = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
-  const setResults = useFilesStore((state) => state.setResults);
-  const [file, setFile] = useState<File | null>(null);
 
+  const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,8 +21,7 @@ const PdfToPpt = () => {
     }
     setSelectedFile(file as any);
     setFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
-    setResults([{ url: URL.createObjectURL(file as File) as string }]);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     e.target.value = "";
     setFileSelected(true);
   };
@@ -64,6 +62,7 @@ const PdfToPpt = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
+        previewFileDesign={previewFileDesign}
         PreviewFileType="pptx"
         accept=".pdf"
         label="Select a file"

@@ -9,7 +9,10 @@ import { IoMdClose } from "react-icons/io";
 
 const CompressPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
   const { compressPdf } = useUploadData();
 
   const [fileSelected, setFileSelected] = useState(false);
@@ -20,7 +23,7 @@ const CompressPdf = () => {
     if (!file) return;
 
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File));
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     e.target.value = "";
     setFileSelected(true);
   };
@@ -46,7 +49,7 @@ const CompressPdf = () => {
             />
           </div>
 
-          <PreviewFile type="pdf" />
+          <PreviewFile type="pdf" previewFileDesign={previewFileDesign} />
         </div>
       </div>
 

@@ -5,10 +5,11 @@ import PdfFile from "../../components/layout/PdfFile";
 
 const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { convertPdfToJson } = useUploadData();
+
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +20,7 @@ const PdfToJson = () => {
       return;
     }
     setSelectedFile(file as any);
-    setPreviewFile(URL.createObjectURL(file as File) as string);
+    setPreviewFileDesign(URL.createObjectURL(file as File));
     e.target.value = "";
     setFileSelected(true);
   };
@@ -44,6 +45,7 @@ const PdfToJson = () => {
         onFileUpload={handleFileUpload}
         fileSelected={fileSelected}
         handleConvert={handleConvert}
+        previewFileDesign={previewFileDesign}
         PreviewFileType="json"
         accept=".pdf"
         label="Select a file"

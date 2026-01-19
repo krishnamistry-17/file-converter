@@ -30,6 +30,8 @@ const MergePdfComponent = () => {
     await MergePdfs();
     clearMergeFile1();
     clearMergeFile2();
+    setPdfPreview1(null);
+    setPdfPreview2(null);
   };
 
   return (
@@ -45,7 +47,7 @@ const MergePdfComponent = () => {
             description="Merge two PDF files into one."
           />
         </div>
-        <div className="md:flex flex-col md:flex-row gap-6 mb-2">
+        <div className="md:flex flex-col md:flex-row gap-6 mb-8">
           <div className=" relative">
             <label
               htmlFor="pdf1"
@@ -80,7 +82,7 @@ const MergePdfComponent = () => {
             )}
           </div>
 
-          <div className=" md:mt-0 mt-6 relative">
+          <div className=" md:mt-0 mt-17 relative">
             <label
               htmlFor="pdf2"
               className="cursor-pointer bg-white border-2 border-dashed border-gray-500 
@@ -117,7 +119,7 @@ const MergePdfComponent = () => {
 
         <button
           onClick={handleMerge}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-600 mt-5 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
         >
           Download Merged PDF
         </button>

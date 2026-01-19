@@ -23,7 +23,17 @@ export const CsvPreview = ({ file }: { file: File }) => {
   }, [file]);
 
   return (
-    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+    <pre
+      className="
+        w-full max-w-full sm:max-w-md
+        max-h-[50vh] sm:max-h-80
+        overflow-x-auto overflow-y-auto
+        bg-gray-100 rounded
+        text-[11px] sm:text-xs
+        px-2 py-1 sm:px-4 sm:py-2
+        whitespace-pre break-all sm:break-normal
+      "
+    >
       {content}
     </pre>
   );
@@ -52,7 +62,17 @@ export const JsonPreview = ({ file }: { file: File }) => {
   }, [file]);
 
   return (
-    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+    <pre
+      className="
+        w-full max-w-full sm:max-w-md
+        max-h-[50vh] sm:max-h-80
+        overflow-x-auto overflow-y-auto
+        bg-gray-100 rounded
+        text-[11px] sm:text-xs
+        px-2 py-1 sm:px-4 sm:py-2
+        whitespace-pre break-all sm:break-normal
+      "
+    >
       {content}
     </pre>
   );
@@ -77,8 +97,14 @@ export const ExcelPreview = ({ file }: { file: File }) => {
   }, [file]);
 
   return (
-    <div className="overflow-auto max-h-80 w-full">
-      <table className="border-collapse border border-gray-300 w-full text-xs">
+    <div
+      className="
+        w-full max-w-full sm:max-w-md
+        max-h-[50vh] sm:max-h-80
+        overflow-auto bg-gray-100 rounded
+      "
+    >
+      <table className="border-collapse border border-gray-300 w-full text-[11px] sm:text-xs">
         <tbody>
           {data.map((row, i) => (
             <tr key={i}>
@@ -97,141 +123,143 @@ export const ExcelPreview = ({ file }: { file: File }) => {
 
 export const WordPreview = () => {
   return (
-    <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
+    <pre
+      className="
+        w-full max-w-full sm:max-w-md
+        max-h-[50vh] sm:max-h-80
+        overflow-auto bg-gray-100 rounded
+        text-[11px] sm:text-xs
+        px-2 py-1 sm:px-4 sm:py-2
+      "
+    >
       No preview available for Word file
     </pre>
   );
 };
 
+export const PptPreview = () => {
+  return (
+    <pre
+      className="
+        w-full max-w-full sm:max-w-md
+        max-h-[50vh] sm:max-h-80
+        overflow-auto bg-gray-100 rounded
+        text-[11px] sm:text-xs
+        px-2 py-1 sm:px-4 sm:py-2
+      "
+    >
+      No preview available for PPT file
+    </pre>
+  );
+};
+
 const PreviewFile = ({
-  type,
   previewFileDesign,
 }: {
-  type:
-    | "pdf"
-    | "json"
-    | "csv"
-    | "xlsx"
-    | "pptx"
-    | "doc"
-    | "docx"
-    | "html"
-    | "xls";
   previewFileDesign: string | null;
 }) => {
   const selectedFile = useFilesStore((state) => state.selectedFile);
-  const previewFile = useFilesStore((state) => state.previewFile);
-
-  const results = useFilesStore((state) => state.results);
-  console.log(results, "results");
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-
-  useClearOnTabChange(clearSelectedFile);
-
   const location = useLocation();
 
-  const showPptPreview = () => {
-    if (location.pathname.includes("ppt-to-pdf")) {
-      return (
-        <>
-          <pre className="w-full max-h-80 overflow-auto bg-gray-100 p-2 rounded text-xs">
-            No preview available for Ppt file
-          </pre>
-        </>
-      );
-    }
-  };
+  useClearOnTabChange(clearSelectedFile);
 
   useEffect(() => {
     clearSelectedFile();
   }, [location.pathname]);
 
+  if (!selectedFile) return null;
+
+  const type = getFileType(selectedFile);
+
+  const showPptPreview = () => <PptPreview />;
+
+  console.log("previewFileDesign", previewFileDesign);
+
   return (
-    <div>
-      <div className="w-full flex flex-col gap-3 items-center justify-center">
-        <div>
-          {selectedFile && previewFileDesign && (
-            <div className="max-w-md my-4 flex flex-col items-center gap-2">
-              {(() => {
-                const type = getFileType(selectedFile as File);
+    <div className="w-full flex flex-col items-center gap-3">
+      <div className="w-full max-w-full sm:max-w-md my-4 flex flex-col items-center gap-2 px-2">
+        {type === "pdf" && previewFileDesign && (
+          <div className="w-full max-w-full sm:max-w-md flex flex-col items-center gap-2">
+            <iframe
+              src={previewFileDesign}
+              title="PDF Preview"
+              className="w-full h-[60vh] sm:h-80 rounded border"
+              style={{
+                minHeight: "400px",
+                WebkitOverflowScrolling: "touch",
+              }}
+            />
+            <a
+              href={previewFileDesign}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 text-sm underline"
+            >
+              Open PDF in new tab
+            </a>
+          </div>
+        )}
 
-                // PDF
-                if (type === "pdf") {
-                  return (
-                    <iframe
-                      src={previewFileDesign ?? ""}
-                      title="PDF Preview"
-                      className="w-full h-80 rounded border"
-                    />
-                  );
-                }
-
-                // Image
-                if (type === "jpg" || type === "png" || type === "jpeg") {
-                  return (
-                    <img
-                      src={previewFileDesign ?? ""}
-                      alt="Image Preview"
-                      className="max-h-80 object-contain rounded border"
-                    />
-                  );
-                }
-
-                // json preview
-                if (type === "json") {
-                  return <JsonPreview file={selectedFile as File} />;
-                }
-
-                //csv preview
-                if (type === "csv") {
-                  return <CsvPreview file={selectedFile as File} />;
-                }
-
-                //excel preview
-                if (type === "xlsx") {
-                  return <ExcelPreview file={selectedFile as File} />;
-                }
-
-                // word preview
-                if (type === "doc" || type === "docx") {
-                  return <WordPreview />;
-                }
-
-                if (location.pathname.includes("ppt-to-pdf")) {
-                  return showPptPreview();
-                }
-
-                // Html
-                if (type === "html") {
-                  return (
-                    <>
-                      <iframe
-                        src={previewFileDesign ?? ""}
-                        title="Html Preview"
-                        className="w-full h-80 rounded border"
-                      />
-                    </>
-                  );
-                }
-
-                return (
-                  <p className="text-gray-500">
-                    {selectedFile
-                      ? "Please select a file to preview"
-                      : "No preview available"}
-                  </p>
-                );
-              })()}
-
-              <p className="text-sm text-gray-500 flex flex-col items-center justify-center">
-                File Name: {selectedFile.name}
-                <span className="text-xs text-gray-500 pl-3">
-                  selected file type is {type}
-                </span>
-              </p>
-            </div>
+        {(type === "jpg" || type === "jpeg" || type === "png") &&
+          previewFileDesign && (
+            <img
+              src={previewFileDesign}
+              alt="Image Preview"
+              className="w-full max-h-[50vh] sm:max-h-80 object-contain rounded"
+            />
           )}
-        </div>
+
+        {type === "json" && <JsonPreview file={selectedFile} />}
+
+        {type === "csv" && <CsvPreview file={selectedFile} />}
+
+        {(type === "xlsx" || type === "xls") && (
+          <ExcelPreview file={selectedFile} />
+        )}
+
+        {(type === "doc" || type === "docx") && <WordPreview />}
+
+        {type === "pptx" &&
+          (location.pathname.includes("ppt-to-pdf") ? (
+            showPptPreview()
+          ) : (
+            <PptPreview />
+          ))}
+
+        {type === "html" && previewFileDesign && (
+          <iframe
+            src={previewFileDesign}
+            title="HTML Preview"
+            className="w-full h-[60vh] sm:h-80 rounded border"
+          />
+        )}
+
+        {![
+          "pdf",
+          "jpg",
+          "jpeg",
+          "png",
+          "json",
+          "csv",
+          "xlsx",
+          "xls",
+          "doc",
+          "docx",
+          "pptx",
+          "html",
+        ].includes(type || "") && (
+          <p className="text-gray-500 w-full text-center">
+            No preview available
+          </p>
+        )}
+
+        <p className="text-sm text-gray-500 flex flex-col items-center justify-center">
+          File Name: {selectedFile.name}
+          <span className="text-xs text-gray-500 pl-3">
+            Selected file type is {type}
+          </span>
+        </p>
       </div>
     </div>
   );

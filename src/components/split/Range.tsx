@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import useUploadData from "../../hooks/useUploadData";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useSplitStore from "../../store/useSplitStore";
@@ -19,17 +20,6 @@ const Range = ({
   const pageRange = useSplitStore((state) => state.pageRange);
   const setPageRange = useSplitStore((state) => state.setPageRange);
 
-  const handleRangeChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-    field: "from" | "to"
-  ) => {
-    const value = e.target.value;
-    const updated = [...activeRange];
-    updated[index] = { ...updated[index], [field]: value };
-    setActiveRange(updated);
-  };
-
   const handleAddRange = () => {
     const last = activeRange[activeRange.length - 1];
     const lastTo = Number(last.to);
@@ -40,12 +30,38 @@ const Range = ({
     ]);
   };
 
+  useEffect(() => {
+    if (activeRange.length === 0) {
+      setActiveRange([{ from: "1", to: "1" }]);
+    }
+  }, [activeRange, setActiveRange]);
+
   const validateCustomRanges = () =>
     activeRange.every(({ from, to }) => {
-      const f = Number(from),
-        t = Number(to);
-      return Number.isFinite(f) && Number.isFinite(t) && f > 0 && t >= f;
+      const f = parseInt(from, 10);
+      const t = parseInt(to, 10);
+      return !isNaN(f) && !isNaN(t) && f > 0 && t >= f;
     });
+
+  const handleRangeChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    field: "from" | "to"
+  ) => {
+    const value = e.target.value;
+    const updated = [...activeRange];
+    updated[index] = { ...updated[index], [field]: value };
+
+    if (
+      field === "from" &&
+      parseInt(value, 10) > parseInt(updated[index].to, 10)
+    ) {
+      updated[index].to = value;
+    }
+
+    setActiveRange(updated);
+    console.log("Updated activeRange:", updated);
+  };
 
   const handleSplit = async () => {
     if (!selectedFile) return alert("Please select a file first");
@@ -72,8 +88,8 @@ const Range = ({
       setResults(results as any);
     }
 
-    clearSelectedRange(); // optional: only if you want to reset inputs
-    setIsSidebarOpen(false); // close sidebar on mobile
+    clearSelectedRange();
+    setIsSidebarOpen(false);
   };
 
   return (

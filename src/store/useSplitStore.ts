@@ -30,15 +30,14 @@ const useSplitStore = create<SplitStore>((set) => ({
   splitRangeType: "Range",
   results: [],
   activeMode: "custome",
-  activeRange: [{ from: "1", to: "10" }],
+  activeRange: [], //set activerang empty and set range in range component
   pageRange: "",
   setActiveMode: (mode) => set({ activeMode: mode }),
   setActiveRange: (ranges) => set({ activeRange: ranges }),
   setPageRange: (value) => set({ pageRange: value }),
   setResults: (results) => set({ results }),
   clearResults: () => set({ results: [] }),
-  clearSelectedRange: () =>
-    set({ activeRange: [{ from: "1", to: "10" }], pageRange: "" }),
+  clearSelectedRange: () => set({ activeRange: [], pageRange: "" }),
   sizeUnit: "MB",
   setSizeUnit: (unit) => set({ sizeUnit: unit }),
   clearSizeUnit: () => set({ sizeUnit: "MB" }),

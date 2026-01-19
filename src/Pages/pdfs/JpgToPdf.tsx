@@ -11,7 +11,7 @@ const JpgToPdf = () => {
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertJpgToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [_file, setFile] = useState<File | null>(null);
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 

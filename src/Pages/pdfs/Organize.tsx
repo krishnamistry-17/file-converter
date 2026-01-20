@@ -13,15 +13,17 @@ import {
 import { FaSortNumericUpAlt } from "react-icons/fa";
 import { FaSortNumericUp } from "react-icons/fa";
 import useUploadData from "../../hooks/useUploadData";
+import useFilesStore from "../../store/useSheetStore";
 
 const Organize = () => {
   const { selectedFile, setSelectedFile, clearSelectedFile } =
     useFileSessionStore();
 
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { results, setResults, clearResults, setSortedResults } =
     useOrganizeStore();
 
-  const { extractAllPages } = useUploadData();
+  const { extractAllPages, organizePdf } = useUploadData();
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSorted, setIsSorted] = useState(false);
@@ -80,6 +82,19 @@ const Organize = () => {
     };
 
     input.click();
+  };
+
+  const handleOrganizePdf = async () => {
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      organizePdf(results, "organized.pdf");
+    } catch (error) {
+      console.error(error);
+      alert("Organize failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSortFiles = () => {
@@ -194,7 +209,10 @@ const Organize = () => {
             {/* File list */}
             {mergeDisplayFiles()}
 
-            <button className="bg-blue-500 text-white w-full py-2 rounded-md flex justify-center items-center">
+            <button
+              className="bg-blue-500 text-white w-full py-2 rounded-md flex justify-center items-center"
+              onClick={handleOrganizePdf}
+            >
               Organize <IoMdArrowForward className="ml-2" />
             </button>
           </div>
@@ -226,29 +244,31 @@ const Organize = () => {
       )}
 
       {isMobile && selectedFile && (
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
-          <button
-            onClick={handleAddMoreFiles}
-            className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-          >
-            <IoMdAdd />
-          </button>
+        <>
+          <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
+            <button
+              onClick={handleAddMoreFiles}
+              className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+            >
+              <IoMdAdd />
+            </button>
 
-          <button
-            onClick={handleSortFiles}
-            className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-          >
-            {isSorted ? (
-              <FaSortNumericUp
-                onMouseEnter={() => setSortedText("Sort Descending")}
-              />
-            ) : (
-              <FaSortNumericUpAlt
-                onMouseEnter={() => setSortedText("Sort Ascending")}
-              />
-            )}
-          </button>
-        </div>
+            <button
+              onClick={handleSortFiles}
+              className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+            >
+              {isSorted ? (
+                <FaSortNumericUp
+                  onMouseEnter={() => setSortedText("Sort Descending")}
+                />
+              ) : (
+                <FaSortNumericUpAlt
+                  onMouseEnter={() => setSortedText("Sort Ascending")}
+                />
+              )}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

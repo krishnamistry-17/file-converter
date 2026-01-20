@@ -15,6 +15,7 @@ const OrganizePreviewGrid = () => {
   const sortedResults = useOrganizeStore((s) => s.sortedResults);
   const setResults = useOrganizeStore((s) => s.setResults);
   const setSortedResults = useOrganizeStore((s) => s.setSortedResults);
+  console.log(sortedResults);
   const showResults = sortedResults.length > 0 ? sortedResults : results;
 
   const handleRotate = (index: number) => {
@@ -88,15 +89,6 @@ const OrganizePreviewGrid = () => {
                 <MdClose />
               </button>
             </div>
-
-            {/* DOWNLOAD */}
-            <a
-              href={file.url}
-              download={file.name}
-              className="mt-4 block text-center bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
-            >
-              Download
-            </a>
           </div>
         ))}
       </div>

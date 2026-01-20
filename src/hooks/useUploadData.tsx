@@ -8,6 +8,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
 import autoTable from "jspdf-autotable";
+import { degrees } from "pdf-lib";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -831,6 +832,38 @@ const useUploadData = () => {
     pdf.save("converted.pdf");
   };
 
+  const organizePdf = async (
+    pages: {
+      blob: Blob;
+      rotation: number;
+    }[],
+    fileName = "organized.pdf"
+  ) => {
+    const finalPdf = await PDFDocument.create();
+
+    for (const page of pages) {
+      const buffer = await page.blob.arrayBuffer();
+      const srcPdf = await PDFDocument.load(buffer);
+      const [srcPage] = await finalPdf.copyPages(srcPdf, [0]);
+
+      if (page.rotation) {
+        srcPage.setRotation(degrees(page.rotation));
+      }
+
+      finalPdf.addPage(srcPage);
+    }
+
+    const bytes = await finalPdf.save();
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+
+    URL.revokeObjectURL(link.href);
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -860,6 +893,7 @@ const useUploadData = () => {
     compressPdfBySize,
     convertPdfToJson,
     convertCsvToPdf,
+    organizePdf,
   };
 };
 

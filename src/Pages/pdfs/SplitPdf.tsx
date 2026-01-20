@@ -81,7 +81,7 @@ const SplitPdfComponent = () => {
           )}
 
           {fileSelected && results.length === 0 && (
-            <PreviewFile type="pdf" previewFileDesign={""} />
+            <PreviewFile previewFileDesign={null} />
           )}
 
           {selectedFile && results.length > 0 && <SplitPreviewGrid />}
@@ -143,7 +143,9 @@ const SplitPdfComponent = () => {
             {splitRangeType === "Pages" && (
               <Pages setIsSidebarOpen={setIsSidebarOpen} />
             )}
-            {splitRangeType === "Size" && <Size />}
+            {splitRangeType === "Size" && (
+              <Size setIsSidebarOpen={setIsSidebarOpen} />
+            )}
           </div>
         </div>
       </aside>

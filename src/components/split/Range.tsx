@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import useUploadData from "../../hooks/useUploadData";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useSplitStore from "../../store/useSplitStore";
+import useFilesStore from "../../store/useSheetStore";
 
 const Range = ({
   setIsSidebarOpen,
@@ -12,12 +13,13 @@ const Range = ({
   const clearSelectedRange = useSplitStore((state) => state.clearSelectedRange);
   const { splitPdfByRange, splitPdfByFixedRange } = useUploadData();
   const setResults = useSplitStore((state) => state.setResults);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const activeMode = useSplitStore((state) => state.activeMode);
   const setActiveMode = useSplitStore((state) => state.setActiveMode);
   const activeRange = useSplitStore((state) => state.activeRange);
   const setActiveRange = useSplitStore((state) => state.setActiveRange);
   const pageRange = useSplitStore((state) => state.pageRange);
+  console.log("pageRange", pageRange);
   const setPageRange = useSplitStore((state) => state.setPageRange);
 
   const handleAddRange = () => {
@@ -40,7 +42,7 @@ const Range = ({
     activeRange.every(({ from, to }) => {
       const f = parseInt(from, 10);
       const t = parseInt(to, 10);
-      return !isNaN(f) && !isNaN(t) && f > 0 && t >= f;
+      return !Number.isNaN(f) && !Number.isNaN(t) && f > 0 && t >= f;
     });
 
   const handleRangeChange = (
@@ -64,32 +66,49 @@ const Range = ({
   };
 
   const handleSplit = async () => {
-    if (!selectedFile) return alert("Please select a file first");
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      if (!selectedFile) return alert("Please select a file first");
 
-    if (activeMode === "custome") {
-      if (!validateCustomRanges())
-        return alert("Please enter valid page ranges.");
+      if (activeMode === "custome") {
+        if (!validateCustomRanges())
+          return alert("Please enter valid page ranges.");
 
-      const numericRanges = activeRange.map((r) => ({
-        from: Number(r.from),
-        to: Number(r.to),
-      }));
-      const results = await splitPdfByRange(
-        selectedFile as File,
-        numericRanges
-      );
-      setResults(results as any);
-    } else if (activeMode === "fixed") {
-      const count = Number(pageRange);
-      if (!Number.isFinite(count) || count < 1)
-        return alert("Please enter a valid page range.");
+        const numericRanges = activeRange.map((r) => ({
+          from: Number(r.from),
+          to: Number(r.to),
+        }));
+        const rangeResults = await Promise.all(
+          numericRanges.map((range) =>
+            splitPdfByRange(selectedFile as File, range)
+          )
+        );
 
-      const results = await splitPdfByFixedRange(selectedFile as File, count);
-      setResults(results as any);
+        setResults(rangeResults.flat() as any);
+      } else if (activeMode === "fixed") {
+        const size = Number(pageRange);
+        console.log("size", size);
+        if (!size || size <= 0) {
+          alert(
+            "Enter a valid page size,fixed range acccpets only single value"
+          );
+          return;
+        }
+
+        const results = await splitPdfByFixedRange(selectedFile as File, size);
+
+        setResults(results as any);
+      }
+
+      clearSelectedRange();
+      setIsSidebarOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Range split failed!");
+    } finally {
+      setLoading(false);
     }
-
-    clearSelectedRange();
-    setIsSidebarOpen(false);
   };
 
   return (
@@ -159,9 +178,11 @@ const Range = ({
             <p className="text-sm font-medium">Split into page ranges of:</p>
             <input
               type="number"
+              min={1}
+              placeholder="Pages per split (e.g. 3)"
               value={pageRange}
               onChange={(e) => setPageRange(e.target.value)}
-              className="focus:outline-none focus:ring-0 border border-gray-300 rounded-md p-2 sm:mt-0 mt-2"
+              className="focus:outline-none focus:ring-0 border border-gray-300 rounded-md p-2"
             />
           </div>
         )}

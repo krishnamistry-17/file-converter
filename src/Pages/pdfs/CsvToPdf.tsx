@@ -8,6 +8,7 @@ const CsvToPdf = () => {
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const setDownloadFileUrl = useFilesStore((state) => state.setDownloadFileUrl);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { convertCsvToPdf } = useUploadData();
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const [fileSelected, setFileSelected] = useState(false);
@@ -26,9 +27,20 @@ const CsvToPdf = () => {
   };
 
   const handleConvert = async () => {
-    await convertCsvToPdf(selectedFile as File);
-    setDownloadFileUrl(URL.createObjectURL(selectedFile as File) as string);
-    clearSelectedFile();
+    setLoading(true);
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    try {
+      await convertCsvToPdf(selectedFile as File);
+      setDownloadFileUrl(URL.createObjectURL(selectedFile as File) as string);
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

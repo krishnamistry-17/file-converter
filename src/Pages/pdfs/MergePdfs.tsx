@@ -6,17 +6,23 @@ import SelectFile from "../../components/SelectFile";
 const MergePdfComponent = () => {
   const [pdfPreview1, setPdfPreview1] = useState<string | null>(null);
   const [pdfPreview2, setPdfPreview2] = useState<string | null>(null);
+
   const clearMergeFile1 = useFilesStore((state) => state.clearMergeFile1);
   const clearMergeFile2 = useFilesStore((state) => state.clearMergeFile2);
 
   const mergeFile1 = useFilesStore((state) => state.mergeFile1);
   const mergeFile2 = useFilesStore((state) => state.mergeFile2);
+
   const setMergeFile1 = useFilesStore((state) => state.setMergeFile1);
   const setMergeFile2 = useFilesStore((state) => state.setMergeFile2);
+
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { MergePdfs } = useUploadData();
+
   const handleFileUpload1 = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setMergeFile1(file);
+
     setPdfPreview1(URL.createObjectURL(file as File));
   };
 
@@ -27,11 +33,20 @@ const MergePdfComponent = () => {
   };
 
   const handleMerge = async () => {
-    await MergePdfs();
-    clearMergeFile1();
-    clearMergeFile2();
-    setPdfPreview1(null);
-    setPdfPreview2(null);
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await MergePdfs();
+      clearMergeFile1();
+      clearMergeFile2();
+      setPdfPreview1(null);
+      setPdfPreview2(null);
+    } catch (error) {
+      console.error(error);
+      alert("Merge failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

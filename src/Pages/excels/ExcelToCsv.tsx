@@ -7,6 +7,7 @@ import { useState } from "react";
 const ExcelToCsv = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { ConvertExcelToCsv } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,7 +25,16 @@ const ExcelToCsv = () => {
   };
 
   const handleConvert = async () => {
-    await ConvertExcelToCsv();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await ConvertExcelToCsv();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

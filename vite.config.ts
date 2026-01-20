@@ -7,9 +7,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
+    allowedHosts: true,
     proxy: {
       "/api": {
-        target: "https://82c65df0e6c2.ngrok-free.app",
+        target: "https://25535d21e61d.ngrok-free.app",
         changeOrigin: true,
         secure: false,
       },

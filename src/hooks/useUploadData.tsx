@@ -229,50 +229,50 @@ const useUploadData = () => {
   };
 
   // Json -> Pdf
-  const ConvertJsonToPdf = () => {
-    showError();
+  const ConvertJsonToPdf = (): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      showError();
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = event.target?.result as string;
-        const json = JSON.parse(data);
+      const reader = new FileReader();
 
-        const pdf = new jsPDF({
-          compress: true,
-        });
+      reader.onload = (event) => {
+        try {
+          const data = event.target?.result as string;
+          const json = JSON.parse(data);
 
-        const pageHeight = pdf.internal.pageSize.height;
-        const pageWidth = pdf.internal.pageSize.width;
-        const margin = 10;
-        const lineHeight = 7; // distance between lines
+          const pdf = new jsPDF({ compress: true });
 
-        // convert JSON to string and split into wrapped lines
-        const jsonString = JSON.stringify(json, null, 2);
-        const lines = pdf.splitTextToSize(jsonString, pageWidth - 2 * margin);
+          const pageHeight = pdf.internal.pageSize.height;
+          const pageWidth = pdf.internal.pageSize.width;
+          const margin = 10;
+          const lineHeight = 7;
 
-        let y = margin; // initial y position
+          const jsonString = JSON.stringify(json, null, 2);
+          const lines = pdf.splitTextToSize(jsonString, pageWidth - 2 * margin);
 
-        for (let i = 0; i < lines.length; i++) {
-          if (y + lineHeight > pageHeight - margin) {
-            pdf.addPage();
-            y = margin; // reset for new page
+          let y = margin;
+
+          for (let i = 0; i < lines.length; i++) {
+            if (y + lineHeight > pageHeight - margin) {
+              pdf.addPage();
+              y = margin;
+            }
+            pdf.text(lines[i], margin, y);
+            y += lineHeight;
           }
-          pdf.text(lines[i], margin, y);
-          y += lineHeight;
+
+          pdf.save("converted.pdf");
+          setSelectedFile(null);
+          resolve();
+        } catch (err) {
+          console.error(err);
+          reject(err);
         }
+      };
 
-        pdf.save("converted.pdf");
-        setSelectedFile(null);
-      } catch (err) {
-        console.error("Error converting JSON to PDF:", err);
-        alert(
-          "Failed to convert JSON to PDF. Make sure the file is valid JSON."
-        );
-      }
-    };
-
-    reader.readAsText(selectedFile as any);
+      reader.onerror = reject;
+      reader.readAsText(selectedFile as File);
+    });
   };
 
   // Pdf -> Json
@@ -545,60 +545,50 @@ const useUploadData = () => {
 
   const splitPdfByRange = async (
     file: File,
-    ranges: { from: number; to: number }[]
+    range: { from: number; to: number }
   ) => {
-    const buffer = await file.arrayBuffer();
-    const pdf = await PDFDocument.load(buffer);
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(arrayBuffer);
     const totalPages = pdf.getPageCount();
 
-    const results: any[] = [];
+    //ensure numbers
+    const from = Number(range.from);
+    const to = Number(range.to);
 
-    for (const raw of ranges) {
-      const from = Number(raw.from);
-      const to = Number(raw.to);
-      console.log(from, to, "from, to");
-
-      if (
-        !Number.isFinite(from) ||
-        !Number.isFinite(to) ||
-        from < 1 ||
-        to < 1 ||
-        from > to ||
-        from > totalPages
-      ) {
-        console.warn("Invalid range skipped:", raw);
-        continue;
-      }
-      if (to > totalPages)
-        console.warn(`Adjusted "to" from ${to} to ${totalPages}`);
-
-      const safeTo = Math.min(to, totalPages);
-
-      const newPdf = await PDFDocument.create();
-
-      const pageIndexes = Array.from(
-        { length: safeTo - from + 1 },
-        (_, i) => from - 1 + i
-      );
-
-      const pages = await newPdf.copyPages(pdf, pageIndexes);
-      pages.forEach((p) => newPdf.addPage(p));
-
-      const bytes = await newPdf.save();
-      const blob = new Blob([new Uint8Array(bytes)], {
-        type: "application/pdf",
-      });
-
-      results.push({
-        name: `pages-${from}-${safeTo}.pdf`,
-        blob,
-        url: URL.createObjectURL(blob),
-        pages: `${from}-${safeTo}`,
-      });
+    if (
+      Number.isNaN(from) ||
+      Number.isNaN(to) ||
+      from < 1 ||
+      to > totalPages ||
+      from > to
+    ) {
+      return [];
     }
 
-    console.log("Final split results:", results);
-    return results;
+    const newPdf = await PDFDocument.create();
+
+    // IMPORTANT: pdf-lib uses ZERO-based indexes
+    const pageIndexes: number[] = [];
+    for (let i = from; i <= to; i++) {
+      pageIndexes.push(i - 1);
+    }
+
+    const copiedPages = await newPdf.copyPages(pdf, pageIndexes);
+    copiedPages.forEach((p) => newPdf.addPage(p));
+
+    const bytes = await newPdf.save();
+    const blob = new Blob([new Uint8Array(bytes)], {
+      type: "application/pdf",
+    });
+
+    return [
+      {
+        name: `range-${from}-${to}.pdf`,
+        blob,
+        url: URL.createObjectURL(blob),
+        pages: `${from}-${to}`,
+      },
+    ];
   };
 
   const splitPdfByFixedRange = async (
@@ -820,24 +810,6 @@ const useUploadData = () => {
     });
     return results;
   };
-
-  // const convertCsvToPdf = async (file: File) => {
-  //   const buffer = await file.arrayBuffer();
-  //   const csv = Papa.parse(new TextDecoder().decode(buffer), { header: true });
-  //   const pdf = new jsPDF();
-  //   pdf.text(
-  //     csv.data.map((row: any) => Object.values(row).join(",")).join("\n"),
-  //     10,
-  //     10
-  //   );
-  //   const blob = new Blob([pdf.output("blob")], { type: "application/pdf" });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement("a");
-  //   a.href = url;
-  //   a.download = "converted.pdf";
-  //   a.click();
-  //   setSelectedFile(null);
-  // };
 
   const convertCsvToPdf = async (file: File) => {
     const buffer = await file.arrayBuffer();

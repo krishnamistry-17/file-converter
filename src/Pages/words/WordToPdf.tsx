@@ -6,7 +6,7 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const WordToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
@@ -55,13 +55,22 @@ const WordToPdf = () => {
       alert("Conversion successful!");
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      alert("Conversion failed!");  
     }
   };
 
   const handleConvert = async () => {
-    await handleUpload();
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await handleUpload();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

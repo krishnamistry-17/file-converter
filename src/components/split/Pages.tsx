@@ -2,6 +2,7 @@ import { useState } from "react";
 import useUploadData from "../../hooks/useUploadData";
 import useSplitStore from "../../store/useSplitStore";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
+import useFilesStore from "../../store/useSheetStore";
 
 const Pages = ({
   setIsSidebarOpen,
@@ -10,7 +11,7 @@ const Pages = ({
 }) => {
   const pageExtractMode = useSplitStore((s) => s.pageExtractMode);
   const setPageExtractMode = useSplitStore((s) => s.setPageExtractMode);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { extractAllPages, extractSelectedRange, extractSelectedPage } =
     useUploadData();
 
@@ -27,31 +28,39 @@ const Pages = ({
   const [pageInput, setPageInput] = useState("");
 
   const handleSplit = async () => {
-    if (!selectedFile) return;
-    if (pageExtractMode === "extractAll") {
-      const allResults = await extractAllPages(selectedFile as File);
-      setResults(allResults as any);
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+
+    try {
+      if (!selectedFile) return;
+
+      if (pageExtractMode === "extractAll") {
+        const allResults = await extractAllPages(selectedFile);
+        setResults(allResults as any);
+      }
+
+      if (pageExtractMode === "selectPages") {
+        const { pages, ranges } = parsePagesAndRanges(pageInput);
+
+        const pageResults =
+          pages.length > 0
+            ? await extractSelectedPage(selectedFile, pages)
+            : [];
+
+        const rangeResults = await Promise.all(
+          ranges.map((r) => extractSelectedRange(selectedFile, r))
+        );
+
+        setResults([...(pageResults ?? []), ...rangeResults.flat()] as any);
+      }
+
+      setIsSidebarOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("Page split failed");
+    } finally {
+      setLoading(false);
     }
-
-    if (pageExtractMode === "selectPages") {
-      // const allResults = await extractAllPages(selectedFile as File);
-      // const pageResults = await extractSelectedPage(
-      //   selectedFile as File,
-      //   pageRange.split(",").map(Number)
-      // );
-
-      const rangeResults = await Promise.all(
-        activeRange.map((r: { from: string; to: string }) =>
-          extractSelectedRange(selectedFile as File, {
-            from: Number(r.from),
-            to: Number(r.to),
-          })
-        )
-      );
-
-      setResults([...rangeResults.flat()] as any);
-    }
-    setIsSidebarOpen(false);
   };
 
   const parsePagesAndRanges = (input: string) => {
@@ -97,6 +106,7 @@ const Pages = ({
         ranges.map((r) => ({ from: r.from.toString(), to: r.to.toString() }))
       );
   };
+
   const handleDownloadSelectedPages = async () => {
     if (!selectedFile) return;
     const selectedpageResult = await extractSelectedPage(

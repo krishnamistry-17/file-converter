@@ -8,6 +8,7 @@ const JpgToPdf = () => {
   const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
     null
   );
+  const setLoading = useFilesStore((state) => state.setLoading);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { ConvertJpgToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
@@ -27,8 +28,17 @@ const JpgToPdf = () => {
   };
 
   const handleConvert = async () => {
-    await ConvertJpgToPdf();
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await ConvertJpgToPdf();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

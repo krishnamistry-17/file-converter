@@ -4,26 +4,33 @@ type SplitRange = { from: string; to: string };
 
 interface SplitStore {
   splitRangeType: "Range" | "Pages" | "Size";
+  setSplitRangeType: (type: "Range" | "Pages" | "Size") => void;
+
   results: any[];
-  activeMode: "custome" | "fixed";
-  activeRange: SplitRange[];
-  pageRange: string;
-  setActiveMode: (mode: "custome" | "fixed") => void;
-  setActiveRange: (ranges: SplitRange[]) => void;
-  setPageRange: (value: string) => void;
   setResults: (results: any[]) => void;
   clearResults: () => void;
+
+  activeMode: "custome" | "fixed";
+  setActiveMode: (mode: "custome" | "fixed") => void;
+
+  activeRange: SplitRange[];
+  setActiveRange: (ranges: SplitRange[]) => void;
+
+  pageRange: string;
+  setPageRange: (value: string) => void;
+  
   sizeUnit: "KB" | "MB";
   setSizeUnit: (unit: "KB" | "MB") => void;
   clearSizeUnit: () => void;
+  
   totalPages: number;
   setTotalPages: (pages: number) => void;
   clearTotalPages: () => void;
-  clearSelectedRange: () => void;
-  setSplitRangeType: (type: "Range" | "Pages" | "Size") => void;
+  
   pageExtractMode: "extractAll" | "selectPages";
   setPageExtractMode: (mode: "extractAll" | "selectPages") => void;
   clearPageExtractMode: () => void;
+  clearSelectedRange: () => void;
 }
 
 const useSplitStore = create<SplitStore>((set) => ({

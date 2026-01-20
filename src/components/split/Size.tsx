@@ -3,23 +3,40 @@ import useSplitStore from "../../store/useSplitStore";
 import SwitchButton from "../SwitchButton";
 import useUploadData from "../../hooks/useUploadData";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
+import useFilesStore from "../../store/useSheetStore";
 
-const Size = () => {
+const Size = ({
+  setIsSidebarOpen,
+}: {
+  setIsSidebarOpen: (open: boolean) => void;
+}) => {
   const totalPages = useSplitStore((state) => state.totalPages);
   const { selectedFile } = useFileSessionStore();
   const setResults = useSplitStore((state) => state.setResults);
   const clearResults = useSplitStore((state) => state.clearResults);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const [value, setValue] = useState<number>(15);
   const [allowCompression, setAllowCompression] = useState<boolean>(false);
   const { compressPdfBySize } = useUploadData();
+
   const handleSplitPdfBySize = async () => {
-    if (!selectedFile) return;
-    const results = allowCompression
-      ? await compressPdfBySize(selectedFile as File)
-      : await compressPdfBySize(selectedFile as File);
-    setResults(results as any);
-    clearResults();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      if (!selectedFile) return;
+      const results = allowCompression
+        ? await compressPdfBySize(selectedFile as File)
+        : await compressPdfBySize(selectedFile as File);
+      setResults(results as any);
+      clearResults();
+      setIsSidebarOpen(false);
+      return;
+    } catch (error) {
+      console.error(error);
+      alert("Size split failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

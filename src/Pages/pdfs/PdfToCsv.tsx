@@ -8,9 +8,11 @@ const PdfToCsv = () => {
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const selectedFile = useFilesStore((state) => state.selectedFile);
   const { convertPdfToCsv } = useUploadData();
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const [fileSelected, setFileSelected] = useState(false);
-  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -26,8 +28,17 @@ const PdfToCsv = () => {
   };
 
   const handleConvert = async () => {
-    await convertPdfToCsv(selectedFile as File);
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await convertPdfToCsv(selectedFile as File);
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

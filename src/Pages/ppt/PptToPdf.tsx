@@ -6,11 +6,13 @@ import api from "../../utils/axios";
 const PptToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
   const [fileSelected, setFileSelected] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
-  const [previewFileDesign, setPreviewFileDesign] = useState<string| null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
     if (!uploadedFile) return alert("Please select a file");
@@ -51,8 +53,17 @@ const PptToPdf = () => {
   };
 
   const handleConvert = async () => {
-    await handleUpload();
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await handleUpload();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

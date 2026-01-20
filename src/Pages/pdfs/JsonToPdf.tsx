@@ -7,6 +7,7 @@ const JsonToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { ConvertJsonToPdf } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,8 +25,20 @@ const JsonToPdf = () => {
   };
 
   const handleConvert = async () => {
-    await ConvertJsonToPdf();
-    clearSelectedFile();
+    setLoading(true);
+
+    // allow loader to render
+    await new Promise((r) => setTimeout(r, 100));
+
+    try {
+      await ConvertJsonToPdf();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -16,6 +16,7 @@ interface FilesStore {
   loading: boolean;
   error: string | null;
   setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
 
   selectedFile: File | null;
   setSelectedFile: (file: any) => void;
@@ -60,6 +61,7 @@ const useFilesStore = create<FilesStore>((set) => ({
   loading: false,
   error: null,
   setError: (error) => set({ error }),
+  setLoading: (loading) => set({ loading }),
 
   selectedFile: null,
   setSelectedFile: (file) => set({ selectedFile: file }),

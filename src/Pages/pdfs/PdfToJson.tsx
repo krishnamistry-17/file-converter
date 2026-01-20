@@ -6,10 +6,13 @@ import PdfFile from "../../components/layout/PdfFile";
 const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const selectedFile = useFilesStore((state) => state.selectedFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const { convertPdfToJson } = useUploadData();
 
-  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
   const [fileSelected, setFileSelected] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,15 +29,23 @@ const PdfToJson = () => {
   };
 
   const handleConvert = async () => {
-    const json = await convertPdfToJson(selectedFile as File);
-
-    const blob = new Blob([JSON.stringify(json, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-
-    window.open(url);
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      const json = await convertPdfToJson(selectedFile as File);
+      const blob = new Blob([JSON.stringify(json, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+      clearSelectedFile();
+      return;
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

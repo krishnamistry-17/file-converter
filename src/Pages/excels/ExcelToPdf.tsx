@@ -6,12 +6,16 @@ import { API_ROUTES } from "../../constance/apiConstance";
 
 const ExcelToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-  const setDownloadFilePreview = useFilesStore((state) => state.setDownloadFilePreview);
-
+  const setDownloadFilePreview = useFilesStore(
+    (state) => state.setDownloadFilePreview
+  );
+  const setLoading = useFilesStore((state) => state.setLoading);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [file, setFile] = useState<File | null>(null);
   const [fileSelected, setFileSelected] = useState(false);
-  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
+  const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
+    null
+  );
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,8 +64,17 @@ const ExcelToPdf = () => {
   };
 
   const handleConvert = async () => {
-    await handleUpload();
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await handleUpload();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

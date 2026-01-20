@@ -7,6 +7,7 @@ import { useState } from "react";
 const ExcelToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { ConvertExcelToJson } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,7 +25,16 @@ const ExcelToJson = () => {
   };
 
   const handleConvert = async () => {
-    await ConvertExcelToJson();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await ConvertExcelToJson();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,7 +49,7 @@ const ExcelToJson = () => {
         accept=".xlsx"
         label="Select a file"
         btnText="Download Json"
-      />    
+      />
     </>
   );
 };

@@ -7,6 +7,7 @@ import { useState } from "react";
 const DocsToHtml = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const setPreviewFile = useFilesStore((state) => state.setPreviewFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
   const { ConvertDocsToHtml } = useUploadData();
   const [fileSelected, setFileSelected] = useState(false);
 
@@ -24,7 +25,16 @@ const DocsToHtml = () => {
   };
 
   const handleConvert = async () => {
-    await ConvertDocsToHtml();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await ConvertDocsToHtml();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

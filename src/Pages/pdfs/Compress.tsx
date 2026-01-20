@@ -9,7 +9,8 @@ import { IoMdClose } from "react-icons/io";
 
 const CompressPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
-
+  const setLoading = useFilesStore((state) => state.setLoading);
+  const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
   const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
     null
   );
@@ -28,6 +29,19 @@ const CompressPdf = () => {
     setFileSelected(true);
   };
 
+  const handleCompress = async () => {
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await compressPdf();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Compression failed!");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="relative flex min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
       <div
@@ -49,7 +63,7 @@ const CompressPdf = () => {
             />
           </div>
 
-          <PreviewFile type="pdf" previewFileDesign={previewFileDesign} />
+          <PreviewFile previewFileDesign={previewFileDesign} />
         </div>
       </div>
 
@@ -101,7 +115,7 @@ const CompressPdf = () => {
           </div>
 
           <button
-            onClick={compressPdf}
+            onClick={handleCompress}
             className="mt-6 w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 transition"
           >
             Download Compressed PDF

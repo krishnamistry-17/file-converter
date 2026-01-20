@@ -7,6 +7,7 @@ import { API_ROUTES } from "../../constance/apiConstance";
 const PdfToWord = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
   const clearSelectedFile = useFilesStore((state) => state.clearSelectedFile);
+  const setLoading = useFilesStore((state) => state.setLoading);
 
   const [file, setFile] = useState<File | null>(null);
   const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(null);
@@ -48,8 +49,17 @@ const PdfToWord = () => {
   };
 
   const handleConvert = async () => {
-    await handleUpload();
-    clearSelectedFile();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
+    try {
+      await handleUpload();
+      clearSelectedFile();
+    } catch (error) {
+      console.error(error);
+      alert("Conversion failed!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

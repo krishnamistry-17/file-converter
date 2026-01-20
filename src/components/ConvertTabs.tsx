@@ -3,10 +3,9 @@ import { useState } from "react";
 import ConvertToPdf from "./tabs/ConvertToPdf/ConvertToPdf";
 import ConvertFromPdf from "./tabs/ConvertFromPdf/ConvertFromPdf";
 import OtherConversion from "./tabs/OtherConversion/OtherConversion";
-import MergePdf from "./tabs/MergePdf/MergePdf";
-import SplitPdf from "./tabs/SplitPdf/SplitPdf";
 import AllTab from "./tabs/AllTab";
 import { FaChevronDown } from "react-icons/fa";
+import OrganizedPdf from "./tabs/OrganizedPdf/OrganizedPdf";
 
 const ConvertTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -18,8 +17,7 @@ const ConvertTabs = () => {
     "All",
     "Convert to PDF",
     "Convert from PDF",
-    "Merge PDF",
-    "Split PDF",
+    "Organized PDFs",
     "Other Options",
   ];
 
@@ -110,10 +108,7 @@ const ConvertTabs = () => {
             <ConvertFromPdf />
           </TabPanel>
           <TabPanel>
-            <MergePdf />
-          </TabPanel>
-          <TabPanel>
-            <SplitPdf />
+            <OrganizedPdf />
           </TabPanel>
           <TabPanel>
             <OtherConversion />

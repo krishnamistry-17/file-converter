@@ -22,6 +22,7 @@ import PptToPdf from "../Pages/ppt/PptToPdf";
 import ConvertFromPdf from "../components/tabs/ConvertFromPdf/ConvertFromPdf";
 import ConvertToPdf from "../components/tabs/ConvertToPdf/ConvertToPdf";
 import OtherConversion from "../components/tabs/OtherConversion/OtherConversion";
+import Organize from "../Pages/pdfs/Organize";
 
 const routes = createBrowserRouter([
   {
@@ -115,6 +116,10 @@ const routes = createBrowserRouter([
       {
         path: "/other-conversion",
         element: <OtherConversion />,
+      },
+      {
+        path: "/organized-pdfs",
+        element: <Organize />,
       },
     ],
   },

@@ -31,7 +31,6 @@ const PdfFile = ({
   onFileUpload,
   fileSelected,
   handleConvert,
-  PreviewFileType,
   accept,
   label,
   btnText,
@@ -87,7 +86,6 @@ const PdfFile = ({
 
           <div className="mt-10">
             <PreviewFile
-              type={PreviewFileType}
               previewFileDesign={previewFileDesign as any}
             />
           </div>

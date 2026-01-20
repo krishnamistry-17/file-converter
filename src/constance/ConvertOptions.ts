@@ -147,6 +147,27 @@ const allOptions = [
   },
 ];
 
+const organizedOptions = [
+  {
+    label: "Merge PDFs",
+    path: "/merge-pdfs",
+    icon: FaFilePdf,
+    description: "Merge two or more PDF files into a single PDF file.",
+  },
+  {
+    label: "Split PDF",
+    path: "/split-pdfs",
+    icon: FaFilePdf,
+    description: "Split a PDF file into multiple PDF files.",
+  },
+  {
+    label: "Organized PDF",
+    path: "/organized-pdfs",
+    icon: FaFilePdf,
+    description: "Organize a PDF file into a single PDF file.",
+  },
+];
+
 export const fileOperations = [
   {
     title: "All",
@@ -161,12 +182,8 @@ export const fileOperations = [
     options: allOptions.filter((o) => o.label.includes("PDF to")),
   },
   {
-    title: "Merge PDF",
-    options: allOptions.filter((o) => o.label.includes("Merge")),
-  },
-  {
-    title: "Split PDF",
-    options: allOptions.filter((o) => o.label.includes("Split")),
+    title: "Organized PDFs",
+    options: organizedOptions,
   },
   {
     title: "Other Options",

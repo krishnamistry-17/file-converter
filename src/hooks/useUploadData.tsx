@@ -2,14 +2,15 @@ import jsPDF from "jspdf";
 import useFilesStore from "../store/useSheetStore";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFFont, PDFPage, rgb, StandardFonts } from "pdf-lib";
 import useSplitStore from "../store/useSplitStore";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
 import autoTable from "jspdf-autotable";
 import { degrees } from "pdf-lib";
-import type { PageResult } from "../types/pageResult";
+import type { PageNumberOptions, PageResult } from "../types/pageResult";
+import type { PageNumberPosition } from "../types/pagenumberPosition";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -880,6 +881,115 @@ const useUploadData = () => {
     URL.revokeObjectURL(url);
   };
 
+  const drawPageNumber = ({
+    page,
+    text,
+    position,
+    font,
+  }: {
+    page: PDFPage;
+    text: string;
+    position: PageNumberPosition;
+    font: PDFFont;
+  }) => {
+    const fontSize = 12;
+    const margin = 20;
+
+    const { width, height } = page.getSize();
+    const textWidth = font.widthOfTextAtSize(text, fontSize);
+
+    let x = margin;
+    let y = margin;
+
+    switch (position) {
+      case "bottom-center":
+        x = width / 2 - textWidth / 2;
+        break;
+
+      case "bottom-right":
+        x = width - textWidth - margin;
+        break;
+
+      case "top-center":
+        x = width / 2 - textWidth / 2;
+        y = height - margin;
+        break;
+
+      case "top-right":
+        x = width - textWidth - margin;
+        y = height - margin;
+        break;
+    }
+
+    page.drawText(text, {
+      x,
+      y,
+      size: fontSize,
+      font,
+      color: rgb(0, 0, 0),
+    });
+  };
+
+  const addPageNumberToPdf = async (
+    pages: { blob: Blob; rotation: number }[],
+    options: PageNumberOptions
+  ) => {
+    const {
+      position,
+      startFrom = 1,
+      range,
+      fileName = "page-numbered.pdf",
+      text = "{current}",
+    } = options;
+
+    const finalPdf = await PDFDocument.create();
+    const font = await finalPdf.embedFont(StandardFonts.Helvetica);
+
+    const totalPages = pages.length;
+
+    let globalIndex = 1;
+    let printedNumber = startFrom;
+
+    for (const item of pages) {
+      const srcPdf = await PDFDocument.load(await item.blob.arrayBuffer());
+
+      const copiedPages = await finalPdf.copyPages(
+        srcPdf,
+        srcPdf.getPageIndices()
+      );
+
+      for (const page of copiedPages) {
+        if (item.rotation) {
+          page.setRotation(degrees(item.rotation));
+        }
+
+        const shouldNumber =
+          !range || (globalIndex >= range.from && globalIndex <= range.to);
+
+        if (shouldNumber) {
+          const finalText = text
+            .replace("{current}", String(printedNumber))
+            .replace("{total}", String(range?.to ?? totalPages));
+
+          drawPageNumber({
+            page,
+            text: finalText,
+            position,
+            font,
+          });
+
+          printedNumber++;
+        }
+
+        finalPdf.addPage(page);
+        globalIndex++;
+      }
+    }
+
+    const bytes = await finalPdf.save();
+    downloadPdf(bytes, fileName);
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -913,6 +1023,7 @@ const useUploadData = () => {
     addBlankPageToPdf,
     displayPdf,
     rotatePdfDownload,
+    addPageNumberToPdf,
   };
 };
 

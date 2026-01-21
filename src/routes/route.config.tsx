@@ -23,6 +23,8 @@ import ConvertFromPdf from "../components/tabs/ConvertFromPdf/ConvertFromPdf";
 import ConvertToPdf from "../components/tabs/ConvertToPdf/ConvertToPdf";
 import OtherConversion from "../components/tabs/OtherConversion/OtherConversion";
 import Organize from "../Pages/pdfs/Organize";
+import PdfPageNumber from "../Pages/pdfs/PdfPageNumber";
+import RotatePdf from "../Pages/pdfs/RotatePdf";
 
 const routes = createBrowserRouter([
   {
@@ -120,6 +122,14 @@ const routes = createBrowserRouter([
       {
         path: "/organized-pdfs",
         element: <Organize />,
+      },
+      {
+        path: "/page-numbers",
+        element: <PdfPageNumber />,
+      },
+      {
+        path: "/rotate-pdf",
+        element: <RotatePdf />,
       },
     ],
   },

@@ -6,6 +6,10 @@ interface OrganizeStore {
   setSelectOrganizeFile: (file: File) => void;
   clearSelectOrganizeFile: () => void;
 
+  blankPage: PageResult | null;
+  setBlankPage: (page: PageResult) => void;
+  clearBlankPage: () => void;
+
   results: PageResult[];
   setResults: (results: PageResult[]) => void;
   clearResults: () => void;
@@ -27,6 +31,10 @@ export const useOrganizeStore = create<OrganizeStore>((set) => ({
   selectOrganizeFile: null,
   setSelectOrganizeFile: (file: File) => set({ selectOrganizeFile: file }),
   clearSelectOrganizeFile: () => set({ selectOrganizeFile: null }),
+
+  blankPage: null,
+  setBlankPage: (page: PageResult) => set({ blankPage: page }),
+  clearBlankPage: () => set({ blankPage: null }),
 
   results: [],
   setResults: (results: PageResult[]) => set({ results }),

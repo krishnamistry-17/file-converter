@@ -145,6 +145,24 @@ const allOptions = [
     icon: FaFilePdf,
     description: "Compress a PDF file to reduce its size.",
   },
+  {
+    label: "Organized PDF",
+    path: "/organized-pdfs",
+    icon: FaFilePdf,
+    description: "Organize a PDF file into a single PDF file.",
+  },
+  {
+    label: "Page Numbers",
+    path: "/page-numbers",
+    icon: FaFilePdf,
+    description: "Add page numbers to a PDF file.",
+  },
+  {
+    label: "Rotate PDF",
+    path: "/rotate-pdf",
+    icon: FaFilePdf,
+    description: "Rotate a PDF file.",
+  },
 ];
 
 const organizedOptions = [
@@ -168,6 +186,21 @@ const organizedOptions = [
   },
 ];
 
+const editPdfOptions = [
+  {
+    label: "Page Numbers",
+    path: "/page-numbers",
+    icon: FaFilePdf,
+    description: "Add page numbers to a PDF file.",
+  },
+  {
+    label: "Rotate PDF",
+    path: "/rotate-pdf",
+    icon: FaFilePdf,
+    description: "Rotate a PDF file.",
+  },
+];
+
 export const fileOperations = [
   {
     title: "All",
@@ -180,6 +213,10 @@ export const fileOperations = [
   {
     title: "Convert From PDF",
     options: allOptions.filter((o) => o.label.includes("PDF to")),
+  },
+  {
+    title: "Edit PDF",
+    options: editPdfOptions,
   },
   {
     title: "Organized PDFs",

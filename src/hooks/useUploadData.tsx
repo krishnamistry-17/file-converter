@@ -26,40 +26,6 @@ export type SplitResult = {
   pages: string;
 };
 
-// export const normalizeText = (text: string) => {
-//   //number
-//   if (!isNaN(Number(text))) {
-//     return text;
-//   }
-
-//   //date
-//   if (!isNaN(new Date(text).getTime())) {
-//     return new Date(text).toLocaleDateString();
-//   }
-
-//   //boolean
-//   if (text.toLowerCase() === "true" || text.toLowerCase() === "false") {
-//     return text.toLowerCase() === "true";
-//   }
-
-//   //null
-//   if (text.toLowerCase() === "null") {
-//     return null;
-//   }
-
-//   //undefined
-//   if (text.toLowerCase() === "undefined") {
-//     return undefined;
-//   }
-
-//   //empty string
-//   if (text.toLowerCase() === "") {
-//     return "";
-//   }
-
-//   return text;
-// };
-
 const normalizeText = (value: any) =>
   value === null || value === undefined ? "" : String(value);
 
@@ -678,7 +644,6 @@ const useUploadData = () => {
     const buffer = await file.arrayBuffer();
     const pdf = await PDFDocument.load(buffer);
     const totalPages = pdf.getPageCount();
-    console.log(totalPages, "totalPages");
     const results: SplitResult[] = [];
     for (let i = 0; i < totalPages; i++) {
       const newPdf = await PDFDocument.create();
@@ -864,6 +829,15 @@ const useUploadData = () => {
     URL.revokeObjectURL(link.href);
   };
 
+  const addBlankPageToPdf = async (
+    width = 595, // A4 width
+    height = 842 // A4 height
+  ): Promise<Uint8Array> => {
+    const pdfDoc = await PDFDocument.create();
+    pdfDoc.addPage([width, height]);
+    return pdfDoc.save();
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -894,6 +868,7 @@ const useUploadData = () => {
     convertPdfToJson,
     convertCsvToPdf,
     organizePdf,
+    addBlankPageToPdf,
   };
 };
 

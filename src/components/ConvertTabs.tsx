@@ -6,6 +6,7 @@ import OtherConversion from "./tabs/OtherConversion/OtherConversion";
 import AllTab from "./tabs/AllTab";
 import { FaChevronDown } from "react-icons/fa";
 import OrganizedPdf from "./tabs/OrganizedPdf/OrganizedPdf";
+import EditPdfLayout from "./tabs/EditPdf/EditPdfLayout";
 
 const ConvertTabs = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -18,6 +19,7 @@ const ConvertTabs = () => {
     "Convert to PDF",
     "Convert from PDF",
     "Organized PDFs",
+    "Edit PDF",
     "Other Options",
   ];
 
@@ -109,6 +111,9 @@ const ConvertTabs = () => {
           </TabPanel>
           <TabPanel>
             <OrganizedPdf />
+          </TabPanel>
+          <TabPanel>
+            <EditPdfLayout />
           </TabPanel>
           <TabPanel>
             <OtherConversion />

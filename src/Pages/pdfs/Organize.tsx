@@ -9,7 +9,7 @@ import {
   IoMdClose,
   IoMdTrash,
 } from "react-icons/io";
-import { FaSortNumericUpAlt } from "react-icons/fa";
+import { FaSortNumericDownAlt } from "react-icons/fa";
 import { FaSortNumericUp } from "react-icons/fa";
 import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
@@ -24,6 +24,7 @@ const Organize = () => {
     selectOrganizeFile,
     setSelectOrganizeFile,
     clearSelectOrganizeFile,
+    clearBlankPage,
   } = useOrganizeStore();
 
   const { extractAllPages, organizePdf } = useUploadData();
@@ -91,7 +92,7 @@ const Organize = () => {
     setResults(
       results.filter((page) => page.fileName !== selectOrganizeFile?.name)
     );
-
+    clearBlankPage();
     clearSelectOrganizeFile();
   };
 
@@ -99,6 +100,7 @@ const Organize = () => {
     setNewSelectedFiles((prev) => prev.filter((f) => f.name !== fileName));
 
     setResults(results.filter((page) => page.fileName !== fileName));
+    clearBlankPage();
   };
 
   const handleOrganizePdf = async () => {
@@ -117,16 +119,17 @@ const Organize = () => {
   const handleSortFiles = () => {
     setResults(
       [...results].sort((a, b) =>
-        isSorted ? b.pages - a.pages : a.pages - b.pages
+        isSorted ? a.pages - b.pages : b.pages - a.pages
       )
     );
-    setIsSorted(!isSorted);
+    setIsSorted((prev) => !prev);
   };
 
   const handleReset = () => {
     clearResults();
     clearSelectOrganizeFile();
     setNewSelectedFiles([]);
+    clearBlankPage();
   };
 
   const isSidebarVisible = results.length > 0;
@@ -172,14 +175,14 @@ const Organize = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
+    <div className="relative lg:flex flex-col min-h-screen bg-linear-to-b from-gray-50 to-white px-4 py-12">
       <div
         className={`flex-1 bg-white rounded-2xl shadow-lg border
            border-gray-100 transition-all duration-300 sm:p-10
         ${!isMobile && isSidebarVisible ? "lg:mr-[380px]" : ""}
       `}
       >
-        <div className="flex flex-col items-center px-4 sm:px-10">
+        <div className="flex flex-col items-center px-4 sm:px-10 lg:py-0 py-4">
           <div className="max-w-lg">
             <SelectFile
               heading="Organize PDF"
@@ -202,6 +205,18 @@ const Organize = () => {
           {results.length > 0 && <OrganizePreviewGrid />}
         </div>
       </div>
+      {isMobile && results.length > 0 && (
+        <div className=" flex flex-col gap-3">
+          <h2 className="text-xl font-semibold py-4">SelectedFiles</h2>
+          {mergeDisplayFiles()}
+          <button
+            className="bg-blue-500 text-white w-full py-2 rounded-md flex justify-center items-center"
+            onClick={handleOrganizePdf}
+          >
+            Organize <IoMdArrowForward className="ml-2" />
+          </button>
+        </div>
+      )}
 
       {!isMobile && isSidebarVisible && (
         <aside className="fixed top-0 right-0 h-full w-[380px] bg-white border-l shadow-lg z-50">
@@ -235,16 +250,16 @@ const Organize = () => {
           <div className="absolute top-1/3 -left-6 flex flex-col gap-3">
             <button
               onClick={handleAddMoreFiles}
-              className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow"
+              className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow"
             >
               <IoMdAdd />
             </button>
 
             <button
               onClick={handleSortFiles}
-              className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow"
+              className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow"
             >
-              {isSorted ? <FaSortNumericUp /> : <FaSortNumericUpAlt />}
+              {isSorted ? <FaSortNumericUp /> : <FaSortNumericDownAlt />}
             </button>
           </div>
         </aside>
@@ -264,7 +279,7 @@ const Organize = () => {
               onClick={handleSortFiles}
               className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
             >
-              {isSorted ? <FaSortNumericUp /> : <FaSortNumericUpAlt />}
+              {isSorted ? <FaSortNumericUp /> : <FaSortNumericDownAlt />}
             </button>
           </div>
         </>

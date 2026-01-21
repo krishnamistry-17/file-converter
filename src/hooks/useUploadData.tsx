@@ -9,6 +9,7 @@ import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
 import autoTable from "jspdf-autotable";
 import { degrees } from "pdf-lib";
+import type { PageResult } from "../types/pageResult";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -838,6 +839,47 @@ const useUploadData = () => {
     return pdfDoc.save();
   };
 
+  const displayPdf = async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const pdf = await PDFDocument.load(buffer);
+    const bytes = await pdf.save();
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+    return URL.createObjectURL(blob);
+  };
+
+  const rotatePdfDownload = async (
+    results: PageResult[],
+    fileName = "rotated.pdf"
+  ) => {
+    const finalPdf = await PDFDocument.create();
+
+    for (const result of results) {
+      const buffer = await result.blob.arrayBuffer();
+      const srcPdf = await PDFDocument.load(buffer);
+
+      const pageIndices = srcPdf.getPageIndices();
+
+      const copiedPages = await finalPdf.copyPages(srcPdf, pageIndices);
+
+      copiedPages.forEach((page) => {
+        if (result.rotation) {
+          page.setRotation(degrees(result.rotation));
+        }
+        finalPdf.addPage(page);
+      });
+    }
+
+    const bytes = await finalPdf.save();
+    const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return {
     ExportToExcel,
     ExportToCSV,
@@ -869,6 +911,8 @@ const useUploadData = () => {
     convertCsvToPdf,
     organizePdf,
     addBlankPageToPdf,
+    displayPdf,
+    rotatePdfDownload,
   };
 };
 

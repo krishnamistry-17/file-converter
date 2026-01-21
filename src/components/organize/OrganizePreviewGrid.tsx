@@ -1,25 +1,16 @@
 import { FaRotate } from "react-icons/fa6";
 import { MdClose } from "react-icons/md";
 import { useOrganizeStore } from "../../store/useOrganizeStore";
-
-type pageResult = {
-  name: string;
-  blob: Blob;
-  url: string;
-  pages: number;
-  rotation: number;
-};
+import type { PageResult } from "../../types/pageResult";
 
 const OrganizePreviewGrid = () => {
   const results = useOrganizeStore((s) => s.results);
-  const sortedResults = useOrganizeStore((s) => s.sortedResults);
   const setResults = useOrganizeStore((s) => s.setResults);
-  const setSortedResults = useOrganizeStore((s) => s.setSortedResults);
-  console.log(sortedResults);
-  const showResults = sortedResults.length > 0 ? sortedResults : results;
+
+  const showResults = results;
 
   const handleRotate = (index: number) => {
-    const update = (list: pageResult[]) =>
+    const update = (list: PageResult[]) =>
       list.map((item, i) =>
         i === index
           ? { ...item, rotation: ((item.rotation ?? 0) + 90) % 360 }
@@ -27,18 +18,12 @@ const OrganizePreviewGrid = () => {
       );
 
     setResults(update(results));
-    if (sortedResults.length) {
-      setSortedResults(update(sortedResults));
-    }
   };
 
   const handleRemove = (index: number) => {
-    const remove = (list: pageResult[]) => list.filter((_, i) => i !== index);
+    const remove = (list: PageResult[]) => list.filter((_, i) => i !== index);
 
     setResults(remove(results));
-    if (sortedResults.length) {
-      setSortedResults(remove(sortedResults));
-    }
   };
 
   if (!showResults.length) {
@@ -50,15 +35,15 @@ const OrganizePreviewGrid = () => {
   return (
     <div className="my-6 w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {showResults.map((file: pageResult, index: number) => (
+        {showResults.map((file: PageResult, index: number) => (
           <div
-            key={`${file.name}-${index}`}
+            key={`${file.fileName}-${index}`}
             className="bg-white rounded-xl shadow-md p-4 relative"
           >
             {/* PDF PREVIEW */}
             <iframe
               src={file.url}
-              title={file.name}
+              title={file.fileName}
               className="w-full h-72 border rounded transition-transform duration-300"
               style={{
                 transform: `rotate(${file.rotation}deg)`,
@@ -67,7 +52,7 @@ const OrganizePreviewGrid = () => {
 
             {/* INFO */}
             <div className="mt-3">
-              <p className="font-medium truncate">{file.name}</p>
+              <p className="font-medium truncate">{file.fileName}</p>
               <p className="text-sm text-gray-500">Page {file.pages}</p>
             </div>
 

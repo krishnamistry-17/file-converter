@@ -1,24 +1,21 @@
 import { create } from "zustand";
-
-interface pageResult {
-  name: string;
-  blob: Blob;
-  url: string;
-  pages: number;
-  rotation: number;
-}
+import type { PageResult } from "../types/pageResult";
 
 interface OrganizeStore {
-  results: pageResult[];
-  setResults: (results: pageResult[]) => void;
+  selectOrganizeFile: File | null;
+  setSelectOrganizeFile: (file: File) => void;
+  clearSelectOrganizeFile: () => void;
+
+  results: PageResult[];
+  setResults: (results: PageResult[]) => void;
   clearResults: () => void;
 
   totalPages: number;
   setTotalPages: (pages: number) => void;
   clearTotalPages: () => void;
 
-  sortedResults: pageResult[];
-  setSortedResults: (results: pageResult[]) => void;
+  sortedResults: PageResult[];
+  setSortedResults: (results: PageResult[]) => void;
   clearSortedResults: () => void;
 
   rotatePdfIndexes: number[];
@@ -27,8 +24,12 @@ interface OrganizeStore {
 }
 
 export const useOrganizeStore = create<OrganizeStore>((set) => ({
+  selectOrganizeFile: null,
+  setSelectOrganizeFile: (file: File) => set({ selectOrganizeFile: file }),
+  clearSelectOrganizeFile: () => set({ selectOrganizeFile: null }),
+
   results: [],
-  setResults: (results: pageResult[]) => set({ results }),
+  setResults: (results: PageResult[]) => set({ results }),
   clearResults: () => set({ results: [] }),
 
   totalPages: 0,
@@ -36,7 +37,7 @@ export const useOrganizeStore = create<OrganizeStore>((set) => ({
   clearTotalPages: () => set({ totalPages: 0 }),
 
   sortedResults: [],
-  setSortedResults: (results: pageResult[]) => set({ sortedResults: results }),
+  setSortedResults: (results: PageResult[]) => set({ sortedResults: results }),
   clearSortedResults: () => set({ sortedResults: [] }),
 
   rotatePdfIndexes: [],

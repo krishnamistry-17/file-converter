@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import SelectFile from "../../components/SelectFile";
 import InputField from "../../components/InputField";
-import { useFileSessionStore } from "../../store/useFileSessionStore";
 import { useOrganizeStore } from "../../store/useOrganizeStore";
 import OrganizePreviewGrid from "../../components/organize/OrganizePreviewGrid";
 import {
@@ -16,21 +15,21 @@ import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
 
 const Organize = () => {
-  const { selectedFile, setSelectedFile, clearSelectedFile } =
-    useFileSessionStore();
-
   const setLoading = useFilesStore((state) => state.setLoading);
-  const { results, setResults, clearResults, setSortedResults } =
-    useOrganizeStore();
+
+  const {
+    results,
+    setResults,
+    clearResults,
+    selectOrganizeFile,
+    setSelectOrganizeFile,
+    clearSelectOrganizeFile,
+  } = useOrganizeStore();
 
   const { extractAllPages, organizePdf } = useUploadData();
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSorted, setIsSorted] = useState(false);
-  const [_sortedText, setSortedText] = useState<
-    "Sort Ascending" | "Sort Descending"
-  >("Sort Ascending");
-
   const [newSelectedFiles, setNewSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const Organize = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setSelectedFile(file);
+    setSelectOrganizeFile(file);
 
     const pages = await extractAllPages(file);
     setResults(
@@ -52,6 +51,7 @@ const Organize = () => {
         ...page,
         rotation: 0,
         pages: index + 1,
+        fileName: file.name,
       }))
     );
   };
@@ -75,13 +75,30 @@ const Organize = () => {
           ...page,
           rotation: 0,
           pages: startIndex + index + 1,
+          fileName: file.name,
         })),
       ]);
 
-      setNewSelectedFiles([...newSelectedFiles, file]);
+      setNewSelectedFiles((prev) => [...prev, file]);
     };
 
     input.click();
+  };
+
+  const handleDeleteSelectedFile = () => {
+    if (!selectOrganizeFile) return;
+
+    setResults(
+      results.filter((page) => page.fileName !== selectOrganizeFile?.name)
+    );
+
+    clearSelectOrganizeFile();
+  };
+
+  const handleDeleteExtraFile = (fileName: string) => {
+    setNewSelectedFiles((prev) => prev.filter((f) => f.name !== fileName));
+
+    setResults(results.filter((page) => page.fileName !== fileName));
   };
 
   const handleOrganizePdf = async () => {
@@ -98,40 +115,40 @@ const Organize = () => {
   };
 
   const handleSortFiles = () => {
-    if (isSorted) {
-      setSortedResults([...results].sort((a, b) => b.pages - a.pages));
-    } else {
-      const sorted = [...results].sort((a, b) => a.pages - b.pages);
-      setSortedResults(sorted);
-    }
+    setResults(
+      [...results].sort((a, b) =>
+        isSorted ? b.pages - a.pages : a.pages - b.pages
+      )
+    );
     setIsSorted(!isSorted);
   };
 
   const handleReset = () => {
-    clearSelectedFile();
     clearResults();
+    clearSelectOrganizeFile();
     setNewSelectedFiles([]);
   };
+
+  const isSidebarVisible = results.length > 0;
 
   const mergeDisplayFiles = () => {
     return (
       <div className="flex flex-col gap-2 my-4">
         <div className="flex flex-col gap-2">
-          <div
-            className="flex items-center justify-between  bg-gray-50 hover:bg-gray-100 transition cursor-pointer
+          {selectOrganizeFile && (
+            <div
+              className="flex items-center justify-between  bg-gray-50 hover:bg-gray-100 transition cursor-pointer
               border border-gray-200 rounded-md p-3 "
-          >
-            {selectedFile?.name}
-            <button
-              className="text-blue-500 cursor-pointer underline text-md"
-              onClick={() => {
-                clearSelectedFile();
-                clearResults();
-              }}
             >
-              <IoMdTrash />
-            </button>
-          </div>
+              {selectOrganizeFile?.name}
+              <button
+                className="text-blue-500 cursor-pointer underline text-md"
+                onClick={handleDeleteSelectedFile}
+              >
+                <IoMdTrash />
+              </button>
+            </div>
+          )}
           {newSelectedFiles?.map((file: any) => (
             <div
               key={file.name}
@@ -142,9 +159,7 @@ const Organize = () => {
               <button
                 className="text-blue-500 cursor-pointer underline text-md"
                 onClick={() => {
-                  setNewSelectedFiles(
-                    newSelectedFiles.filter((f) => f.name !== file.name)
-                  );
+                  handleDeleteExtraFile(file.name);
                 }}
               >
                 <IoMdTrash />
@@ -161,7 +176,7 @@ const Organize = () => {
       <div
         className={`flex-1 bg-white rounded-2xl shadow-lg border
            border-gray-100 transition-all duration-300 sm:p-10
-        ${!isMobile && selectedFile ? "lg:mr-[380px]" : ""}
+        ${!isMobile && isSidebarVisible ? "lg:mr-[380px]" : ""}
       `}
       >
         <div className="flex flex-col items-center px-4 sm:px-10">
@@ -180,15 +195,15 @@ const Organize = () => {
             />
           </div>
 
-          {!selectedFile && (
+          {results.length === 0 && (
             <p className="text-gray-500 mt-8">Upload a PDF to start</p>
           )}
 
-          {selectedFile && <OrganizePreviewGrid />}
+          {results.length > 0 && <OrganizePreviewGrid />}
         </div>
       </div>
 
-      {!isMobile && selectedFile && (
+      {!isMobile && isSidebarVisible && (
         <aside className="fixed top-0 right-0 h-full w-[380px] bg-white border-l shadow-lg z-50">
           <div className="p-6">
             <button className="absolute top-5 right-5" onClick={handleReset}>
@@ -229,21 +244,13 @@ const Organize = () => {
               onClick={handleSortFiles}
               className="bg-blue-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow"
             >
-              {isSorted ? (
-                <FaSortNumericUp
-                  onMouseEnter={() => setSortedText("Sort Descending")}
-                />
-              ) : (
-                <FaSortNumericUpAlt
-                  onMouseEnter={() => setSortedText("Sort Ascending")}
-                />
-              )}
+              {isSorted ? <FaSortNumericUp /> : <FaSortNumericUpAlt />}
             </button>
           </div>
         </aside>
       )}
 
-      {isMobile && selectedFile && (
+      {isMobile && selectOrganizeFile && (
         <>
           <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
             <button
@@ -257,15 +264,7 @@ const Organize = () => {
               onClick={handleSortFiles}
               className="bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
             >
-              {isSorted ? (
-                <FaSortNumericUp
-                  onMouseEnter={() => setSortedText("Sort Descending")}
-                />
-              ) : (
-                <FaSortNumericUpAlt
-                  onMouseEnter={() => setSortedText("Sort Ascending")}
-                />
-              )}
+              {isSorted ? <FaSortNumericUp /> : <FaSortNumericUpAlt />}
             </button>
           </div>
         </>

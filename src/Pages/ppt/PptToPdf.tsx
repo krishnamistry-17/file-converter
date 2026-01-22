@@ -2,7 +2,7 @@ import useFilesStore from "../../store/useSheetStore";
 import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 import api from "../../utils/axios";
-import { toast } from "react-toastify";
+import { API_ROUTES } from "../../constance/apiConstance";
 
 const PptToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -16,7 +16,7 @@ const PptToPdf = () => {
   );
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-    if (!uploadedFile) return toast.error("Please select a file");
+    if (!uploadedFile) return alert("Please select a file");
 
     setSelectedFile(uploadedFile);
     setFile(uploadedFile);
@@ -26,13 +26,13 @@ const PptToPdf = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return toast.error("Select a Ppt file first");
+    if (!file) return alert("Select a Ppt file first");
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await api.post("/api/convert/ppt-to-pdf", formData, {
+      const response = await api.post(API_ROUTES.PPT.PPT_TO_PDF, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -41,15 +41,15 @@ const PptToPdf = () => {
       const data = await response.data;
 
       if (!data.downloadUrl) {
-        toast.error("Conversion failed!");
+        alert("Conversion failed!");
         return;
       }
       window.open(data.downloadUrl, "_blank");
       URL.revokeObjectURL(data.downloadUrl);
-      toast.success("Conversion successful!");
+      alert("Conversion successful!");
     } catch (error) {
       console.error(error);
-      toast.error("Conversion failed!");
+      alert("Download failed!");
     }
   };
 
@@ -59,10 +59,9 @@ const PptToPdf = () => {
     try {
       await handleUpload();
       clearSelectedFile();
-      toast.success("Conversion successful!");
     } catch (error) {
       console.error(error);
-      toast.error("Conversion failed!");
+      alert("Conversion failed!");
     } finally {
       setLoading(false);
     }

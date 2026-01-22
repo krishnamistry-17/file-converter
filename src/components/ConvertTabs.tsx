@@ -26,11 +26,11 @@ const ConvertTabs = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 ">
       <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
-        <div className="lg:flex hidden justify-center mb-10 ">
+        <div className="xs:hidden md:flex justify-center mb-10">
           <TabList
-            className="sm:flex sm:flex-row flex-col sm:bg-white bg-transparent sm:w-auto w-full  
+            className="flex md:flex-row flex-row justify-between sm:bg-white bg-transparent sm:w-auto w-full 
             sm:rounded-full shadow-md sm:p-2 p-4 gap-2"
-            style={{ scrollbarWidth: "none" }}
+            // style={{ scrollbarWidth: "none" }}
           >
             {tabs.map((tab: any, index: number) => {
               return (
@@ -52,7 +52,7 @@ const ConvertTabs = () => {
             })}
           </TabList>
         </div>
-        <div className="lg:hidden lg:mb-0 mb-4 relative z-40">
+        <div className="sm:block md:hidden  lg:mb-0 mb-4 relative z-40">
           <div
             onClick={() => {
               setActiveTab(activeTab);

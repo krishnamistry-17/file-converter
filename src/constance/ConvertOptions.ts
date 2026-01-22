@@ -5,6 +5,7 @@ import {
   FaFilePowerpoint,
   FaFileAlt,
   FaFilePdf,
+  FaFileImage,
 } from "react-icons/fa";
 export const navOptions = [
   { label: "Merge PDF", path: "/merge-pdfs" },
@@ -36,6 +37,7 @@ export const convertOptions = [
       { icon: FaFileWord, label: "PDF to Word", path: "/pdf-to-word" },
       { icon: FaFileCsv, label: "PDF to CSV", path: "/pdf-to-csv" },
       { icon: FaFilePowerpoint, label: "PDF to PPT", path: "/pdf-to-ppt" },
+      { icon: FaFileImage, label: "PDF to Jpg", path: "/pdf-to-jpg" },
     ],
   },
   {
@@ -60,6 +62,12 @@ const allOptions = [
     path: "/jpg-to-pdf",
     icon: FaFilePdf,
     description: "Convert a JPG file to a PDF file.",
+  },
+  {
+    label: "Convert PDF to Jpg",
+    path: "/pdf-to-jpg",
+    icon: FaFileImage,
+    description: "Convert a PDF file to a Jpg file.",
   },
   {
     label: "Convert Word to PDF",

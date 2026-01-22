@@ -42,10 +42,10 @@ const MergePdfComponent = () => {
       clearMergeFile2();
       setPdfPreview1(null);
       setPdfPreview2(null);
-      toast.success("Merge successful!");
+      toast.success("Merge pdf downloaded successfully!");
     } catch (error) {
       console.error(error);
-      toast.error("Merge failed!");
+      toast.error("Merge pdf download failed!");
     } finally {
       setLoading(false);
     }

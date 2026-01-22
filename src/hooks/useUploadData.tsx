@@ -29,14 +29,10 @@ export type SplitResult = {
   pages: string;
 };
 
-const normalizeText = (value: any) =>
-  value === null || value === undefined ? "" : String(value);
-
 const useUploadData = () => {
   const mergeFile1 = useFilesStore((state) => state.mergeFile1);
   const mergeFile2 = useFilesStore((state) => state.mergeFile2);
 
-  const files = useFilesStore((state) => state.results);
   const selectedFile = useFilesStore((state) => state.selectedFile);
 
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -46,32 +42,6 @@ const useUploadData = () => {
       toast.error("No file selected!");
       return;
     }
-  };
-
-  //download data in excel format
-  const ExportToExcel = () => {
-    //create a worksheet
-    const excel = XLSX.utils.json_to_sheet(files);
-    //create a workbook
-    const workbook = XLSX.utils.book_new();
-    //append the worksheet to the workbook
-    XLSX.utils.book_append_sheet(workbook, excel, "Sheet1");
-    //write the workbook to a buffer
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    //create a blob from the buffer
-    const excelBlob = new Blob([excelBuffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    //create a url from the blob
-    const excelUrl = URL.createObjectURL(excelBlob);
-    //create a link element
-    const a = document.createElement("a");
-    a.href = excelUrl;
-    a.download = "data.xlsx";
-    a.click();
   };
 
   const ConvertExcelToCsv = () => {
@@ -136,66 +106,6 @@ const useUploadData = () => {
       a.click();
     };
     reader.readAsArrayBuffer(selectedFile as any);
-  };
-
-  //download data in csv format
-  const ExportToCSV = () => {
-    const csv = Papa.unparse(files);
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.csv";
-    a.click();
-  };
-
-  //download data in json format
-  const ExportToJSON = () => {
-    const json = JSON.stringify(files, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.json";
-    a.click();
-  };
-
-  const mapTableDataToRows = (data: any[]): string[][] => {
-    if (!Array.isArray(data) || data.length === 0) return [];
-
-    // If rows are objects (table data)
-    if (!Array.isArray(data[0])) {
-      const headers = Object.keys(data[0]);
-
-      const body = data.map((row) =>
-        headers.map((key) => normalizeText(row[key]) as string)
-      );
-
-      return [headers, ...body] as string[][];
-    }
-
-    // If already string[][]
-    return data.map((row) => row.map(normalizeText)) as string[][];
-  };
-
-  //download data in pdf format
-  const ExportToPDF = () => {
-    const pdf = new jsPDF();
-    const rows = mapTableDataToRows(files as any[]);
-
-    let y = 10;
-
-    rows.forEach((row: string[]) => {
-      if (y > 270) {
-        pdf.addPage();
-        y = 10;
-      }
-
-      pdf.text(row.join("    "), 10, y);
-      y += 8;
-    });
-
-    pdf.save("data.pdf");
   };
 
   // Json -> Pdf
@@ -419,6 +329,49 @@ const useUploadData = () => {
     }
   };
 
+  //pdf -> png,jpg,jpeg
+  const ConvertPdfToPng = async (
+    file: File
+  ): Promise<{ previews: string[]; blobs: Blob[] }> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    const previews: string[] = [];
+    const blobs: Blob[] = [];
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 0.5 });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      const ctx = canvas.getContext("2d")!;
+      await page.render({ canvasContext: ctx, viewport, canvas: canvas })
+        .promise;
+
+      previews.push(canvas.toDataURL("image/png"));
+
+      const blob = await new Promise<Blob>((res) =>
+        canvas.toBlob((b) => b && res(b), "image/png")
+      );
+      blobs.push(blob);
+    }
+
+    return { previews, blobs };
+  };
+
+  // Download blob as file
+  const downloadBlob = (blob: Blob, fileName: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // pdf -> ppt
   const ConvertedPdfToPpt = async () => {
     showError();
@@ -478,7 +431,7 @@ const useUploadData = () => {
   // Merge PDFs
 
   const MergePdfs = async () => {
-      if (!mergeFile1 || !mergeFile2) {
+    if (!mergeFile1 || !mergeFile2) {
       toast.error("Please select both PDF files to merge!");
       return;
     }
@@ -1043,14 +996,11 @@ const useUploadData = () => {
   };
 
   return {
-    ExportToExcel,
-    ExportToCSV,
-    ExportToPDF,
-    ExportToJSON,
     ConvertExcelToJson,
     ConvertExcelToCsv,
     ConvertDocsToHtml,
     ConvertJsonToPdf,
+    downloadBlob,
     ConvertPdfToExcel,
     ConvertPdfToWord,
     convertPdfToCsv,
@@ -1076,6 +1026,7 @@ const useUploadData = () => {
     displayPdf,
     rotatePdfDownload,
     addPageNumberToPdf,
+    ConvertPdfToPng,
   };
 };
 

@@ -3,7 +3,6 @@ import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 import api from "../../utils/axios";
 import { API_ROUTES } from "../../constance/apiConstance";
-import { toast } from "react-toastify";
 
 const PdfToWord = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -18,7 +17,7 @@ const PdfToWord = () => {
     const file = e.target.files?.[0];
 
     if (!file) {
-      toast.error("Please select a file");
+      alert("Please select a file");
       return;
     }
     setSelectedFile(file as any);
@@ -29,7 +28,7 @@ const PdfToWord = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return toast.error("Select a PDF file first");
+    if (!file) return alert("Select a PDF file first");
 
     const formData = new FormData();
     formData.append("pdf", file);
@@ -42,10 +41,10 @@ const PdfToWord = () => {
       const wordUrl = response.data.url;
       window.open(wordUrl, "_blank");
 
-      toast.success(" Conversion successful!");
+      alert(" Conversion successful!");
     } catch (error) {
       console.error(error);
-      toast.error("Conversion failed!");
+      alert("Conversion failed!");
     }
   };
 
@@ -55,10 +54,9 @@ const PdfToWord = () => {
     try {
       await handleUpload();
       clearSelectedFile();
-      toast.success("Conversion successful!");
     } catch (error) {
       console.error(error);
-      toast.error("Conversion failed!");
+      alert("Conversion failed!");
     } finally {
       setLoading(false);
     }

@@ -176,7 +176,9 @@ const Range = ({
 
         {activeMode === "fixed" && (
           <div className="sm:flex items-center justify-between gap-2 my-2">
-            <p className="text-sm font-medium">Split into page ranges of:</p>
+            <p className="text-sm font-medium mb-2">
+              Split into page ranges of:
+            </p>
             <input
               type="number"
               min={1}

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "proxy": "ngrok http 3000"
+    "proxy": "http://192.168.29.34:2020 "
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
@@ -17,6 +17,7 @@
     "file-saver": "^2.0.5",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
+    "jszip": "^3.10.1",
     "mammoth": "^1.11.0",
     "papaparse": "^5.5.3",
     "pdf-lib": "^1.17.1",

@@ -1,26 +1,22 @@
-import { usePdfPageNumbersStore } from "../../store/usePdfPageNumbers";
-
-const PageNumberPreviewGrid = () => {
-  const results = usePdfPageNumbersStore((s) => s.results);
-
+const PageNumberPreviewGrid = ({ images }: { images: string[] }) => {
+  console.log(images);
   return (
     <div className="my-6 w-full">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-        {results.map((file, index) => (
+        {images.map((image, index) => (
           <div
-            key={`${file.fileName}-${index}`}
+            key={`${image}-${index}`}
             className="bg-white max-w-96 mt-3 xl rounded-xl shadow-md p-4 relative z-40 overflow-x-auto "
           >
             <iframe
-              src={file.url}
-              title={file.fileName}
-              className="w-full h-72 border rounded"
-              style={{ transform: `rotate(${file.rotation}deg)` }}
+              src={image}
+              title={`page-${index + 1}`}
+              className="w-full h-60 border rounded"
             />
 
             <div className="mt-3">
-              <p className="font-medium truncate">{file.fileName}</p>
-              <p className="text-sm text-gray-500">Page {file.pages}</p>
+              <p className="font-medium truncate">{`page-${index + 1}`}</p>
+              <p className="text-sm text-gray-500">Page {index + 1}</p>
             </div>
           </div>
         ))}

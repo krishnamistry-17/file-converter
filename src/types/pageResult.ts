@@ -21,3 +21,9 @@ export interface PageNumberOptions {
   rangeType?: "odd" | "even" | "all";
   numberType?: "arabic" | "roman";
 }
+
+export interface ImageResult {
+  name: string;
+  url: string;
+  blob: Blob;
+}

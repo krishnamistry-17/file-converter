@@ -25,6 +25,7 @@ import OtherConversion from "../components/tabs/OtherConversion/OtherConversion"
 import Organize from "../Pages/pdfs/Organize";
 import PdfPageNumber from "../Pages/pdfs/PdfPageNumber";
 import RotatePdf from "../Pages/pdfs/RotatePdf";
+import PdfToJpg from "../Pages/pdfs/PdfToJpg";
 
 const routes = createBrowserRouter([
   {
@@ -130,6 +131,10 @@ const routes = createBrowserRouter([
       {
         path: "/rotate-pdf",
         element: <RotatePdf />,
+      },
+      {
+        path: "/pdf-to-jpg",
+        element: <PdfToJpg />,
       },
     ],
   },

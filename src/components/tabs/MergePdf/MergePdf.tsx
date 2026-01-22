@@ -23,8 +23,8 @@ const MergePdf = () => {
           Fast, secure, and easy file conversions
         </p>
         <p className="md:text-lg text-md text-gray-500 mt-2">
-          Merge your PDF files easily and quickly. Choose the file
-          type you want to convert and click the convert button.
+          Merge your PDF files easily and quickly. Choose the file type you want
+          to convert and click the convert button.
         </p>
       </div>
 

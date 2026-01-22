@@ -2,6 +2,7 @@ import useFilesStore from "../../store/useSheetStore";
 import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 import api from "../../utils/axios";
+import { toast } from "react-toastify";
 
 const PptToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -15,7 +16,7 @@ const PptToPdf = () => {
   );
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.target.files?.[0];
-    if (!uploadedFile) return alert("Please select a file");
+    if (!uploadedFile) return toast.error("Please select a file");
 
     setSelectedFile(uploadedFile);
     setFile(uploadedFile);
@@ -25,7 +26,7 @@ const PptToPdf = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert("Select a Ppt file first");
+    if (!file) return toast.error("Select a Ppt file first");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -40,15 +41,15 @@ const PptToPdf = () => {
       const data = await response.data;
 
       if (!data.downloadUrl) {
-        alert("Conversion failed!");
+        toast.error("Conversion failed!");
         return;
       }
       window.open(data.downloadUrl, "_blank");
       URL.revokeObjectURL(data.downloadUrl);
-      alert("Conversion successful!");
+      toast.success("Conversion successful!");
     } catch (error) {
       console.error(error);
-      alert("Download failed!");
+      toast.error("Conversion failed!");
     }
   };
 
@@ -58,9 +59,10 @@ const PptToPdf = () => {
     try {
       await handleUpload();
       clearSelectedFile();
+      toast.success("Conversion successful!");
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      toast.error("Conversion failed!");
     } finally {
       setLoading(false);
     }

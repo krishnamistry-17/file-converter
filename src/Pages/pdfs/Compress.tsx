@@ -6,6 +6,7 @@ import useUploadData from "../../hooks/useUploadData";
 import { useState } from "react";
 import { compressPdfOptions } from "../../constance/ConvertOptions";
 import { IoMdClose } from "react-icons/io";
+import { toast } from "react-toastify";
 
 const CompressPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -14,6 +15,8 @@ const CompressPdf = () => {
   const [previewFileDesign, setPreviewFileDesign] = useState<string | null>(
     null
   );
+  const results = useFilesStore((state) => state.results);
+  const setResults = useFilesStore((state) => state.setResults);
   const { compressPdf } = useUploadData();
 
   const [fileSelected, setFileSelected] = useState(false);
@@ -23,7 +26,15 @@ const CompressPdf = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setSelectedFile(file as any);
+    setSelectedFile(file);
+    setResults([{
+      name: file.name,
+      blob: file,
+      url: URL.createObjectURL(file),
+      rotation: 0,
+      fileName: file.name,
+      pages: 1,
+    }]);
     setPreviewFileDesign(URL.createObjectURL(file as File));
     e.target.value = "";
     setFileSelected(true);
@@ -35,9 +46,10 @@ const CompressPdf = () => {
     try {
       await compressPdf();
       clearSelectedFile();
+      toast.success("Compression successful!");
     } catch (error) {
       console.error(error);
-      alert("Compression failed!");
+      toast.error("Compression failed!");
     } finally {
       setLoading(false);
     }
@@ -55,13 +67,15 @@ const CompressPdf = () => {
             description="Compress a PDF file to reduce its size."
           />
 
-          <div className="w-full flex justify-center">
+          {results.length === 0 && (
+            <div className="w-full flex justify-center">
             <InputField
               handleFileUpload={handleFileUpload}
               accept=".pdf"
-              label="Select a file"
-            />
-          </div>
+                label="Select a file"
+              />
+            </div>
+          )}
 
           <PreviewFile previewFileDesign={previewFileDesign} />
         </div>

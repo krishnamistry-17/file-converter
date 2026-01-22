@@ -4,6 +4,7 @@ import PreviewFile from "../PreviewFile";
 import useFilesStore from "../../store/useSheetStore";
 import UploadModal from "../UploadModal";
 import { IoMdClose } from "react-icons/io";
+import ToastError from "../ToastError";
 interface PdfFileProps {
   previewFileDesign?: React.ReactNode;
   heading: string;
@@ -64,12 +65,13 @@ const PdfFile = ({
 
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-10">
           <div className="flex flex-col items-center gap-4">
-            <button
-              onClick={() => {
-                setModalOpen(true);
-                setSelectedFile(null);
-              }}
-              className="
+            {fileSelected === false && (
+              <button
+                onClick={() => {
+                  setModalOpen(true);
+                  setSelectedFile(null);
+                }}
+                className="
                w-full sm:w-auto
               px-10 py-4
               border-2 border-dashed border-gray-300
@@ -77,17 +79,16 @@ const PdfFile = ({
               hover:border-blue-500 hover:text-blue-600
               transition
             "
-            >
-              {label}
-            </button>
-
+              >
+                {label}
+              </button>
+            )}
+            <ToastError />
             <p className="text-xs text-gray-400">Supported format: {accept}</p>
           </div>
 
           <div className="mt-10">
-            <PreviewFile
-              previewFileDesign={previewFileDesign as any}
-            />
+            <PreviewFile previewFileDesign={previewFileDesign as any} />
           </div>
 
           {fileSelected && (

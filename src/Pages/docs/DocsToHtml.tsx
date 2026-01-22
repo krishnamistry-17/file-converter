@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import PdfFile from "../../components/layout/PdfFile";
 import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
@@ -15,7 +16,7 @@ const DocsToHtml = () => {
     const file = e.target.files?.[0];
 
     if (!file) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
     setSelectedFile(file as any);
@@ -31,7 +32,7 @@ const DocsToHtml = () => {
       await ConvertDocsToHtml();
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      toast.error("Conversion failed!");
     } finally {
       setLoading(false);
     }

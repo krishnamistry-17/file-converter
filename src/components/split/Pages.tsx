@@ -3,6 +3,7 @@ import useUploadData from "../../hooks/useUploadData";
 import useSplitStore from "../../store/useSplitStore";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useFilesStore from "../../store/useSheetStore";
+import { toast } from "react-toastify";
 
 const Pages = ({
   setIsSidebarOpen,
@@ -57,7 +58,7 @@ const Pages = ({
       setIsSidebarOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Page split failed");
+      toast.error("Page split failed");
     } finally {
       setLoading(false);
     }

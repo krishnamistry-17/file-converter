@@ -4,6 +4,8 @@ import NumberPosition from "../NumberPosition";
 import { useEffect, useState } from "react";
 import useUploadData from "../../hooks/useUploadData";
 import useSplitStore from "../../store/useSplitStore";
+import useFilesStore from "../../store/useSheetStore";
+import { toast } from "react-toastify";
 
 const PageSidebar = () => {
   const {
@@ -31,6 +33,7 @@ const PageSidebar = () => {
 
   const activeRange = useSplitStore((s) => s.activeRange);
   const setActiveRange = useSplitStore((s) => s.setActiveRange);
+  const setLoading = useFilesStore((state) => state.setLoading);
 
   const { addPageNumberToPdf } = useUploadData();
 
@@ -43,6 +46,8 @@ const PageSidebar = () => {
   }, [totalPages, setSelectedTextName]);
 
   const handleApply = async () => {
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 100));
     if (!results.length) return;
 
     addPageNumberToPdf(results, {
@@ -59,6 +64,8 @@ const PageSidebar = () => {
     });
 
     clearResults();
+    toast.success("Page numbers applied successfully!");
+    setLoading(false);
   };
 
   useEffect(() => {

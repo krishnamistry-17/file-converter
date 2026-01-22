@@ -13,6 +13,7 @@ import { FaSortNumericDownAlt } from "react-icons/fa";
 import { FaSortNumericUp } from "react-icons/fa";
 import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
+import { toast } from "react-toastify";
 
 const Organize = () => {
   const setLoading = useFilesStore((state) => state.setLoading);
@@ -108,9 +109,11 @@ const Organize = () => {
     await new Promise((r) => setTimeout(r, 100));
     try {
       organizePdf(results, "organized.pdf");
+      toast.success("Organize successful!");
+      clearResults();
     } catch (error) {
       console.error(error);
-      alert("Organize failed!");
+      toast.error("Organize failed!");
     } finally {
       setLoading(false);
     }
@@ -190,13 +193,15 @@ const Organize = () => {
             />
           </div>
 
-          <div className="w-full flex justify-center">
-            <InputField
-              handleFileUpload={handleFileUpload}
-              accept=".pdf"
-              label="Select a file"
-            />
-          </div>
+          {results.length === 0 && (
+            <div className="w-full flex justify-center">
+              <InputField
+                handleFileUpload={handleFileUpload}
+                accept=".pdf"
+                label="Select a file"
+              />
+            </div>
+          )}
 
           {results.length === 0 && (
             <p className="text-gray-500 mt-8">Upload a PDF to start</p>

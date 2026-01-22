@@ -2,6 +2,7 @@ import { useState } from "react";
 import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
 import SelectFile from "../../components/SelectFile";
+import { toast } from "react-toastify";
 
 const MergePdfComponent = () => {
   const [pdfPreview1, setPdfPreview1] = useState<string | null>(null);
@@ -41,9 +42,10 @@ const MergePdfComponent = () => {
       clearMergeFile2();
       setPdfPreview1(null);
       setPdfPreview2(null);
+      toast.success("Merge successful!");
     } catch (error) {
       console.error(error);
-      alert("Merge failed!");
+      toast.error("Merge failed!");
     } finally {
       setLoading(false);
     }

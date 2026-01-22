@@ -2,6 +2,7 @@ import useFilesStore from "../../store/useSheetStore";
 import useUploadData from "../../hooks/useUploadData";
 import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
+import { toast } from "react-toastify";
 
 const PdfToJson = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -19,7 +20,7 @@ const PdfToJson = () => {
     const file = e.target.files?.[0];
 
     if (!file) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
     setSelectedFile(file as any);
@@ -39,10 +40,11 @@ const PdfToJson = () => {
       const url = URL.createObjectURL(blob);
       window.open(url);
       clearSelectedFile();
+      toast.success("Conversion successful!");
       return;
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      toast.error("Conversion failed!");
     } finally {
       setLoading(false);
     }

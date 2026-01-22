@@ -3,11 +3,13 @@ import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import GlobalLoader from "../GlobalLoader";
+import ToastError from "../ToastError";
 
 const Layout = () => {
   return (
     <div>
       <GlobalLoader />
+      <ToastError />
       <Navbar />
       <ScrollWindow>
         <Outlet />

@@ -3,6 +3,7 @@ import { useState } from "react";
 import PdfFile from "../../components/layout/PdfFile";
 import api from "../../utils/axios";
 import { API_ROUTES } from "../../constance/apiConstance";
+import { toast } from "react-toastify";
 
 const ExcelToPdf = () => {
   const setSelectedFile = useFilesStore((state) => state.setSelectedFile);
@@ -21,7 +22,7 @@ const ExcelToPdf = () => {
     const file = e.target.files?.[0];
 
     if (!file) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
     setSelectedFile(file as any);
@@ -32,7 +33,7 @@ const ExcelToPdf = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert("Select a Excel file first");
+    if (!file) return toast.error("Select a Excel file first");
 
     const formData = new FormData();
     formData.append("file", file);
@@ -47,7 +48,7 @@ const ExcelToPdf = () => {
       const data = await response.data;
 
       if (!data.downloadUrl) {
-        alert("Conversion failed!");
+        toast.error("Conversion failed!");
         return;
       }
       setDownloadFilePreview(data.previewUrl);
@@ -56,10 +57,10 @@ const ExcelToPdf = () => {
       a.download = data.fileName;
       a.click();
       URL.revokeObjectURL(data.downloadUrl);
-      alert("Conversion successful!");
+      toast.success("Conversion successful!");
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      toast.error("Conversion failed!");
     }
   };
 
@@ -71,7 +72,7 @@ const ExcelToPdf = () => {
       clearSelectedFile();
     } catch (error) {
       console.error(error);
-      alert("Conversion failed!");
+      toast.error("Conversion failed!");
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@ import autoTable from "jspdf-autotable";
 import { degrees } from "pdf-lib";
 import type { PageNumberOptions, PageResult } from "../types/pageResult";
 import type { PageNumberPosition } from "../types/pagenumberPosition";
+import { toast } from "react-toastify";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -42,7 +43,7 @@ const useUploadData = () => {
 
   const showError = () => {
     if (!selectedFile) {
-      alert("No file selected!");
+      toast.error("No file selected!");
       return;
     }
   };
@@ -75,7 +76,7 @@ const useUploadData = () => {
 
   const ConvertExcelToCsv = () => {
     if (!selectedFile) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
     const reader = new FileReader();
@@ -96,7 +97,7 @@ const useUploadData = () => {
 
   const ConvertDocsToHtml = async () => {
     if (!selectedFile) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
 
@@ -116,7 +117,7 @@ const useUploadData = () => {
 
   const ConvertExcelToJson = () => {
     if (!selectedFile) {
-      alert("Please select a file");
+      toast.error("Please select a file");
       return;
     }
     const reader = new FileReader();
@@ -313,7 +314,7 @@ const useUploadData = () => {
       reader.readAsText(selectedFile as any);
     } catch (err) {
       console.error(err);
-      alert("Failed to convert PDF to Excel");
+      toast.error("Failed to convert PDF to Excel");
     }
   };
 
@@ -337,7 +338,7 @@ const useUploadData = () => {
       reader.readAsText(selectedFile as any);
     } catch (err) {
       console.error(err);
-      alert("Failed to convert PDF to Word");
+      toast.error("Failed to convert PDF to Word");
     }
   };
 
@@ -414,7 +415,7 @@ const useUploadData = () => {
       reader.readAsDataURL(selectedFile as any);
     } catch (err) {
       console.error(err);
-      alert("Failed to convert JPG to PDF");
+      toast.error("Failed to convert JPG to PDF");
     }
   };
 
@@ -438,14 +439,14 @@ const useUploadData = () => {
       reader.readAsText(selectedFile as any);
     } catch (error) {
       console.error(error);
-      alert("Failed to convert PDF to PPT");
+      toast.error("Failed to convert PDF to PPT");
     }
   };
 
   // Compress PDF
   const compressPdf = async () => {
     if (!selectedFile) {
-      alert("Please select a PDF file first!");
+      toast.error("Please select a PDF file first!");
       return;
     }
 
@@ -470,15 +471,15 @@ const useUploadData = () => {
       a.click();
     } catch (err) {
       console.error(err);
-      alert("Failed to compress PDF");
+      toast.error("Failed to compress PDF");
     }
   };
 
   // Merge PDFs
 
   const MergePdfs = async () => {
-    if (!mergeFile1 || !mergeFile2) {
-      alert("Please select both PDF files to merge!");
+      if (!mergeFile1 || !mergeFile2) {
+      toast.error("Please select both PDF files to merge!");
       return;
     }
 

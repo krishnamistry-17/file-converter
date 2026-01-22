@@ -12,6 +12,7 @@ import {
 import useUploadData from "../../hooks/useUploadData";
 import useFilesStore from "../../store/useSheetStore";
 import { FaRotateLeft, FaRotateRight } from "react-icons/fa6";
+import { toast } from "react-toastify";
 
 const RotatePdf = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -105,9 +106,10 @@ const RotatePdf = () => {
     try {
       await rotatePdfDownload(results, "rotated.pdf");
       clearResults();
+      toast.success("Download successful!");
     } catch (error) {
       console.error(error);
-      alert("Download failed!");
+      toast.error("Download failed!");
     } finally {
       setLoading(false);
     }
@@ -188,14 +190,15 @@ const RotatePdf = () => {
                 description="Rotate a PDF file by 90 degrees."
               />
             </div>
-
-            <div className="w-full flex justify-center">
-              <InputField
-                handleFileUpload={handleFileUpload}
-                accept=".pdf"
-                label="Select a file"
-              />
-            </div>
+            {results.length === 0 && (
+              <div className="w-full flex justify-center">
+                <InputField
+                  handleFileUpload={handleFileUpload}
+                  accept=".pdf"
+                  label="Select a file"
+                />
+              </div>
+            )}
             {results.length === 0 && (
               <p className="text-gray-500 mt-8">Upload a PDF to start</p>
             )}

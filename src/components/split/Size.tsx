@@ -4,6 +4,7 @@ import SwitchButton from "../SwitchButton";
 import useUploadData from "../../hooks/useUploadData";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useFilesStore from "../../store/useSheetStore";
+import { toast } from "react-toastify";
 
 const Size = ({
   setIsSidebarOpen,
@@ -33,7 +34,7 @@ const Size = ({
       return;
     } catch (error) {
       console.error(error);
-      alert("Size split failed!");
+      toast.error("Size split failed!");
     } finally {
       setLoading(false);
     }

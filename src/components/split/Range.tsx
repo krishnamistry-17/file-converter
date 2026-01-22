@@ -3,6 +3,7 @@ import useUploadData from "../../hooks/useUploadData";
 import { useFileSessionStore } from "../../store/useFileSessionStore";
 import useSplitStore from "../../store/useSplitStore";
 import useFilesStore from "../../store/useSheetStore";
+import { toast } from "react-toastify";
 
 const Range = ({
   setIsSidebarOpen,
@@ -69,11 +70,11 @@ const Range = ({
     setLoading(true);
     await new Promise((r) => setTimeout(r, 100));
     try {
-      if (!selectedFile) return alert("Please select a file first");
+      if (!selectedFile) return toast.error("Please select a file first");
 
       if (activeMode === "custome") {
         if (!validateCustomRanges())
-          return alert("Please enter valid page ranges.");
+          return toast.error("Please enter valid page ranges.");
 
         const numericRanges = activeRange.map((r) => ({
           from: Number(r.from),
@@ -90,7 +91,7 @@ const Range = ({
         const size = Number(pageRange);
         console.log("size", size);
         if (!size || size <= 0) {
-          alert(
+          toast.error(
             "Enter a valid page size,fixed range acccpets only single value"
           );
           return;
@@ -105,7 +106,7 @@ const Range = ({
       setIsSidebarOpen(false);
     } catch (error) {
       console.error(error);
-      alert("Range split failed!");
+      toast.error("Range split failed!");
     } finally {
       setLoading(false);
     }

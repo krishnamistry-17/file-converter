@@ -929,6 +929,32 @@ const useUploadData = () => {
       color: rgb(0, 0, 0),
     });
   };
+  const toRoman = (num: number): string => {
+    const map: [number, string][] = [
+      [1000, "M"],
+      [900, "CM"],
+      [500, "D"],
+      [400, "CD"],
+      [100, "C"],
+      [90, "XC"],
+      [50, "L"],
+      [40, "XL"],
+      [10, "X"],
+      [9, "IX"],
+      [5, "V"],
+      [4, "IV"],
+      [1, "I"],
+    ];
+
+    let result = "";
+    for (const [value, numeral] of map) {
+      while (num >= value) {
+        result += numeral;
+        num -= value;
+      }
+    }
+    return result;
+  };
 
   const addPageNumberToPdf = async (
     pages: { blob: Blob; rotation: number }[],
@@ -940,6 +966,8 @@ const useUploadData = () => {
       range,
       fileName = "page-numbered.pdf",
       text = "{current}",
+      rangeType = "all",
+      numberType = "arabic",
     } = options;
 
     const finalPdf = await PDFDocument.create();
@@ -952,7 +980,6 @@ const useUploadData = () => {
 
     for (const item of pages) {
       const srcPdf = await PDFDocument.load(await item.blob.arrayBuffer());
-
       const copiedPages = await finalPdf.copyPages(
         srcPdf,
         srcPdf.getPageIndices()
@@ -963,13 +990,37 @@ const useUploadData = () => {
           page.setRotation(degrees(item.rotation));
         }
 
-        const shouldNumber =
+        const inRange =
           !range || (globalIndex >= range.from && globalIndex <= range.to);
+
+        const formattedNumber =
+          numberType === "roman"
+            ? toRoman(printedNumber)
+            : String(printedNumber);
+
+        const matchesRangeType =
+          rangeType === "all" ||
+          (rangeType === "odd" && globalIndex % 2 === 1) ||
+          (rangeType === "even" && globalIndex % 2 === 0);
+
+        const matchesNumberType =
+          numberType === "arabic"
+            ? true
+            : numberType === "roman"
+            ? toRoman(printedNumber).length > 0
+            : false;
+
+        const shouldNumber = inRange && matchesRangeType && matchesNumberType;
 
         if (shouldNumber) {
           const finalText = text
-            .replace("{current}", String(printedNumber))
-            .replace("{total}", String(range?.to ?? totalPages));
+            .replace("{current}", formattedNumber)
+            .replace(
+              "{total}",
+              numberType === "arabic"
+                ? String(range?.to ?? totalPages)
+                : toRoman(range?.to ?? totalPages)
+            );
 
           drawPageNumber({
             page,

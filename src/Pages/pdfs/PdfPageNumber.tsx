@@ -55,13 +55,16 @@ const PdfPageNumber = () => {
                 description="Add page numbers to a PDF file. This tool will add page numbers to a PDF file."
               />
             </div>
-            <div className="w-full flex justify-center">
-              <InputField
-                handleFileUpload={handleFileUpload}
-                accept=".pdf"
-                label="Select a file"
-              />
-            </div>
+            {results.length === 0 && (
+              <div className="w-full flex justify-center">
+                <InputField
+                  handleFileUpload={handleFileUpload}
+                  accept=".pdf"
+                  label="Select a file"
+                />
+              </div>
+            )}
+
             {results.length === 0 && (
               <p className="text-gray-500 mt-8">Upload a PDF to start</p>
             )}

@@ -18,4 +18,6 @@ export interface PageNumberOptions {
   };
   fileName?: string;
   text?: string;
+  rangeType?: "odd" | "even" | "all";
+  numberType?: "arabic" | "roman";
 }

@@ -39,6 +39,12 @@ interface PdfPageNumbersStore {
   setPageNumberPosition: (position: PageNumberPosition) => void;
   clearPageNumberPosition: () => void;
 
+  selectedRangeType: "all" | "odd" | "even";
+  setSelectedRangeType: (type: "all" | "odd" | "even") => void;
+
+  selectedNumberType: "arabic" | "roman";
+  setSelectedNumberType: (type: "arabic" | "roman") => void;
+
   selectedName: string;
   setSelectedName: (name: string) => void;
   clearSelectedName: () => void;
@@ -61,6 +67,14 @@ export const usePdfPageNumbersStore = create<PdfPageNumbersStore>((set) => ({
   firstNumber: 1,
   setFirstNumber: (number: number) => set({ firstNumber: number }),
   clearFirstNumber: () => set({ firstNumber: 1 }),
+
+  selectedRangeType: "all",
+  setSelectedRangeType: (type: "all" | "odd" | "even") =>
+    set({ selectedRangeType: type }),
+
+  selectedNumberType: "arabic",
+  setSelectedNumberType: (type: "arabic" | "roman") =>
+    set({ selectedNumberType: type }),
 
   firstPage: 1,
   setFirstPage: (page: number) => set({ firstPage: page }),
